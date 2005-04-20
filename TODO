@@ -1,0 +1,92 @@
+current tasks:
+  upload submissions as po file / zip
+  assigning stuff to people (package + email too)
+  - upload completed work (by maintainer)
+  - what has been returned, what hasn't
+  - ability to send work to people
+  - let maintainer add people manually
+  - create / review goals
+  localize pootle
+  - create po files
+  - set language on login (and detect languages from browser)
+  priorities (directory/file order)
+  process (administrators/translators/reviewers)
+  locking
+  allow search to display only items related to search (no context)
+  add ability to email bug report
+
+requirements for translatathon:
+  assigning stuff to people (with permissions)
+    - both translation and review
+  attribution (based on login)
+    ? where to put it
+    - last translator
+    - comment with everyone at top of po file
+    - comment in suggestion
+  translation review cycle
+    - comment to explain rejection
+  highlight spaces in original so you can see what is a space
+
+other:
+  handle plurals properly (currently ignored)
+  add ability to mark/unmark things as fuzzy
+  move the sidebar to be like distributed proofreaders (at the top, small)
+  test with apache multiprocess
+  store a history file
+  maybe have a separate file to track who translated each string
+  display results of checks for each string on submission
+  handle language subtypes (regions)
+  handle project versions
+  have clickable characters to add for a language (mostly useful for diacritics)
+  a reviewer can mark as string as fuzzy but not provide a translation (in
+    order to browse and fixup things like af KDE.
+  integrate with KBabel/POEdit
+  allow XLIFF version of files to be downloaded/uploaded
+  show KDE and other PO comments in some uncluttered but accesible way
+  create Gettext .mo/.gmo (compiled .po) files that can be downloaded and run.  Similarly
+    allow creation of .qm (compiled Qt .ts files).
+    See pygettext for .mo files and lrelease which is GPL'd for Qt .qm files
+  create XPI files automatically when updates are made
+  Add X-Poedit style tags in the header when you download so that people using
+    this PO editor don't have to configure everything
+  stats:
+    percentage change.  So you can see if a language/project is active or not.
+  if there is only one .PO firl for a project then merge the header bar and the
+    PO file bar to make it less clutered and more logical.
+  goto a specific message.  Maybe a better thing to have a bar graph showing
+    what bits aren't translated and jump straight to that.
+  localisation: create a fallback mechanism so you can set a number of
+    languages: Bambara, French then default to English.
+  three column translation: English, Other language, Destination Language.  So
+    that a French speaker can translate into Bambarra with little English
+
+bugs:
+  when returned to the indexpage from the translatepage (finished search etc) the project root is one level out
+  suggestion msgid comments get incorporated into main po file! this *totally* confuses things, item numbers seem to get messed up too...
+  when checks are on and you browse into one when you return checks are off
+    (confusing)
+  searching does not work when in the translation interface
+  currently project codes cannot have a dash "-" in them eg kde-i18n.  Either
+    we should allow or warn when starting pootle.
+
+assignment:
+  assign to a group
+  lock at the user level - only one person per file
+  translatathon:
+    30 people
+    time-consuming:
+      choosing who does what
+      wordcounts would help
+    at the end, not sure what to assign...
+
+feedback from Durban translatathon:
+  regenerate Pootle PO files on web
+  autocreate POT files when packaging
+  upload SA translations
+  word counts, not just string counts
+  some timeouts
+  automatic tips for things like accelerators
+  tutorial PO file
+  search failing on assigns, message is cryptic
+  stats on translation
+

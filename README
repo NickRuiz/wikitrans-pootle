@@ -1,0 +1,69 @@
+Pootle: a web translation and translation management engine
+===========================================================
+
+How it works
+------------
+The concept is: a PO file is a document, so lets use PO files directly, 
+rather than storing it in a database.  But we need quick access to statistics 
+so we cache them in .stats files. This lets us do most checks etc in advance 
+and then iterate quickly.
+
+Requirements/Installation
+-------------------------
+Pootle requires the Translate Toolkit package from 
+http://translate.sourceforge.net as it uses most of the other modules.
+
+The Translate Toolkit requires Python 2.2 or higher, but Pootle itself 
+probably only works with Python 2.3 or higher.  The Translate Toolkit must 
+be installed properly i.e. it needs to be accessible in your Python Path. This
+will normally be accomplished by installing from source:
+
+	python setup.py install
+
+For the web interface, Pootle requires jToolkit (http://jtoolkit.sourceforge.net/)
+jToolkit can run applications either via Apache using mod_python, or standalone 
+from the command line.  Pootle works best at the moment being run from the 
+command line since we don't handle inter-process locking etc.  It's also 
+much easier! To install jToolkit run:
+
+	tar xvzf jToolkit-N.N.N.tar.gz
+	cd jToolkit-N.N.N
+	python jToolkitSetup.py install
+
+To install Pootle itself, run
+
+	tar xzf Pootle-N.N.N.tar.gz
+	cd Pootle-N.N.N
+	python pootlesetup.py install
+
+Running
+-------
+To run, edit pootle.prefs and specify your languages and projects. The key detail 
+here is the podir for each project.  Then from the Pootle directory run:
+
+	python pootle.py
+
+Use --help to see the other options.  You can tell it which prefs file to use, 
+what HTML file and what port to run on (the default is 8080). The defaults will 
+generally work.
+
+Now visit http://localhost:8080/ and begin translating.
+
+To stop, press Ctrl-C. On Windows, it will only react to the Ctrl-C after a webpage is requested.
+
+Notes
+-----
+Files should be reindexed automatically.
+To reindex manually, simply remove any stats files you want reindexed, or run 
+	python pootle.py --refreshstats
+
+Assignments
+-----------
+To assign sstrings to users, you need to create a xxx.po.assigns file in the same 
+directory as xxx.po This should contain lines in the following format:
+
+username: action: 0,2-34,36,99
+
+where action can be 'suggest' or 'review', and the numbers refer to 0-based item 
+numbers in the file.
+

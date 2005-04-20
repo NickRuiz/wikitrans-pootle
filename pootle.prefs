@@ -1,0 +1,66 @@
+# jToolkit preferences file
+# showing jBrowser fields
+
+importmodules:
+  pootle = 'translate.pootle'
+  pootleserver = 'translate.pootle.pootle'
+
+Pootle:
+  serverclass = pootleserver.PootleServer
+  sessionkey='p00tl3'
+  # set this to the URL people will access pootle from
+  baseurl = "/"
+  title = "Pootle"
+  description = "this is a demo installation of pootle"
+  registration:
+    fromaddress = "pootle-registration@localhost"
+    smtpserver = "localhost"
+  userprefs = "users.prefs"
+  projects:
+    pootle:
+      fullname = "Pootle"
+      description = "Web translation software"
+      checkstyle = "standard"
+    openoffice:
+      fullname = "OpenOffice.org"
+      description = "Office productivity suite"
+      checkerstyle = "openoffice"
+    mozilla:
+      fullname = "Mozilla"
+      description = "Web-browser, email program and HTML editor"
+      checkerstyle = "mozilla"
+    firefox:
+      fullname = "Firefox"
+      description = "Lean and mean, standards compliant web-browser"
+      checkerstyle = "mozilla"
+    xfce:
+      fullname = "xfce 4.2"
+      description = "Linux desktop with good looks and speed to thrill"
+      checkerstyle = "gnome"
+      createmofiles = 1
+    abiword.fullname = 'Abiword'
+    abiword.description = 'Word processor'
+    horde.fullname = "Horde"
+    horde.description = "Horde"
+    audacity.fullname = 'Audacity'''
+    test.createmofiles = ''
+    test.fullname = 'test'
+    test.checkerstyle = 'test'
+    test.description = 'test'
+    vlc.description = 'VideoLan Client'
+    vlc.fullname = 'vlc'
+    vlc.checkerstyle = 'gnome'
+    vlc.createmofiles = ''
+    tuxpaint.fullname = 'tuxpaint'
+  podirectory = "po"
+  languages:
+    af:
+      fullname = "Afrikaans"
+      specialchars = "ÄËÏÖÜäëïöü ÂÊÎÔÛâêîôû"
+    de:
+      fullname = "German"
+    ru:
+      fullname = "Russian"
+    en.fullname = 'English'
+    cy.fullname = 'Welsh'
+    vi.fullname = 'Vietnamese'
