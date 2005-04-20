@@ -1,0 +1,16 @@
+2005-04-20 11:33  davidfraser
+
+	* README, TODO, __init__.py, adminpages.py, indexpage.py,
+	  pagelayout.py, pootle.prefs, pootle.py, pootlefile.py, potree.py,
+	  projects.py, translatepage.py, users.py, versioncontrol.py,
+	  html/favicon.ico, html/pootle.css, html/robots.txt,
+	  html/doc/howto.html, html/doc/index.html,
+	  html/doc/resources.html, html/images/edit.png,
+	  html/images/file.png, html/images/folder.png,
+	  html/images/gap.png, html/images/goal.png,
+	  html/images/person.png, html/images/pootle-medium.jpg,
+	  html/images/pootle-small.jpg, html/images/pootle.jpg,
+	  html/images/pootle.svg, html/images/top.png,
+	  html/js/autoexpand.js: moved from translate/pootle to Pootle and
+	  adjusted imports, README etc
+
