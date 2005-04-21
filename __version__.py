@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 """this file contains the version of pootle"""
-ver = "0.8"
+ver = "0.6.0"
 
