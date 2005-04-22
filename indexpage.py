@@ -5,7 +5,10 @@ from Pootle import pagelayout
 from Pootle import projects
 from Pootle import pootlefile
 from Pootle import versioncontrol
+from Pootle import __version__ as pootleversion
+from jToolkit import __version__ as jtoolkitversion
 import os
+import sys
 
 def summarizestats(statslist, totalstats=None):
   if totalstats is None:
@@ -26,7 +29,9 @@ class AboutPage(pagelayout.PootlePage):
     introtext = pagelayout.IntroText(self.localize("<strong>Pootle</strong> is a simple web portal that should allow you to <strong>translate</strong>! Since Pootle is <strong>Free Software</strong>, you can download it and run your own copy if you like. You can also help participate in the development in many ways (you don't have to be able to program)."))
     hosttext = pagelayout.IntroText(self.localize('The Pootle project itself is hosted at <a href="http://translate.sourceforge.net/">translate.sourceforge.net</a> where you can find the details about source code, mailing lists etc.'))
     nametext = pagelayout.IntroText(self.localize('The name stands for <b>PO</b>-based <b>O</b>nline <b>T</b>ranslation / <b>L</b>ocalization <b>E</b>ngine, but you may need to read <a href="http://www.thechestnut.com/flumps.htm">this</a>.'))
-    aboutpootle = [abouttitle, introtext, hosttext, nametext]
+    versiontitle = pagelayout.Title(self.localize("Versions"))
+    versiontext = pagelayout.IntroText(self.localize("This site is running:<br/>Pootle %s</br>jToolkit %s</br>Python %s (on %s/%s)") % (pootleversion.ver, jtoolkitversion.ver, sys.version, sys.platform, os.name))
+    aboutpootle = [abouttitle, introtext, hosttext, nametext, versiontitle, versiontext]
     contents = pagelayout.Contents([title, description, aboutpootle])
     pagelayout.PootlePage.__init__(self, pagetitle, contents, session)
 
