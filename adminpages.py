@@ -4,6 +4,7 @@ from jToolkit.widgets import widgets
 from jToolkit.widgets import table
 from Pootle import pagelayout
 from Pootle import projects
+from translate.filters import checks
 
 class AdminPage(pagelayout.PootlePage):
   """page for administering pootle..."""
@@ -122,6 +123,8 @@ class ProjectsAdminPage(pagelayout.PootlePage):
     projects.setcell(0, 3, table.TableCell(pagelayout.Title(self.localize("Checker Style"))))
     projects.setcell(0, 4, table.TableCell(pagelayout.Title(self.localize("Create MO Files"))))
     projects.setcell(0, 5, table.TableCell(pagelayout.Title(self.localize("Remove project"))))
+    allchecks = [(check, check) for check in checks.projectcheckers.keys()]
+    allchecks.append(("", self.localize("Standard")))
     for projectcode in self.potree.getprojectcodes():
       projectadminlink = "../projects/%s/admin.html" % projectcode
       projectname = self.potree.getprojectname(projectcode)
@@ -134,26 +137,26 @@ class ProjectsAdminPage(pagelayout.PootlePage):
         projectcreatemofiles = ""
       nametextbox = widgets.Input({"name": "projectname-%s" % projectcode, "value": projectname})
       descriptiontextbox = widgets.Input({"name": "projectdescription-%s" % projectcode, "value": projectdescription})
-      checkerstyletextbox = widgets.Input({"name": "projectcheckerstyle-%s" % projectcode, "value": projectcheckerstyle})
+      checkerstyleselect = widgets.Select({"name": "projectcheckerstyle-%s" % projectcode, "value": projectcheckerstyle}, options=allchecks)
       createmofilescheckbox = widgets.Input({"name": "projectcreatemofiles-%s" % projectcode, "value": projectcreatemofiles, "type": "checkbox", projectcreatemofiles:''})
       removecheckbox = widgets.Input({"name": "projectremove-%s" % projectcode, "type": "checkbox"})
       rownum = projects.maxrownum()+1
       projects.setcell(rownum, 0, table.TableCell(widgets.Link(projectadminlink, projectcode)))
       projects.setcell(rownum, 1, table.TableCell(nametextbox))
       projects.setcell(rownum, 2, table.TableCell(descriptiontextbox))
-      projects.setcell(rownum, 3, table.TableCell(checkerstyletextbox))
+      projects.setcell(rownum, 3, table.TableCell(checkerstyleselect))
       projects.setcell(rownum, 4, table.TableCell(createmofilescheckbox))
       projects.setcell(rownum, 5, table.TableCell([removecheckbox, self.localize("Remove %s") % projectcode]))
     rownum = projects.maxrownum()+1
     codetextbox = widgets.Input({"name": "newprojectcode", "value": "", "size": 6})
     nametextbox = widgets.Input({"name": "newprojectname", "value": self.localize("(add project here)")})
     descriptiontextbox = widgets.Input({"name": "newprojectdescription", "value": self.localize("(project description)")})
-    checkerstyletextbox = widgets.Input({"name": "newprojectcheckerstyle", "value": self.localize("(checker style)")})
+    checkerstyleselect = widgets.Select({"name": "newprojectcheckerstyle"}, options=allchecks)
     createmofilescheckbox = widgets.Input({"name": "newprojectcreatemofiles", "type": "checkbox"})
     projects.setcell(rownum, 0, table.TableCell(codetextbox))
     projects.setcell(rownum, 1, table.TableCell(nametextbox))
     projects.setcell(rownum, 2, table.TableCell(descriptiontextbox))
-    projects.setcell(rownum, 3, table.TableCell(checkerstyletextbox))
+    projects.setcell(rownum, 3, table.TableCell(checkerstyleselect))
     projects.setcell(rownum, 4, table.TableCell(createmofilescheckbox))
     submitbutton = widgets.Input({"type":"submit", "name":"changeprojects", "value":self.localize("Save changes")})
     projectform = widgets.Form([projects, submitbutton], {"name": "projects", "action":""})
