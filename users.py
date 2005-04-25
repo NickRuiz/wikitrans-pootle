@@ -107,9 +107,10 @@ class UserOptions(pagelayout.PootlePage):
     personal = table.TableLayout()
     personal.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Option"))))
     personal.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Current value"))))
-    for optionname in ("name", "email"):
-      optionvalue = getattr(self.session.prefs, optionname, "")
-      valuetextbox = widgets.Input({"name": "option-%s" % optionname, "value": optionvalue})
+    options = {"name": self.localize("Name"), "email": self.localize("Email")}
+    for option, optionname in options.items():
+      optionvalue = getattr(self.session.prefs, option, "")
+      valuetextbox = widgets.Input({"name": "option-%s" % option, "value": optionvalue})
       rownum = personal.maxrownum()+1
       personal.setcell(rownum, 0, table.TableCell(optionname))
       personal.setcell(rownum, 1, table.TableCell(valuetextbox))
