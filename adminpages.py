@@ -294,6 +294,9 @@ class TranslationProjectAdminPage(pagelayout.PootlePage):
           if key.startswith("rights-"):
             username = key.replace("rights-", "", 1)
             self.project.setrights(username, value)
+          if key.startswith("rightsremove-"):
+            username = key.replace("rightsremove-", "", 1)
+            self.project.delrights(username)
         username = argdict.get("rightsnew-username", None)
         if username:
           username = username.strip()
@@ -308,6 +311,7 @@ class TranslationProjectAdminPage(pagelayout.PootlePage):
 
   def getoptions(self):
     """returns a box that describes the options"""
+    self.project.readprefs()
     if self.project.filestyle == "gnu":
       filestyle = pagelayout.IntroText(self.localize("This is a GNU-style project (one directory, files named per language)."))
     else:
@@ -316,13 +320,18 @@ class TranslationProjectAdminPage(pagelayout.PootlePage):
     rightstable = table.TableLayout()
     rightstable.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Username"))))
     rightstable.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Rights"))))
-    self.addrightsrow(rightstable, 1, "nobody", self.project.getrights(username=None))
+    rightstable.setcell(0, 2, table.TableCell(pagelayout.Title(self.localize("Remove"))))
+    self.addrightsrow(rightstable, 1, "nobody", self.project.getrights(username=None), delete=False)
     defaultrights = self.project.getrights(username="default")
-    self.addrightsrow(rightstable, 2, "default", defaultrights)
+    self.addrightsrow(rightstable, 2, "default", defaultrights, delete=False)
     rownum = 3
+    userlist = []
     for username, rights in getattr(self.project.prefs, "rights", {}).iteritems():
       if username in ("nobody", "default"): continue
-      self.addrightsrow(rightstable, rownum, username, rights)
+      userlist.append(username)
+    userlist.sort()
+    for username in userlist:
+      self.addrightsrow(rightstable, rownum, username, self.project.getrights(username=username))
       rownum += 1
     rightstable.setcell(rownum, 0, table.TableCell(widgets.Input({"name": "rightsnew-username"})))
     selectrights = widgets.MultiSelect({"name": "rightsnew", "value": defaultrights}, self.rightnames)
@@ -331,11 +340,14 @@ class TranslationProjectAdminPage(pagelayout.PootlePage):
     rightsform = widgets.Form([rightstitle, rightstable, submitbutton], {"action": "", "name":"rightsform"})
     return [filestyle, rightsform]
 
-  def addrightsrow(self, rightstable, rownum, username, rights):
+  def addrightsrow(self, rightstable, rownum, username, rights, delete=True):
     """adds a row for the given user's rights"""
     if not isinstance(rights, list):
       rights = [right.strip() for right in rights.split(",")]
     rightstable.setcell(rownum, 0, table.TableCell(username))
     selectrights = widgets.MultiSelect({"name": "rights-%s" % username, "value": rights}, self.rightnames)
     rightstable.setcell(rownum, 1, table.TableCell(selectrights))
+    removecheckbox = widgets.Input({"type":"checkbox", "name":"rightsremove-%s" % username})
+    if delete: 
+      rightstable.setcell(rownum, 2, table.TableCell([removecheckbox, self.localize("Remove %s") % username]))
 
