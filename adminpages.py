@@ -28,9 +28,10 @@ class AdminPage(pagelayout.PootlePage):
     general = table.TableLayout()
     general.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Option"))))
     general.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Current value"))))
-    for optionname in ("title", "description", "baseurl"):
-      optionvalue = getattr(self.instance, optionname, "")
-      valuetextbox = widgets.Input({"name": "option-%s" % optionname, "value": optionvalue})
+    options = {"title": self.localize("Title"), "description": self.localize("Description"), "baseurl": self.localize("Base URL")}
+    for option, optionname in options.items():
+      optionvalue = getattr(self.instance, option, "")
+      valuetextbox = widgets.Input({"name": "option-%s" % option, "value": optionvalue})
       rownum = general.maxrownum()+1
       general.setcell(rownum, 0, table.TableCell(optionname))
       general.setcell(rownum, 1, table.TableCell(valuetextbox))
