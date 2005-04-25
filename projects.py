@@ -146,12 +146,20 @@ class TranslationProject:
     setattr(self.prefs.rights, username, rights)
     self.saveprefs()
 
+  def delrights(self, username):
+    """deletes teh rights for the given username"""
+    if username == "nobody" or username == "default":
+      raise RightsError(session.localize('You cannot remove the "nobody" or "default" user'))
+    delattr(self.prefs.rights, username)
+    self.saveprefs()
+
   def getgoalnames(self):
     """gets the goals and associated files for the project"""
     goals = getattr(self.prefs, "goals", {})
     goallist = []
     for goalname, goalnode in goals.iteritems():
       goallist.append(goalname)
+    goallist.sort()
     return goallist
 
   def getgoalfiles(self, goalname, dirfilter=None):
