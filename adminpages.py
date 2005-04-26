@@ -244,14 +244,15 @@ class ProjectAdminPage(pagelayout.PootlePage):
           raise ValueError("No languagecode given in doupdatelanguage")
         translationproject = self.potree.getproject(languagecode, self.projectcode)
         translationproject.converttemplates(self.session)
+      mainpagelink = pagelayout.Title(widgets.Link("index.html", self.localize("Back to main page")))
       languagestitle = pagelayout.Title(self.localize("Existing languages"))
       languagelinks = self.getlanguagelinks()
       existing = pagelayout.ContentsItem([languagestitle, languagelinks])
       newlangform = self.getnewlangform()
-      contents = [existing, newlangform]
+      contents = [mainpagelink, existing, newlangform]
     else:
       contents = pagelayout.IntroText(self.localize("You do not have the rights to administer this project."))
-    pagelayout.PootlePage.__init__(self, "Pootle Admin: "+projectname, contents, session, bannerheight=81)
+    pagelayout.PootlePage.__init__(self, "Pootle Admin: "+projectname, contents, session, bannerheight=81, returnurl="projects/%s/admin.html" % projectcode)
 
   def getlanguagelinks(self):
     """gets the links to the languages"""
