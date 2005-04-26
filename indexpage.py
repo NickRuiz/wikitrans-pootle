@@ -151,7 +151,7 @@ class LanguageIndex(pagelayout.PootlePage):
     self.localize = session.localize
     languagename = self.potree.getlanguagename(self.languagecode)
     projectlinks = self.getprojectlinks()
-    pagelayout.PootlePage.__init__(self, "Pootle: "+languagename, projectlinks, session, bannerheight=81)
+    pagelayout.PootlePage.__init__(self, "Pootle: "+languagename, projectlinks, session, bannerheight=81, returnurl="%s/" % self.languagecode)
 
   def getprojectlinks(self):
     """gets the links to the projects"""
@@ -181,8 +181,11 @@ class ProjectLanguageIndex(pagelayout.PootlePage):
     self.projectcode = projectcode
     self.localize = session.localize
     projectname = self.potree.getprojectname(self.projectcode)
+    adminlink = []
+    if session.issiteadmin():
+      adminlink = pagelayout.Title(widgets.Link("admin.html", self.localize("Project Admin Page")))
     languagelinks = self.getlanguagelinks()
-    pagelayout.PootlePage.__init__(self, "Pootle: "+projectname, languagelinks, session, bannerheight=81)
+    pagelayout.PootlePage.__init__(self, "Pootle: "+projectname, [adminlink, languagelinks], session, bannerheight=81, returnurl="projects/%s/" % self.projectcode)
 
   def getlanguagelinks(self):
     """gets the links to the languages"""
@@ -236,10 +239,10 @@ class ProjectIndex(pagelayout.PootlePage):
       rootlink = ""
     language = widgets.Link("../" + rootlink + "index.html", self.project.languagename)
     project = widgets.Link(self.getbrowseurl(rootlink), self.project.projectname)
-    baselinks = ["[", language, "]", "[", project, "]"]
-    if "admin" in self.project.getrights(self.session):
+    if "admin" in self.project.getrights(self.session) or session.issiteadmin():
       adminlink = widgets.Link(rootlink + "admin.html", self.localize("Admin"))
-      baselinks += ["[", adminlink, "]"]
+      project = [project, ": ", adminlink]
+    baselinks = ["[", language, "]", "[", project, "]"]
     pathlinks = []
     if dirfilter:
       dirs = self.dirfilter.split("/")
@@ -269,7 +272,7 @@ class ProjectIndex(pagelayout.PootlePage):
     else:
       childitems = self.getchilditems(dirfilter)
     pagetitle = self.localize("Pootle: Project %s, Language %s") % (self.project.projectname, self.project.languagename)
-    pagelayout.PootlePage.__init__(self, pagetitle, [message, mainitem, childitems], session, bannerheight=81, returnurl="%s/%s/%s" % (self.project.languagecode, self.project.projectcode, self.dirname))
+    pagelayout.PootlePage.__init__(self, pagetitle, [message, mainitem, childitems], session, bannerheight=81, returnurl="%s/%s/%s/" % (self.project.languagecode, self.project.projectcode, self.dirname))
     self.addsearchbox(searchtext="", action="translate.html")
     if self.showassigns and "assign" in self.rights:
       self.addassignbox()
@@ -631,7 +634,7 @@ class ProjectIndex(pagelayout.PootlePage):
       filegoals = self.project.getfilegoals(goalfile)
       if self.showgoals and "admin" in self.rights:
         if len(filegoals) > 1:
-          actionlinks.append(self.localize("All Goals: %s" % (", ".join(filegoals))))
+          actionlinks.append(self.localize("All Goals: %s") % (", ".join(filegoals)))
       if "editgoal" in linksrequired and "admin" in self.rights:
         goaloptions = [('', '')] + [(goalname, goalname) for goalname in self.project.getgoalnames()]
         useroptions = [('', '')]
