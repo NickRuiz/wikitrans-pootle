@@ -231,7 +231,9 @@ class POTree:
     projectdir = os.path.join(self.podirectory, projectcode)
     templatesdir = os.path.join(projectdir, "templates")
     if not os.path.exists(templatesdir):
-      templatesdir = projectdir
+      templatesdir = os.path.join(projectdir, "pot")
+      if not os.path.exists(templatesdir):
+        templatesdir = projectdir
     potfilenames = []
     def addfiles(podir, dirname, fnames):
       """adds the files to the set of files for this project"""

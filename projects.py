@@ -411,12 +411,14 @@ class TranslationProject:
     """creates PO files from the templates"""
     projectdir = os.path.join(self.potree.podirectory, self.projectcode)
     templatesdir = os.path.join(projectdir, "templates")
+    if not os.path.exists(templatesdir):
+      templatesdir = os.path.join(projectdir, "pot")
+      if not os.path.exists(templatesdir):
+        templatesdir = projectdir
     if self.potree.isgnustyle(self.projectcode):
       self.filestyle = "gnu"
     else:
       self.filestyle = "std"
-    if not os.path.exists(templatesdir):
-      templatesdir = projectdir
     templates = self.potree.gettemplates(self.projectcode)
     if self.filestyle == "gnu":
       self.podir = projectdir
