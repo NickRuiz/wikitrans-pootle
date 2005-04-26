@@ -181,14 +181,13 @@ class POTree:
     """returns a list of valid languagecodes for a given project or all projects"""
     alllanguagecodes = [languagecode for languagecode, language in self.languages.iteritems()]
     if projectcode is None:
-      alllanguagecodes.sort()
-      return alllanguagecodes
+      languagecodes = alllanguagecodes
     else:
       projectdir = os.path.join(self.podirectory, projectcode)
       if not os.path.exists(projectdir):
         return []
       if self.isgnustyle(projectcode):
-        return [languagecode for languagecode in alllanguagecodes if self.hasproject(languagecode, projectcode)]
+        languagecodes = [languagecode for languagecode in alllanguagecodes if self.hasproject(languagecode, projectcode)]
       else:
         subdirs = [fn for fn in os.listdir(projectdir) if os.path.isdir(os.path.join(projectdir, fn))]
         languagecodes = []
@@ -201,7 +200,8 @@ class POTree:
             potentialcode = potentialcode[:potentialcode.find("_")]
           if potentialcode in alllanguagecodes:
             languagecodes.append(potentialcode)
-        return languagecodes
+    languagecodes.sort()
+    return languagecodes
 
   def getprojectcodes(self, languagecode=None):
     """returns a list of project codes that are valid for the given languagecode or all projects"""
