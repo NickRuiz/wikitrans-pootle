@@ -809,7 +809,8 @@ class TranslationProject:
     newmsgstr = self.quoteforpo(trans)
     pofile = self.pofiles[pofilename]
     pofile.track(item, "edited by %s" % session.username)
-    pofile.setmsgstr(item, newmsgstr, session.prefs)
+    languageprefs = getattr(session.instance.languages, self.languagecode, None)
+    pofile.setmsgstr(item, newmsgstr, session.prefs, languageprefs)
 
   def suggesttranslation(self, pofilename, item, trans, session):
     """stores a new suggestion for a translation..."""

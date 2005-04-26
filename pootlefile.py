@@ -277,16 +277,21 @@ class pootlefile(po.pofile):
     assignsfile.writelines(assignstrings)
     assignsfile.close()
 
-  def setmsgstr(self, item, newmsgstr, userprefs):
+  def setmsgstr(self, item, newmsgstr, userprefs, languageprefs):
     """updates a translation with a new msgstr value"""
     self.pofreshen()
     thepo = self.transelements[item]
     thepo.msgstr = newmsgstr
     thepo.markfuzzy(False)
-    self.updateheader(PO_Revision_Date = time.strftime("%F %H:%M%z"))
+    self.updateheader(add=True, PO_Revision_Date = time.strftime("%F %H:%M%z"))
     if userprefs:
       if getattr(userprefs, "name", None) and getattr(userprefs, "email", None):
-        self.updateheader(Last_Translator = "%s <%s>" % (userprefs.name, userprefs.email))
+        self.updateheader(add=True, Last_Translator = "%s <%s>" % (userprefs.name, userprefs.email))
+    if languageprefs:
+      nplural = getattr(languageprefs, "nplural", None)
+      pluralequation = getattr(languageprefs, "pluralequation", None)
+      if nplural and pluralequation:
+        self.updateheaderplural(nplural, pluralequation)
     self.savepofile()
     self.reclassifyelement(item)
 
