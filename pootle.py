@@ -250,6 +250,12 @@ class PootleServer(users.OptionalLoginAppServer):
 	  page = widgets.PlainContents(contents)
 	  page.content_type = "text/plain; charset=UTF-8"
 	  return page
+	elif bottom.endswith(".xlf"):
+	  xlifffilename = os.path.join(*pathwords)
+	  contents = project.getxliff(xlifffilename)
+	  page = widgets.PlainContents(contents)
+	  page.content_type = "text/plain; charset=UTF-8"
+	  return page
 	elif bottom.endswith(".mo"):
           if not "pocompile" in project.getrights(session):
             return None
@@ -267,7 +273,7 @@ class PootleServer(users.OptionalLoginAppServer):
 	    dirfilter = None
           goal = argdict.get("goal", None)
           if goal:
-            goalfiles = project.getgoal(goal)
+            goalfiles = project.getgoalfiles(goal)
             pofilenames = []
             for goalfile in goalfiles:
               pofilenames.extend(project.browsefiles(goalfile))

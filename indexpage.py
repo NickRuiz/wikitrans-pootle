@@ -40,7 +40,7 @@ class PootleIndex(pagelayout.PootlePage):
   def __init__(self, potree, session):
     self.potree = potree
     self.localize = session.localize
-    aboutlink = pagelayout.IntroText(widgets.Link("about.html", self.localize("About this Pootle server")))
+    aboutlink = pagelayout.IntroText(widgets.Link("/about.html", self.localize("About this Pootle server")))
     languagelinks = self.getlanguagelinks()
     projectlinks = self.getprojectlinks()
     contents = [aboutlink, languagelinks, projectlinks]
@@ -308,14 +308,14 @@ class ProjectIndex(pagelayout.PootlePage):
       del self.argdict["removeassigns"]
     if "doupload" in self.argdict:
       uploadfile = self.argdict.pop("uploadfile", None)
-      if not uploadfile:
-        raise ValueError("cannot upload file, no file attached")
+      if not uploadfile.filename:
+        raise ValueError(self.localize("Cannot upload file, no file attached"))
       if uploadfile.filename.endswith(".po"):
         self.project.uploadpofile(self.session, self.dirname, uploadfile.filename, uploadfile.contents)
       elif uploadfile.filename.endswith(".zip"):
         self.project.uploadarchive(self.session, self.dirname, uploadfile.contents)
       else:
-        raise ValueError("can only upload PO files and zips of PO files")
+        raise ValueError(self.localize("Can only upload PO files and zips of PO files"))
       del self.argdict["doupload"]
     if "doupdate" in self.argdict:
       updatefile = self.argdict.pop("updatefile", None)
@@ -532,16 +532,24 @@ class ProjectIndex(pagelayout.PootlePage):
     actionlinks = self.getactionlinks("index.html", projectstats, linksrequired=["review", "translate", "zip"], goal=goalname)
     bodydescription = pagelayout.ActionLinks(actionlinks)
     usericon = pagelayout.Icon("person.png")
+    goaluserslist = []
     if goalusers:
-      goalusers = widgets.SeparatedList(goalusers)
+      goalusers.sort()
+      goaluserslist = widgets.SeparatedList(goalusers)
     if self.argdict.get("goal", "") == goalname:
-      adduser = widgets.Input({"type": "text", "name": "newgoaluser", "size": 8})
+      unassignedusers = [username for username, userprefs in self.session.loginchecker.users.iteritems()]
+      unassignedusers.remove("__dummy__")
+      for user in goalusers:
+        if user in unassignedusers:
+          unassignedusers.remove(user)
+      unassignedusers.sort()
+      adduserlist = widgets.Select({"name": "newgoaluser"}, options=[(user, user) for user in unassignedusers])
       editgoalname = widgets.HiddenFieldList({"editgoalname": goalname})
       submitbutton = widgets.Input({"type": "submit", "name": "doeditgoalusers", "value": self.localize("Add User")})
-      userwidgets = [usericon, editgoalname, goalusers, adduser, submitbutton]
+      userwidgets = [usericon, editgoalname, goaluserslist, adduserlist, submitbutton]
       userlist = widgets.Division(widgets.Form(userwidgets, {"action": "", "name": "goaluserform"}))
     elif goalusers:
-      userlist = widgets.Division([usericon, goalusers])
+      userlist = widgets.Division([usericon, goaluserslist])
     else:
       userlist = []
     body = pagelayout.ContentsItem([folderimage, bodytitle, bodydescription, userlist])
@@ -567,7 +575,7 @@ class ProjectIndex(pagelayout.PootlePage):
   def getfileitem(self, fileentry, linksrequired=None):
     """returns an item showing a file entry"""
     if linksrequired is None:
-      linksrequired = ["review", "quick", "all", "po", "csv", "mo", "update"]
+      linksrequired = ["review", "quick", "all", "po", "xliff", "csv", "mo", "update"]
     basename = os.path.basename(fileentry)
     projectstats = self.project.calculatestats([fileentry])
     folderimage = pagelayout.Icon("file.png")
@@ -577,7 +585,11 @@ class ProjectIndex(pagelayout.PootlePage):
     if "po" in linksrequired:
       downloadlink = widgets.Link(basename, self.localize('PO file'))
       actionlinks.append(downloadlink)
-    if "csv" in linksrequired:
+    if "xliff" in linksrequired and "translate" in self.rights:
+      xliffname = basename.replace(".po", ".xlf")
+      xlifflink = widgets.Link(xliffname, self.localize('XLIFF file'))
+      actionlinks.append(xlifflink)
+    if "csv" in linksrequired and "translate" in self.rights:
       csvname = basename.replace(".po", ".csv")
       csvlink = widgets.Link(csvname, self.localize('CSV file'))
       actionlinks.append(csvlink)
