@@ -147,7 +147,7 @@ class PootlePage(widgets.Page):
     stylesheets = [session.instance.baseurl + "pootle.css"]
     if hasattr(session.instance, "stylesheet"):
       stylesheets.append(session.instance.baseurl + session.instance.stylesheet)
-    favicon = widgets.PlainContents('<link rel="shortcut icon" href="favicon.ico" >')
+    favicon = widgets.PlainContents('<link rel="shortcut icon" href="' + session.instance.baseurl + 'favicon.ico" />')
       
     self.banner = PootleBanner(session.instance, bannerheight)
     self.links = PootleSidebar(session, returnurl)
