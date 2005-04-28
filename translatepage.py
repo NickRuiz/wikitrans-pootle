@@ -80,26 +80,26 @@ class TranslatePage(pagelayout.PootlePage):
     pofilelen = self.project.getpofilelen(self.pofilename)
     lastitem = min(pofilelen-1, self.firstitem + pagesize - 1)
     if pofilelen > pagesize and not self.firstitem == 0:
-      pagelinks.append(widgets.Link(baselink + "&item=0", "Start"))
+      pagelinks.append(widgets.Link(baselink + "&item=0", self.localize("Start")))
     else:
-      pagelinks.append("Start") 
+      pagelinks.append(self.localize("Start")) 
     if self.firstitem > 0:
       linkitem = max(self.firstitem - pagesize, 0)
-      pagelinks.append(widgets.Link(baselink + "&item=%d" % linkitem, "Previous %d" % (self.firstitem - linkitem)))
+      pagelinks.append(widgets.Link(baselink + "&item=%d" % linkitem, self.localize("Previous %d") % (self.firstitem - linkitem)))
     else:
-      pagelinks.append("Previous %d" % pagesize)
+      pagelinks.append(self.localize("Previous %d") % pagesize)
     pagelinks.append(self.localize("Items %d to %d of %d") % (self.firstitem+1, lastitem+1, pofilelen))
     if self.firstitem + len(self.translations) < self.project.getpofilelen(self.pofilename):
       linkitem = self.firstitem + pagesize
       itemcount = min(pofilelen - linkitem, pagesize)
       pagelinks.append(widgets.Link(baselink + "&item=%d" % linkitem, self.localize("Next %d") % itemcount))
     else:
-      pagelinks.append("Next %d" % pagesize)
+      pagelinks.append(self.localize("Next %d") % pagesize)
     if pofilelen > pagesize and (self.item + pagesize) < pofilelen:
-      pagelinks.append(widgets.Link(baselink + "&item=%d" % max(pofilelen - pagesize, 0), "End"))
+      pagelinks.append(widgets.Link(baselink + "&item=%d" % max(pofilelen - pagesize, 0), self.localize("End")))
     else:
-      pagelinks.append("End")
-    return pagelayout.IntroText(widgets.SeparatedList(pagelinks, " | "))
+      pagelinks.append(self.localize("End"))
+    return pagelayout.ItemStatistics(widgets.SeparatedList(pagelinks, " | "))
 
   def addfilelinks(self, pofilename, matchnames):
     """adds a section on the current file, including any checks happening"""
