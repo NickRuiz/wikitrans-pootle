@@ -879,6 +879,12 @@ class TranslationProject:
     pofile = self.getpofile(pofilename)
     return pofile.getcsv()
 
+  def getxliff(self, xlifffilename):
+    """returns pofile as xliff"""
+    pofilename = xlifffilename.replace(".xlf", ".po")
+    pofile = self.getpofile(pofilename)
+    return pofile.getxliff()
+
   def getmo(self, mofilename):
     """return pofile as compiled mo"""
     pofilename = mofilename.replace(".mo", ".po")
