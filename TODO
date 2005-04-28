@@ -63,11 +63,11 @@ other:
 bugs:
   when returned to the indexpage from the translatepage (finished search etc) the project root is one level out
   suggestion msgid comments get incorporated into main po file! this *totally* confuses things, item numbers seem to get messed up too...
-  when checks are on and you browse into one when you return checks are off
-    (confusing)
   searching does not work when in the translation interface
   currently project codes cannot have a dash "-" in them eg kde-i18n.  Either
     we should allow or warn when starting pootle.
+  header entries get jumbled when we update them.  Technically not an issue but
+    creates quite a lot of CVS noise
 
 assignment:
   assign to a group
