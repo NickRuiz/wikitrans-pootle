@@ -6,6 +6,7 @@ from translate.storage import po
 from translate.misc import quote
 from translate.filters import checks
 from translate.convert import po2csv
+from translate.convert import po2xliff
 from translate.convert import pot2po
 from translate.tools import pocompile
 from jToolkit import timecache
@@ -81,6 +82,13 @@ class pootlefile(po.pofile):
     csvfile = convertor.convertfile(self)
     lines = csvfile.tolines()
     return "".join(lines)
+
+  def getxliff(self):
+    """returns pofile as xliff"""
+    self.pofreshen()
+    convertor = po2xliff.po2xliff()
+    xlifffile = convertor.convertfile(self, None)
+    return xlifffile
 
   def getmo(self):
     """returns pofile compiled into mo"""
