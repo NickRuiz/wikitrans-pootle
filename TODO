@@ -41,11 +41,9 @@ other:
   a reviewer can mark as string as fuzzy but not provide a translation (in
     order to browse and fixup things like af KDE.
   integrate with KBabel/POEdit
-  allow XLIFF version of files to be downloaded/uploaded
+  allow XLIFF version of files to be uploaded
   show KDE and other PO comments in some uncluttered but accesible way
-  create Gettext .mo/.gmo (compiled .po) files that can be downloaded and run.  Similarly
-    allow creation of .qm (compiled Qt .ts files).
-    See pygettext for .mo files and lrelease which is GPL'd for Qt .qm files
+  create .qm (compiled Qt .ts files).  See lrelease which is GPL'd for Qt .qm files
   create XPI files automatically when updates are made
   Add X-Poedit style tags in the header when you download so that people using
     this PO editor don't have to configure everything
@@ -61,9 +59,7 @@ other:
     that a French speaker can translate into Bambarra with little English
 
 bugs:
-  when returned to the indexpage from the translatepage (finished search etc) the project root is one level out
   suggestion msgid comments get incorporated into main po file! this *totally* confuses things, item numbers seem to get messed up too...
-  searching does not work when in the translation interface
   currently project codes cannot have a dash "-" in them eg kde-i18n.  Either
     we should allow or warn when starting pootle.
   header entries get jumbled when we update them.  Technically not an issue but
