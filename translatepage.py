@@ -304,7 +304,7 @@ class TranslatePage(pagelayout.PootlePage):
     else:
       return ""
 
-  def gettransbuttons(self, item, desiredbuttons=["skip", "copy", "suggest", "translate"]):
+  def gettransbuttons(self, item, desiredbuttons=["skip", "copy", "suggest", "translate", "resize"]):
     """gets buttons for actions on translation"""
     buttons = []
     if "skip" in desiredbuttons:
@@ -323,9 +323,16 @@ class TranslatePage(pagelayout.PootlePage):
     if "translate" in desiredbuttons or "suggest" in desiredbuttons:
       specialchars = getattr(getattr(self.session.instance.languages, self.project.languagecode, None), "specialchars", "")
       buttons.append(specialchars)
-    growlink = widgets.Link('#', self.localize("Grow"), newattribs={"onclick": 'return expandtextarea(this)'})
-    shrinklink = widgets.Link('#', self.localize("Shrink"), newattribs={"onclick": 'return contracttextarea(this)'})
-    buttons += [growlink, shrinklink]
+    if "resize" in desiredbuttons:
+      growlink = widgets.Link('#', self.localize("Grow"), newattribs={"onclick": 'return expandtextarea(this)'})
+      shrinklink = widgets.Link('#', self.localize("Shrink"), newattribs={"onclick": 'return contracttextarea(this)'})
+      broadenlink = widgets.Link('#', self.localize("Broaden"), newattribs={"onclick": 'return broadentextarea(this)'})
+      narrowlink = widgets.Link('#', self.localize("Narrow"), newattribs={"onclick": 'return narrowtextarea(this)'})
+      usernode = getattr(self.session.loginchecker.users, self.session.username, None)
+      rows = getattr(usernode, "inputheight", 5)
+      cols = getattr(usernode, "inputwidth", 40)
+      resetlink = widgets.Link('#', self.localize("Reset"), newattribs={"onclick": 'return resettextarea(this, %s, %s)' % (rows, cols)})
+      buttons += [growlink, shrinklink, broadenlink, narrowlink, resetlink]
     return buttons
 
   def gettransedit(self, item, orig, trans):
