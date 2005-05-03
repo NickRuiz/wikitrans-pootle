@@ -117,7 +117,23 @@ class UserOptions(pagelayout.PootlePage):
     rownum = personal.maxrownum()+1
     submitbutton = widgets.Input({"type":"submit", "name":"changepersonal", "value":self.localize("Save changes")})
     personalform = widgets.Form([personal, submitbutton], {"name": "personal", "action":""})
-    return pagelayout.Contents([personaltitle, personalform])
+    interfacetitle = pagelayout.Title(self.localize("Translation Interface Configuration"))
+    interface = table.TableLayout()
+    interface.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Option"))))
+    interface.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Current value"))))
+    options = {"inputheight": self.localize("Input Height"), "inputwidth": self.localize("Input Width"),
+          "viewrows": self.localize("Number of rows in view mode"), 
+          "translaterows": self.localize("Number of rows in translate mode")}
+    for option, optionname in options.items():
+      optionvalue = getattr(self.session.prefs, option, "")
+      valuetextbox = widgets.Input({"name": "option-%s" % option, "value": optionvalue})
+      rownum = interface.maxrownum()+1
+      interface.setcell(rownum, 0, table.TableCell(optionname))
+      interface.setcell(rownum, 1, table.TableCell(valuetextbox))
+    rownum = interface.maxrownum()+1
+    submitbutton = widgets.Input({"type":"submit", "name":"changeinterface", "value":self.localize("Save changes")})
+    interfaceform = widgets.Form([interface, submitbutton], {"name": "interface", "action":""})
+    return pagelayout.Contents([personaltitle, personalform, interfacetitle, interfaceform])
 
 class OptionalLoginAppServer(server.LoginAppServer):
   """a server that enables login but doesn't require it except for specified pages"""
@@ -356,6 +372,20 @@ class PootleSession(session.LoginSession):
     setattr(self.prefs, "name", name)
     email = argdict.get("option-email", "")
     setattr(self.prefs, "email", email)
+    self.saveprefs()
+
+  def setinterfaceoptions(self, argdict):
+    """sets the users interface details"""
+    def setinterfacevalue(name, errormessage):
+      value = argdict.get("option-%s" % name, "")
+      if value != "":
+        if not value.isdigit():
+          raise ValueError(errormessage)
+        setattr(self.prefs, name, value)
+    setinterfacevalue("inputheight", self.localize("Input height must be numeric"))
+    setinterfacevalue("inputwidth", self.localize("Input width must be numeric"))
+    setinterfacevalue("viewrows", self.localize("The number of rows displayed in view mode must be numeric"))
+    setinterfacevalue("translaterows", self.localize("The number of rows displayed in translate mode must be numeric"))
     self.saveprefs()
 
   def getprojects(self):
