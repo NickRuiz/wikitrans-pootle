@@ -163,6 +163,8 @@ class PootleServer(users.OptionalLoginAppServer):
           session.setoptions(argdict)
         if "changepersonal" in argdict:
           session.setpersonaloptions(argdict)
+        if "changeinterface" in argdict:
+          session.setinterfaceoptions(argdict)
         return users.UserOptions(self.potree, session)
     elif top == "admin":
       pathwords = pathwords[1:]
