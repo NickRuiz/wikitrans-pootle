@@ -288,17 +288,17 @@ class TranslatePage(pagelayout.PootleNavPage):
     transtitle = table.TableCell(self.localize("translation"), {"class":"translate-table-title"})
     self.transtable.setcell(-1, 0, origtitle)
     self.transtable.setcell(-1, 1, transtitle)
-    for row, (orig, trans) in enumerate(self.translations):
+    for row, (orig, trans, isplural) in enumerate(self.translations):
       item = self.firstitem + row
       itemclasses = self.project.getitemclasses(self.pofilename, item)
-      origdiv = self.getorigdiv(item, orig, item in self.editable, itemclasses)
+      origdiv = self.getorigdiv(item, orig, item in self.editable, itemclasses, isplural)
       if item in self.editable:
         if self.reviewmode:
           transdiv = self.gettransreview(item, trans, suggestions[item])
         else:
-          transdiv = self.gettransedit(item, orig, trans)
+          transdiv = self.gettransedit(item, orig, trans, isplural)
       else:
-        transdiv = self.gettransview(item, trans)
+        transdiv = self.gettransview(item, trans, isplural)
       polarity = oddoreven(item)
       origcell = table.TableCell(origdiv, {"class":"translate-original translate-original-%s" % polarity})
       self.transtable.setcell(row, 0, origcell)
@@ -313,15 +313,26 @@ class TranslatePage(pagelayout.PootleNavPage):
   def escapetext(self, text):
     return self.escape(text).replace("\n", "</br>\n")
 
-  def getorigdiv(self, item, orig, editable, itemclasses):
+  def getorigdiv(self, item, orig, editable, itemclasses, isplural):
     origclass = "translate-original "
     if editable:
       origclass += "translate-original-focus "
     else:
       origclass += "autoexpand "
-    origpure = widgets.Input({"type": "hidden", "id": "orig-hidden%d" % item, "value": orig})
-    origpretty = self.escapetext(orig)
-    origdiv = widgets.Division([origpure, origpretty], "orig%d" % item, cls=origclass)
+    if not isplural:
+      origpure = widgets.Input({"type": "hidden", "id": "orig-hidden%d" % item, "value": orig[0]})
+      origpretty = self.escapetext(orig[0])
+      origdiv = widgets.Division([origpure, origpretty], "orig%d" % item, cls=origclass)
+    else:
+      origpuresingular = widgets.Input({"type": "hidden", "id": "orig-hidden%d.0" % item, "value": orig[0]})
+      origpureplural = widgets.Input({"type": "hidden", "id": "orig-hidden%d.1" % item, "value": orig[1]})
+      origpure = [origpuresingular, origpureplural]
+      htmlbreak = ("<br />\n")
+      origpretty = [pagelayout.TranslationHeaders(self.localize("Singular")), htmlbreak, 
+                    self.escapetext(orig[0]), htmlbreak, 
+                    pagelayout.TranslationHeaders(self.localize("Plural")), htmlbreak, 
+                    self.escapetext(orig[1])]
+      origdiv = widgets.Division([origpure, origpretty], "orig%d" % item, cls=origclass)
     return origdiv
 
   def geteditlink(self, item):
@@ -363,17 +374,21 @@ class TranslatePage(pagelayout.PootleNavPage):
       buttons += [growlink, shrinklink, broadenlink, narrowlink, resetlink]
     return buttons
 
-  def gettransedit(self, item, orig, trans):
+  def gettransedit(self, item, orig, trans, isplural):
     """returns a widget for editing the given item and translation"""
-    trans = self.escape(trans).decode("utf8")
-    if "translate" in self.rights or "suggest" in self.rights:
-      usernode = getattr(self.session.loginchecker.users, self.session.username, None)
-      rows = getattr(usernode, "inputheight", 5)
-      cols = getattr(usernode, "inputwidth", 40)
-      text = widgets.TextArea({"name":"trans%d" % item, "rows":rows, "cols":cols}, contents=trans)
+    if isplural:
+      text = self.localize("Pootle cannot edit plural messages at this time.<br />")
+      buttons = self.gettransbuttons(item, "skip")
     else:
-      text = pagelayout.TranslationText(trans)
-    buttons = self.gettransbuttons(item)
+      trans = self.escape(trans[0]).decode("utf8")
+      if "translate" in self.rights or "suggest" in self.rights:
+        usernode = getattr(self.session.loginchecker.users, self.session.username, None)
+        rows = getattr(usernode, "inputheight", 5)
+        cols = getattr(usernode, "inputwidth", 40)
+        text = widgets.TextArea({"name":"trans%d" % item, "rows":rows, "cols":cols}, contents=trans)
+      else:
+        text = pagelayout.TranslationText(trans)
+      buttons = self.gettransbuttons(item)
     transdiv = widgets.Division([text, "<br />", buttons], "trans%d" % item, cls="translate-translation")
     return transdiv
 
@@ -420,7 +435,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     currenttitle = widgets.Division(self.localize("<b>Current Translation:</b>"))
     diffcodes = [difflib.SequenceMatcher(None, trans, suggestion).get_opcodes() for suggestion in suggestions]
     combineddiffs = reduce(list.__add__, diffcodes, [])
-    transdiff = self.highlightdiffs(trans, combineddiffs, issrc=True)
+    transdiff = self.highlightdiffs(trans[0], combineddiffs, issrc=True)
     editlink = self.geteditlink(item)
     currenttext = pagelayout.TranslationText([editlink, transdiff])
     suggdivs = []
@@ -459,10 +474,18 @@ class TranslatePage(pagelayout.PootleNavPage):
     transdiv = widgets.Division([currenttitle, currenttext] + suggdivs, "trans%d" % item, cls="translate-translation")
     return transdiv
 
-  def gettransview(self, item, trans):
+  def gettransview(self, item, trans, isplural):
     """returns a widget for viewing the given item's translation"""
     editlink = self.geteditlink(item)
-    text = pagelayout.TranslationText([editlink, self.escape(trans)])
+    if not isplural:
+      text = pagelayout.TranslationText([editlink, self.escape(trans[0])])
+    else:
+      text = [editlink]
+      for item in range(len(trans)):
+        label = "<b>%s</b></br />" % item
+        htmlbreak = "<br />"
+        text += [label, self.escape(trans[item]), htmlbreak]
+      text = pagelayout.TranslationText(text)
     transdiv = widgets.Division(text, "trans%d" % item, cls="translate-translation autoexpand")
     return transdiv
 
