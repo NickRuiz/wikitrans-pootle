@@ -47,7 +47,8 @@ class TranslatePage(pagelayout.PootleNavPage):
     self.maketable()
     searchcontextinfo = widgets.HiddenFieldList({"searchtext": self.searchtext})
     contextinfo = widgets.HiddenFieldList({"pofilename": self.pofilename})
-    translateform = widgets.Form([self.transtable, searchcontextinfo, contextinfo], {"name": "translate", "action":""})
+    formaction = self.makelink("")
+    translateform = widgets.Form([self.transtable, searchcontextinfo, contextinfo], {"name": "translate", "action":formaction})
     title = self.localize("Pootle: translating %s into %s: %s") % (self.project.projectname, self.project.languagename, self.pofilename)
     mainstats = []
     if self.pofilename is not None:
@@ -216,11 +217,16 @@ class TranslatePage(pagelayout.PootleNavPage):
   def getmatchnames(self, checker): 
     """returns any checker filters the user has asked to match..."""
     matchnames = []
+    delkeys = []
     for checkname in self.argdict:
       if checkname in ["fuzzy", "blank", "translated", "has-suggestion"]:
         matchnames.append(checkname)
+        delkeys.append(checkname)
       elif checkname in checker.getfilters():
         matchnames.append("check-" + checkname)
+        delkeys.append(checkname)
+    for key in delkeys:
+      del self.argdict[key]
     matchnames.sort()
     return matchnames
 
