@@ -32,11 +32,8 @@ class TranslatePage(pagelayout.PootleNavPage):
     self.localize = session.localize
     self.rights = self.project.getrights(self.session)
     self.instance = session.instance
-    if dirfilter and dirfilter.endswith(".po"):
-      self.pofilename = dirfilter
-    else:
-      self.pofilename = None
     self.lastitem = None
+    self.pofilename = self.argdict.pop("pofilename", None)
     self.receivetranslations()
     # TODO: clean up modes to be one variable
     self.viewmode = self.argdict.get("view", 0) and "view" in self.rights
@@ -131,8 +128,7 @@ class TranslatePage(pagelayout.PootleNavPage):
 
   def receivetranslations(self):
     """receive any translations submitted by the user"""
-    pofilename = self.argdict.get("pofilename", None)
-    if pofilename is None:
+    if self.pofilename is None:
       return
     skips = []
     submitsuggests = []
@@ -150,58 +146,71 @@ class TranslatePage(pagelayout.PootleNavPage):
         return keytype, itemcode
       return None, None
     def pointsplit(item):
-      if "." in item:
-        item, suggid = item.split(".", 1)
-        return int(item), int(suggid)
+      dotcount = item.count(".")
+      if dotcount == 2:
+        item, pointitem, subpointitem = item.split(".", 2)
+        return int(item), int(pointitem), int(subpointitem)
+      elif dotcount == 1:
+        item, pointitem = item.split(".", 1)
+        return int(item), int(pointitem), None
       else:
-        return int(item), None
+        return int(item), None, None
+    delkeys = []
     for key, value in self.argdict.iteritems():
       keytype, item = parsekey(key)
       if keytype is None:
         continue
-      item, pointitem = pointsplit(item)
+      item, pointitem, subpointitem = pointsplit(item)
       if keytype == "pluralforms":
         pluralitems[item] = int(value)
-      if keytype == "skip":
+      elif keytype == "skip":
         skips.append(item)
-      if keytype == "submitsuggest":
+      elif keytype == "submitsuggest":
         submitsuggests.append(item)
-      if keytype == "submit":
+      elif keytype == "submit":
         submits.append(item)
-      if keytype == "accept":
+      elif keytype == "accept":
         accepts.append((item, pointitem))
-      if keytype == "reject":
+      elif keytype == "reject":
         rejects.append((item, pointitem))
-      if keytype == "trans":
+      elif keytype == "trans":
         if pointitem is not None:
           translations.setdefault(item, {})[pointitem] = value
         else:
           translations[item] = value
-      if keytype == "suggest":
-        suggestions[item, pointitem] = value
+      elif keytype == "suggest":
+        suggestions.setdefault((item, pointitem), {})[subpointitem] = value
+      elif keytype == "orig-pure":
+        # this is just to remove the hidden fields from the argdict
+        pass
+      else:
+        continue
+      delkeys.append(key)
+    for key in delkeys:
+      del self.argdict[key]
     for item in skips:
       self.lastitem = item
     for item in submitsuggests:
       if item in skips or item not in translations:
         continue
       value = translations[item]
-      self.project.suggesttranslation(pofilename, item, value, self.session)
+      self.project.suggesttranslation(self.pofilename, item, value, self.session)
       self.lastitem = item
     for item in submits:
       if item in skips or item not in translations:
         continue
       value = translations[item]
-      self.project.updatetranslation(pofilename, item, value, self.session)
+      self.project.updatetranslation(self.pofilename, item, value, self.session)
       self.lastitem = item
     for item, suggid in rejects:
       value = suggestions[item, suggid]
-      self.project.rejectsuggestion(pofilename, item, suggid, value, self.session)
+      self.project.rejectsuggestion(self.pofilename, item, suggid, value, self.session)
       self.lastitem = item
     for item, suggid in accepts:
       if (item, suggid) in rejects or (item, suggid) not in suggestions:
         continue
       value = suggestions[item, suggid]
-      self.project.acceptsuggestion(pofilename, item, suggid, value, self.session)
+      self.project.acceptsuggestion(self.pofilename, item, suggid, value, self.session)
       self.lastitem = item
 
   def getmatchnames(self, checker): 
@@ -217,7 +226,7 @@ class TranslatePage(pagelayout.PootleNavPage):
 
   def finditem(self):
     """finds the focussed item for this page, searching as neccessary"""
-    item = self.argdict.get("item", None)
+    item = self.argdict.pop("item", None)
     if item is None:
       try:
         search = pootlefile.Search(dirfilter=self.dirfilter, matchnames=self.matchnames, searchtext=self.searchtext)
@@ -235,7 +244,8 @@ class TranslatePage(pagelayout.PootleNavPage):
       if not item.isdigit():
         raise ValueError("Invalid item given")
       self.item = int(item)
-      self.pofilename = self.argdict.get("pofilename", self.dirfilter)
+      if self.pofilename is None:
+        raise ValueError("Received item argument but no pofilename argument")
     self.project.track(self.pofilename, self.item, "being edited by %s" % self.session.username)
 
   def getdisplayrows(self, mode):
@@ -319,19 +329,19 @@ class TranslatePage(pagelayout.PootleNavPage):
       origclass += "translate-original-focus "
     else:
       origclass += "autoexpand "
+    purefields = []
+    for pluralid, pluraltext in enumerate(orig):
+      pureid = "orig-pure%d.%d" % (item, pluralid)
+      purefields.append(widgets.Input({"type": "hidden", "id": pureid, "name": pureid, "value": pluraltext}))
     if len(orig) > 1:
-      origpuresingular = widgets.Input({"type": "hidden", "id": "orig-hidden%d.0" % item, "value": orig[0]})
-      origpureplural = widgets.Input({"type": "hidden", "id": "orig-hidden%d.1" % item, "value": orig[1]})
-      origpure = [origpuresingular, origpureplural]
       htmlbreak = "<br/>\n"
       origpretty = [pagelayout.TranslationHeaders(self.localize("Singular")), htmlbreak, 
                     self.escapetext(orig[0]), htmlbreak,
                     pagelayout.TranslationHeaders(self.localize("Plural")), htmlbreak,
                     self.escapetext(orig[1])]
     else:
-      origpure = widgets.Input({"type": "hidden", "id": "orig-hidden%d" % item, "value": orig[0]})
       origpretty = self.escapetext(orig[0])
-    origdiv = widgets.Division([origpure, origpretty], "orig%d" % item, cls=origclass)
+    origdiv = widgets.Division([purefields, origpretty], "orig%d" % item, cls=origclass)
     return origdiv
 
   def geteditlink(self, item):
@@ -349,7 +359,8 @@ class TranslatePage(pagelayout.PootleNavPage):
       skipbutton = widgets.Input({"type":"submit", "name":"skip%d" % item, "value":self.localize("skip")})
       buttons.append(skipbutton)
     if "copy" in desiredbuttons:
-      copyscript = "document.forms.translate.trans%d.value = document.getElementById('orig-hidden%d').value" % (item, item)
+      pureid = "orig-pure%d.0" % item
+      copyscript = "document.forms.translate.trans%d.value = document.getElementById('%s').value" % (item, pureid)
       copybutton = widgets.Button({"onclick": copyscript}, self.localize("copy"))
       buttons.append(copybutton)
     if "suggest" in desiredbuttons and "suggest" in self.rights:
@@ -482,15 +493,16 @@ class TranslatePage(pagelayout.PootleNavPage):
         if hasplurals:
           pluralform = self.localize("Plural Form %d") % pluralitem
           suggtext.append([pagelayout.TranslationHeaders(pluralform), htmlbreak])
-        suggtext.append([pagelayout.TranslationText(suggdiff), htmlbreak])
-      suggestionhidden = widgets.Input({'type': 'hidden', "name": "sugg%d.%d" % (item, suggid), 'value': suggestion})
+        hiddensuggid = "suggest%d.%d.%d" % (item, suggid, pluralitem)
+        hiddensuggvalue = widgets.Input({'type': 'hidden', "name": hiddensuggid, 'value': pluralsuggestion})
+        suggtext.append([pagelayout.TranslationText(suggdiff), hiddensuggvalue, htmlbreak])
       if "review" in self.rights:
         acceptbutton = widgets.Input({"type":"submit", "name":"accept%d.%d" % (item, suggid), "value":self.localize("accept")})
         rejectbutton = widgets.Input({"type":"submit", "name":"reject%d.%d" % (item, suggid), "value":self.localize("reject")})
         buttons = [acceptbutton, rejectbutton]
       else:
         buttons = []
-      suggdiv = [suggtitle, suggtext, suggestionhidden, "<br/>", buttons]
+      suggdiv = [suggtitle, suggtext, htmlbreak, buttons]
       suggitems.append(suggdiv)
     transbuttons = self.gettransbuttons(item, ["skip"])
     if suggitems:
