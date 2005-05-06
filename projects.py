@@ -669,6 +669,7 @@ class TranslationProject:
             yield pofilename, item
         else:
           yield pofilename, item
+      item = None
 
   def assignpoitems(self, session, search, assignto, action):
     """assign all the items matching the search to the assignto user with the given action"""
