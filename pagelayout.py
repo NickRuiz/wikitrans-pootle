@@ -28,10 +28,6 @@ class Item(widgets.Division):
       cls += "item-odd"
     self.attribs['class'] = cls
 
-# class MainItem(widgets.Division):
-#   def __init__(self, contents):
-#     widgets.Division.__init__(self, contents, cls="mainitem")
-
 class Navbar(widgets.Division):
   def __init__(self, contents):
     widgets.Division.__init__(self, contents, cls="navbar")
@@ -220,7 +216,7 @@ class PootlePage(widgets.Page):
         projectcode, projectname = project
         projectlink = widgets.Link("/projects/%s/" % projectcode, projectname)
       else:
-        languagelink = widgets.Link("../" + rootlink + "index.html", project.languagename)
+        languagelink = widgets.Link(rootlink + "../index.html", project.languagename)
         projectlink = widgets.Link(self.getbrowseurl(rootlink), project.projectname)
         if session:
           if "admin" in project.getrights(session) or session.issiteadmin():
