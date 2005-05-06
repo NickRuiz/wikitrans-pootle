@@ -115,8 +115,6 @@ class TranslatePage(pagelayout.PootleNavPage):
     if self.showassigns and "assign" in self.rights:
       self.addassignbox()
     if self.pofilename is not None:
-      self.links.addcontents(pagelayout.SidebarTitle(self.localize("current file")))
-      self.links.addcontents(pagelayout.SidebarText(pofilename))
       if matchnames:
         checknames = [matchname.replace("check-", "", 1) for matchname in matchnames]
         self.links.addcontents(pagelayout.SidebarText(self.localize("checking %s") % ", ".join(checknames)))
