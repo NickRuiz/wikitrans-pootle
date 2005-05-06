@@ -157,7 +157,7 @@ class LanguageIndex(pagelayout.PootleNavPage):
     self.average = self.getpagestats()
     languagestats = self.localize("%d projects, average %d%% translated" % (self.projectcount, self.average))
     navbar = self.makenavbar(icon="language", path=self.makenavbarpath(language=(self.languagecode, languagename)), stats=languagestats)
-    pagelayout.PootlePage.__init__(self, self.localize("Pootle: %s") % languagename, [navbar, projectlinks], session, bannerheight=81, returnurl="%s/" % self.languagecode)
+    pagelayout.PootleNavPage.__init__(self, self.localize("Pootle: %s") % languagename, [navbar, projectlinks], session, bannerheight=81, returnurl="%s/" % self.languagecode)
 
   def getprojectlinks(self):
     """gets the links to the projects"""
@@ -198,7 +198,7 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     self.average = self.getpagestats()
     projectstats = self.localize("%d languages, average %d%% translated" % (self.languagecount, self.average))
     navbar = self.makenavbar(icon="project", path=self.makenavbarpath(session=session, project=(self.projectcode, projectname)), actions=adminlink, stats=projectstats)
-    pagelayout.PootlePage.__init__(self, self.localize("Pootle: %s") % projectname, [navbar, languagelinks], session, bannerheight=81, returnurl="projects/%s/" % self.projectcode)
+    pagelayout.PootleNavPage.__init__(self, self.localize("Pootle: %s") % projectname, [navbar, languagelinks], session, bannerheight=81, returnurl="projects/%s/" % self.projectcode)
 
   def getlanguagelinks(self):
     """gets the links to the languages"""
@@ -263,7 +263,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     else:
       childitems = self.getchilditems(dirfilter)
     pagetitle = self.localize("Pootle: Project %s, Language %s") % (self.project.projectname, self.project.languagename)
-    pagelayout.PootlePage.__init__(self, pagetitle, [message, navbar, childitems], session, bannerheight=81, returnurl="%s/%s/%s/" % (self.project.languagecode, self.project.projectcode, self.dirname))
+    pagelayout.PootleNavPage.__init__(self, pagetitle, [message, navbar, childitems], session, bannerheight=81, returnurl="%s/%s/%s/" % (self.project.languagecode, self.project.projectcode, self.dirname))
     self.addsearchbox(searchtext="", action="translate.html")
     if self.showassigns and "assign" in self.rights:
       self.addassignbox()

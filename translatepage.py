@@ -67,7 +67,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       icon="edit"
     mainitem = self.makenavbar(icon=icon, path=self.makenavbarpath(self.project, self.session, dirfilter), stats=mainstats, pagelinks=pagelinks)
     translatediv = pagelayout.TranslateForm([notice, translateform, pagelinks])
-    pagelayout.PootlePage.__init__(self, title, [mainitem, translatediv], session, bannerheight=81, returnurl="%s/%s/%s" % (self.project.languagecode, self.project.projectcode, dirfilter))
+    pagelayout.PootleNavPage.__init__(self, title, [mainitem, translatediv], session, bannerheight=81, returnurl="%s/%s/%s" % (self.project.languagecode, self.project.projectcode, dirfilter))
     self.addfilelinks(self.pofilename, self.matchnames)
     autoexpandscript = widgets.Script('text/javascript', '', newattribs={'src': self.instance.baseurl + 'js/autoexpand.js'})
     self.headerwidgets.append(autoexpandscript)
@@ -292,13 +292,12 @@ class TranslatePage(pagelayout.PootleNavPage):
     self.transtable.setcell(-1, 1, transtitle)
     for row, (orig, trans) in enumerate(self.translations):
       item = self.firstitem + row
-      itemclasses = self.project.getitemclasses(self.pofilename, item)
-      origdiv = self.getorigdiv(item, orig, item in self.editable, itemclasses)
+      origdiv = self.getorigdiv(item, orig, item in self.editable)
       if item in self.editable:
         if self.reviewmode:
           transdiv = self.gettransreview(item, trans, suggestions[item])
         else:
-          transdiv = self.gettransedit(item, orig, trans)
+          transdiv = self.gettransedit(item, trans)
       else:
         transdiv = self.gettransview(item, trans)
       polarity = oddoreven(item)
@@ -315,7 +314,7 @@ class TranslatePage(pagelayout.PootleNavPage):
   def escapetext(self, text):
     return self.escape(text).replace("\n", "</br>\n")
 
-  def getorigdiv(self, item, orig, editable, itemclasses):
+  def getorigdiv(self, item, orig, editable):
     origclass = "translate-original "
     if editable:
       origclass += "translate-original-focus "
@@ -375,7 +374,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       buttons += [growlink, shrinklink, broadenlink, narrowlink, resetlink]
     return buttons
 
-  def gettransedit(self, item, orig, trans):
+  def gettransedit(self, item, trans):
     """returns a widget for editing the given item and translation"""
     if "translate" in self.rights or "suggest" in self.rights:
       usernode = getattr(self.session.loginchecker.users, self.session.username, None)
