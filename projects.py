@@ -595,7 +595,12 @@ class TranslationProject:
       doc.add(PyLucene.Field("pomtime", str(pomtime), True, True, True))
       allorig, alltrans = [], []
       for thepo in pofile.transelements:
-        orig, trans = self.unquotefrompo(thepo.msgid), self.unquotefrompo(thepo.msgstr)
+        if thepo.hasplural():
+          orig = self.unquotefrompo(thepo.msgid) + "\n" + self.unquotefrompo(thepo.msgid_plural)
+          trans = "\n".join(self.unquotefrompo(thepo.msgstr).itervalues())
+        else:
+          orig = self.unquotefrompo(thepo.msgid)
+          trans = self.unquotefrompo(thepo.msgstr)
         allorig.append(orig)
         alltrans.append(trans)
       allorig = "\n".join(allorig)
@@ -784,17 +789,24 @@ class TranslationProject:
 
   def unquotefrompo(self, postr):
     """extracts a po-quoted string to normal text"""
-    # TODO: handle plurals properly
     if isinstance(postr, dict):
-      pokeys = postr.keys()
-      pokeys.sort()
-      return self.unquotefrompo(postr[pokeys[0]])
-    return po.unquotefrompo(postr)
+      quotedpo = {}
+      for pluralid in postr:
+        quotedpo[pluralid] = self.unquotefrompo(postr[pluralid])
+      return quotedpo
+    else:
+      return po.unquotefrompo(postr)
 
   def quoteforpo(self, text):
     """quotes text in po-style"""
-    text = text.replace("\r\n", "\n")
-    return po.quoteforpo(text)
+    if isinstance(text, dict):
+      quotedtext = {}
+      for pluralid in text:
+        quotedtext[pluralid] = self.quoteforpo(text[pluralid])
+      return quotedtext
+    else:
+      text = text.replace("\r\n", "\n")
+      return po.quoteforpo(text)
 
   def getitems(self, pofilename, itemstart, itemstop):
     """returns a set of items from the pofile, converted to original and translation strings"""

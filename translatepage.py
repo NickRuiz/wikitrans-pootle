@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sre
 from jToolkit.widgets import widgets
 from jToolkit.widgets import table
 from Pootle import pagelayout
@@ -140,44 +141,45 @@ class TranslatePage(pagelayout.PootleNavPage):
     rejects = []
     translations = {}
     suggestions = {}
-    def getitem(key, prefix):
-      if not key.startswith(prefix):
-        return None
-      try:
-        return int(key.replace(prefix, "", 1))
-      except:
-        return None
-    def getpointitem(key, prefix):
-      if not key.startswith(prefix):
-        return None, None
-      try:
-        key = key.replace(prefix, "", 1)
-        item, suggid = key.split(".", 1)
+    pluralitems = {}
+    keymatcher = sre.compile("(\D+)([0-9.]+)")
+    def parsekey(key):
+      match = keymatcher.match(key)
+      if match:
+        keytype, itemcode = match.groups()
+        return keytype, itemcode
+      return None, None
+    def pointsplit(item):
+      if "." in item:
+        item, suggid = item.split(".", 1)
         return int(item), int(suggid)
-      except:
-        return None, None
+      else:
+        return int(item), None
     for key, value in self.argdict.iteritems():
-      item = getitem(key, "skip")
-      if item is not None:
+      keytype, item = parsekey(key)
+      if keytype is None:
+        continue
+      item, pointitem = pointsplit(item)
+      if keytype == "pluralforms":
+        pluralitems[item] = int(value)
+      if keytype == "skip":
         skips.append(item)
-      item = getitem(key, "submitsuggest")
-      if item is not None:
+      if keytype == "submitsuggest":
         submitsuggests.append(item)
-      item = getitem(key, "submit")
-      if item is not None:
+      if keytype == "submit":
         submits.append(item)
-      item, suggid = getpointitem(key, "accept")
-      if item is not None:
-        accepts.append((item, suggid))
-      item, suggid = getpointitem(key, "reject")
-      if item is not None:
-        rejects.append((item, suggid))
-      item = getitem(key, "trans")
-      if item is not None:
-        translations[item] = value
-      item, suggid = getpointitem(key, "sugg")
-      if item is not None:
-        suggestions[item, suggid] = value
+      if keytype == "accept":
+        accepts.append((item, pointitem))
+      if keytype == "reject":
+        item, suggid = pointsplit(item)
+        rejects.append((item, pointitem))
+      if keytype == "trans":
+        if pointitem is not None:
+          translations.setdefault(item, {})[pointitem] = value
+        else:
+          translations[item] = value
+      if keytype == "suggest":
+        suggestions[item, pointitem] = value
     for item in skips:
       self.lastitem = item
     for item in submitsuggests:
@@ -376,23 +378,29 @@ class TranslatePage(pagelayout.PootleNavPage):
 
   def gettransedit(self, item, orig, trans, isplural):
     """returns a widget for editing the given item and translation"""
-    buttons = self.gettransbuttons(item)
     if "translate" in self.rights or "suggest" in self.rights:
       usernode = getattr(self.session.loginchecker.users, self.session.username, None)
       rows = getattr(usernode, "inputheight", 5)
       cols = getattr(usernode, "inputwidth", 40)
       if isplural:
-        transdiv = self.gettransview(item, trans, isplural)
-        text = self.localize("Pootle cannot edit plural messages at this time.<br />")
-        buttons = self.gettransbuttons(item, "skip")
-        transdiv.addcontentsbefore(text)
-        transdiv.addcontents(buttons)
+        buttons = self.gettransbuttons(item, ["skip", "suggest", "translate"])
+        pluralforms = [widgets.HiddenFieldList([("pluralforms%d" % item, len(trans))])]
+        htmlbreak = "<br />"
+        for pluralitem, pluraltext in enumerate(trans):
+          pluralform = self.localize("Plural Form %d") % pluralitem
+          pluraltext = self.escape(pluraltext).decode("utf-8")
+          textid = "trans%d.%d" % (item, pluralitem)
+          text = widgets.TextArea({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext)
+          pluralforms += [pagelayout.TranslationHeaders(pluralform), htmlbreak, text, htmlbreak]
+        transdiv = widgets.Division([pluralforms, buttons], "trans%d" % item, cls="translate-translation")
       else:
+        buttons = self.gettransbuttons(item, ["skip"])
         trans = self.escape(trans[0]).decode("utf8")
         text = widgets.TextArea({"name":"trans%d" % item, "rows":rows, "cols":cols}, contents=trans)
         transdiv = widgets.Division([text, "<br />", buttons], "trans%d" % item, cls="translate-translation")
     else:
       transdiv = self.gettransview(item, trans, isplural)
+      buttons = self.gettransbuttons(item, ["skip"])
       transdiv.addcontents(buttons)
     return transdiv
 
@@ -484,9 +492,9 @@ class TranslatePage(pagelayout.PootleNavPage):
     if isplural:
       text = [editlink]
       htmlbreak = "<br />"
-      for pluralitem in range(len(trans)):
-        pluraltext = self.localize("Plural Form %d") % pluralitem
-        text += [pagelayout.TranslationHeaders(pluraltext), htmlbreak, self.escape(trans[pluralitem]), htmlbreak]
+      for pluralitem, pluraltext in enumerate(trans):
+        pluralform = self.localize("Plural Form %d") % pluralitem
+        text += [pagelayout.TranslationHeaders(pluralform), htmlbreak, self.escape(pluraltext), htmlbreak]
       text = pagelayout.TranslationText(text)
     else:
       text = pagelayout.TranslationText([editlink, self.escape(trans[0])])
