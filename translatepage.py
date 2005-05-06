@@ -78,6 +78,8 @@ class TranslatePage(pagelayout.PootlePage):
     """gets links to other pages of items, based on the given baselink"""
     pagelinks = []
     pofilelen = self.project.getpofilelen(self.pofilename)
+    if pofilelen <= pagesize:
+      return pagelinks
     lastitem = min(pofilelen-1, self.firstitem + pagesize - 1)
     if pofilelen > pagesize and not self.firstitem == 0:
       pagelinks.append(widgets.Link(baselink + "&item=0", self.localize("Start")))
