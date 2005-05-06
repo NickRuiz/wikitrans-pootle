@@ -234,7 +234,7 @@ class PootleNavPage(PootlePage):
         projectlink = widgets.Link(self.getbrowseurl(rootlink), project.projectname)
         if session:
           if "admin" in project.getrights(session) or session.issiteadmin():
-            adminlink = widgets.Link(rootlink + "admin.html", self.localize("Admin"))
+            adminlink = widgets.Link(rootlink + "/admin.html", self.localize("Admin"))
             projectlink = [projectlink, ": ", adminlink]
         languagelink = ["[", languagelink, "]"]
       projectlink = ["[", projectlink, "]"]
