@@ -150,26 +150,33 @@ class LanguageIndex(pagelayout.PootlePage):
     self.languagecode = languagecode
     self.localize = session.localize
     languagename = self.potree.getlanguagename(self.languagecode)
+    self.initpagestats()
     projectlinks = self.getprojectlinks()
-    pagelayout.PootlePage.__init__(self, "Pootle: "+languagename, projectlinks, session, bannerheight=81, returnurl="%s/" % self.languagecode)
+    self.average = self.getpagestats()
+    languagestats = self.localize("%d projects, average %d%% translated" % (self.projectcount, self.average))
+    navbar = self.makenavbar(icon="language", path=self.makenavbarpath(language=(self.languagecode, languagename)), stats=languagestats)
+    pagelayout.PootlePage.__init__(self, self.localize("Pootle: %s") % languagename, [navbar, projectlinks], session, bannerheight=81, returnurl="%s/" % self.languagecode)
 
   def getprojectlinks(self):
     """gets the links to the projects"""
     projectcodes = self.potree.getprojectcodes(self.languagecode)
+    self.projectcount = len(projectcodes)
     projectitems = [self.getprojectitem(projectcode) for projectcode in projectcodes]
-    return pagelayout.Contents(projectitems)
+    self.polarizeitems(projectitems)
+    return projectitems
 
   def getprojectitem(self, projectcode):
     projectname = self.potree.getprojectname(projectcode)
-    bodytitle = pagelayout.Title(projectname)
     projectdescription = self.potree.getprojectdescription(projectcode)
-    bodydescription = pagelayout.ItemDescription(widgets.Link(projectcode+"/", self.localize('%s project') % projectname, {"title":projectdescription}))
-    body = pagelayout.ContentsItem([bodytitle, bodydescription])
+    projecttitle = pagelayout.Title(widgets.Link(projectcode+"/", projectname, {"title": projectdescription}))
+    projecticon = self.geticon("project")
+    body = pagelayout.ContentsItem([projecticon, projecttitle])
     project = self.potree.getproject(self.languagecode, projectcode)
     numfiles = len(project.pofilenames)
     projectstats = project.calculatestats()
     translated = projectstats.get("translated", 0)
     total = projectstats.get("total", 0)
+    self.updatepagestats(translated, total)
     percentfinished = (translated*100/max(total, 1))
     stats = pagelayout.ItemStatistics(self.localize("%d files, %d/%d strings (%d%%) translated") % (numfiles, translated, total, percentfinished))
     return pagelayout.Item([body, stats])
@@ -183,26 +190,33 @@ class ProjectLanguageIndex(pagelayout.PootlePage):
     projectname = self.potree.getprojectname(self.projectcode)
     adminlink = []
     if session.issiteadmin():
-      adminlink = pagelayout.Title(widgets.Link("admin.html", self.localize("Project Admin Page")))
+      adminlink = widgets.Link("admin.html", self.localize("Admin"))
+    self.initpagestats()
     languagelinks = self.getlanguagelinks()
-    pagelayout.PootlePage.__init__(self, "Pootle: "+projectname, [adminlink, languagelinks], session, bannerheight=81, returnurl="projects/%s/" % self.projectcode)
+    self.average = self.getpagestats()
+    projectstats = self.localize("%d languages, average %d%% translated" % (self.languagecount, self.average))
+    navbar = self.makenavbar(icon="project", path=self.makenavbarpath(session=session, project=(self.projectcode, projectname)), actions=adminlink, stats=projectstats)
+    pagelayout.PootlePage.__init__(self, self.localize("Pootle: %s") % projectname, [navbar, languagelinks], session, bannerheight=81, returnurl="projects/%s/" % self.projectcode)
 
   def getlanguagelinks(self):
     """gets the links to the languages"""
     languagecodes = self.potree.getlanguagecodes(self.projectcode)
+    self.languagecount = len(languagecodes)
     languageitems = [self.getlanguageitem(languagecode) for languagecode in languagecodes]
-    return pagelayout.Contents(languageitems)
+    self.polarizeitems(languageitems)
+    return languageitems
 
   def getlanguageitem(self, languagecode):
     languagename = self.potree.getlanguagename(languagecode)
-    bodytitle = pagelayout.Title(languagename)
-    bodydescription = pagelayout.ItemDescription(widgets.Link("../../%s/%s/" % (languagecode, self.projectcode), self.localize('%s language') % languagename))
-    body = pagelayout.ContentsItem([bodytitle, bodydescription])
+    languagetitle = pagelayout.Title(widgets.Link("../../%s/%s/" % (languagecode, self.projectcode), languagename))
+    languageicon = self.geticon("language")
+    body = pagelayout.ContentsItem([languageicon, languagetitle])
     language = self.potree.getproject(languagecode, self.projectcode)
     numfiles = len(language.pofilenames)
     languagestats = language.calculatestats()
     translated = languagestats.get("translated", 0)
     total = languagestats.get("total", 0)
+    self.updatepagestats(translated, total)
     percentfinished = (translated*100/max(total, 1))
     stats = pagelayout.ItemStatistics(self.localize("%d files, %d/%d strings (%d%%) translated") % (numfiles, translated, total, percentfinished))
     return pagelayout.Item([body, stats])
@@ -231,42 +245,17 @@ class ProjectIndex(pagelayout.PootlePage):
     self.showchecks = self.getboolarg("showchecks")
     self.showassigns = self.getboolarg("showassigns")
     self.showgoals = self.getboolarg("showgoals")
-    currentfolder = dirfilter
-    if currentfolder:
-      depth = currentfolder.count("/") + 1
-      rootlink = "/".join([".."] * depth) + "/"
-    else:
-      rootlink = ""
-    language = widgets.Link("../" + rootlink + "index.html", self.project.languagename)
-    project = widgets.Link(self.getbrowseurl(rootlink), self.project.projectname)
-    if "admin" in self.project.getrights(self.session) or session.issiteadmin():
-      adminlink = widgets.Link(rootlink + "admin.html", self.localize("Admin"))
-      project = [project, ": ", adminlink]
-    baselinks = ["[", language, "]", "[", project, "]"]
-    pathlinks = []
-    if dirfilter:
-      dirs = self.dirfilter.split("/")
-      count = len(dirs)
-      for backlinkdir in dirs:
-        backlinks = "../" * count
-        count = count - 1
-        dirlink = widgets.Link(self.getbrowseurl(backlinks + backlinkdir + "/"), backlinkdir)
-        pathlinks.append(dirlink)
-        if count != 0:
-          pathlinks.append("/ ")
-    navbarpath = pagelayout.Title(widgets.SeparatedList(baselinks + pathlinks, " "))
     if dirfilter and dirfilter.endswith(".po"):
       actionlinks = []
       mainstats = []
-      mainicon = pagelayout.Icon("file.png")
+      mainicon = "file"
     else:
       pofilenames = self.project.browsefiles(dirfilter)
       projectstats = self.project.calculatestats(pofilenames)
       actionlinks = self.getactionlinks("", projectstats, ["review", "check", "assign", "goal", "quick", "all", "zip"], dirfilter)
-      actionlinks = pagelayout.ActionLinks(actionlinks)
       mainstats = self.getitemstats("", projectstats, len(pofilenames))
-      mainicon = pagelayout.Icon("folder.png")
-    mainitem = pagelayout.MainItem([mainicon, navbarpath, actionlinks, mainstats])
+      mainicon = "folder"
+    mainitem = self.makenavbar(icon=mainicon, path=self.makenavbarpath(project=self.project, session=self.session, currentfolder=dirfilter), actions=actionlinks, stats=mainstats)
     if self.showgoals:
       childitems = self.getgoalitems(dirfilter)
     else:
@@ -444,10 +433,7 @@ class ProjectIndex(pagelayout.PootlePage):
       fileitems.append((childfile, fileitem))
     fileitems.sort()
     childitems = [diritem for childdir, diritem in diritems] + [fileitem for childfile, fileitem in fileitems]
-    polarity = False
-    for childitem in childitems:
-      childitem.setpolarity(polarity)
-      polarity = not polarity
+    self.polarizeitems(childitems)
     return childitems
 
   def getitems(self, itempaths, linksrequired=None):
@@ -465,10 +451,7 @@ class ProjectIndex(pagelayout.PootlePage):
       diritems.sort()
       fileitems.sort()
     childitems = [diritem for childdir, diritem in diritems] + [fileitem for childfile, fileitem in fileitems]
-    polarity = False
-    for childitem in childitems:
-      childitem.setpolarity(polarity)
-      polarity = not polarity
+    self.polarizeitems(childitems)
     return childitems
 
   def getgoalitems(self, dirfilter):
