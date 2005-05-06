@@ -813,14 +813,18 @@ class TranslationProject:
     """returns a set of items from the pofile, converted to original and translation strings"""
     pofile = self.getpofile(pofilename)
     elements = pofile.transelements[max(itemstart,0):itemstop]
+    return self.makeitems(elements)
+
+  def makeitems(self, poelements):
+    """makes the po elements into items that translatepage can use"""
     messages = []
-    for poel in elements:
+    for poel in poelements:
       msgid = [po.unquotefrompo(poel.msgid)]
       if poel.hasplural():
         msgid += [po.unquotefrompo(poel.msgid_plural)]
         msgstr = []
         for i in range(len(poel.msgstr)):
-          msgstr += [po.unquotefrompo(poel.msgstr[i])]
+          msgstr[i] = po.unquotefrompo(poel.msgstr[i])
       else:
         msgstr = [po.unquotefrompo(poel.msgstr)]
       messages += [(msgid, msgstr)]
@@ -851,8 +855,7 @@ class TranslationProject:
       pofilename = pofile
       pofile = self.getpofile(pofilename)
     suggestpos = pofile.getsuggestions(item)
-    suggestions = [self.unquotefrompo(suggestpo.msgstr) for suggestpo in suggestpos]
-    return suggestions
+    return self.makeitems(suggestpos)
 
   def acceptsuggestion(self, pofile, item, suggitem, newtrans, session):
     """accepts the suggestion into the main pofile"""

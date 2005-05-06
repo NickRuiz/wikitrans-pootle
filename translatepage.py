@@ -201,16 +201,22 @@ class TranslatePage(pagelayout.PootleNavPage):
       if item in skips or item not in translations:
         continue
       value = translations[item]
+      if isinstance(value, dict) and len(value) == 1 and 0 in value:
+        value = value[0]
       self.project.updatetranslation(self.pofilename, item, value, self.session)
       self.lastitem = item
     for item, suggid in rejects:
       value = suggestions[item, suggid]
+      if isinstance(value, dict) and len(value) == 1 and 0 in value:
+        value = value[0]
       self.project.rejectsuggestion(self.pofilename, item, suggid, value, self.session)
       self.lastitem = item
     for item, suggid in accepts:
       if (item, suggid) in rejects or (item, suggid) not in suggestions:
         continue
       value = suggestions[item, suggid]
+      if isinstance(value, dict) and len(value) == 1 and 0 in value:
+        value = value[0]
       self.project.acceptsuggestion(self.pofilename, item, suggid, value, self.session)
       self.lastitem = item
 
@@ -403,7 +409,7 @@ class TranslatePage(pagelayout.PootleNavPage):
           pluralforms += [pagelayout.TranslationHeaders(pluralform), htmlbreak, text, htmlbreak]
         transdiv = widgets.Division([pluralforms, buttons], "trans%d" % item, cls="translate-translation")
       else:
-        buttons = self.gettransbuttons(item, ["skip"])
+        buttons = self.gettransbuttons(item)
         trans = self.escape(trans[0]).decode("utf8")
         text = widgets.TextArea({"name":"trans%d" % item, "rows":rows, "cols":cols}, contents=trans)
         transdiv = widgets.Division([text, "<br />", buttons], "trans%d" % item, cls="translate-translation")
@@ -462,7 +468,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     diffcodes = {}
     htmlbreak = "<br/>"
     for pluralitem, pluraltrans in enumerate(trans):
-      pluraldiffcodes = [self.getdiffcodes(pluraltrans, suggestion.get(pluralitem, "")) for suggestion in suggestions]
+      pluraldiffcodes = [self.getdiffcodes(pluraltrans, msgstr[pluralitem]) for msgid, msgstr in suggestions]
       diffcodes[pluralitem] = pluraldiffcodes
       combineddiffs = reduce(list.__add__, pluraldiffcodes, [])
       transdiff = self.highlightdiffs(pluraltrans, combineddiffs, issrc=True)
@@ -471,7 +477,7 @@ class TranslatePage(pagelayout.PootleNavPage):
         currenttext.append([pagelayout.TranslationHeaders(pluralform), htmlbreak])
       currenttext.append([transdiff, htmlbreak])
     suggitems = []
-    for suggid, suggestion in enumerate(suggestions):
+    for suggid, (msgid, msgstr) in enumerate(suggestions):
       suggtext = []
       suggestedby = self.project.getsuggester(self.pofilename, item, suggid)
       if len(suggestions) > 1:
@@ -486,7 +492,7 @@ class TranslatePage(pagelayout.PootleNavPage):
           suggtitle = self.localize("Suggestion:")
       suggtitle = ["<b>%s</b>" % suggtitle, htmlbreak]
       for pluralitem, pluraltrans in enumerate(trans):
-        pluralsuggestion = suggestion.get(pluralitem, "")
+        pluralsuggestion = msgstr[pluralitem]
         suggdiffcodes = diffcodes[pluralitem][suggid]
         suggdiff = self.highlightdiffs(pluralsuggestion, suggdiffcodes, issrc=False)
         if isinstance(pluralsuggestion, str):
