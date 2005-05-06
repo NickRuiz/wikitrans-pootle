@@ -321,8 +321,8 @@ class TranslatePage(pagelayout.PootlePage):
       origclass += "translate-original-focus "
     else:
       origclass += "autoexpand "
-    origpure = widgets.Input({"type": "hidden", "id": "orig-hidden%d" % item, "value": orig[0]})
-    origpretty = self.escapetext(orig[0])
+    origpure = widgets.Input({"type": "hidden", "id": "orig-hidden%d" % item, "value": orig})
+    origpretty = self.escapetext(orig)
     origdiv = widgets.Division([origpure, origpretty], "orig%d" % item, cls=origclass)
     return origdiv
 
