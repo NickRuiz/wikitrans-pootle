@@ -28,7 +28,6 @@ requirements for translatathon:
   highlight spaces in original so you can see what is a space
 
 other:
-  handle plurals properly (currently ignored)
   add ability to mark/unmark things as fuzzy
   move the sidebar to be like distributed proofreaders (at the top, small)
   test with apache multiprocess
@@ -59,7 +58,6 @@ other:
     that a French speaker can translate into Bambarra with little English
 
 bugs:
-  suggestion msgid comments get incorporated into main po file! this *totally* confuses things, item numbers seem to get messed up too...
   currently project codes cannot have a dash "-" in them eg kde-i18n.  Either
     we should allow or warn when starting pootle.
   header entries get jumbled when we update them.  Technically not an issue but
