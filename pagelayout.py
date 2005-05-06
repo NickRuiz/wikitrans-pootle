@@ -28,9 +28,13 @@ class Item(widgets.Division):
       cls += "item-odd"
     self.attribs['class'] = cls
 
-class MainItem(widgets.Division):
+# class MainItem(widgets.Division):
+#   def __init__(self, contents):
+#     widgets.Division.__init__(self, contents, cls="mainitem")
+
+class Navbar(widgets.Division):
   def __init__(self, contents):
-    widgets.Division.__init__(self, contents, cls="mainitem")
+    widgets.Division.__init__(self, contents, cls="navbar")
 
 class GoalItem(widgets.Division):
   def __init__(self, contents):
@@ -73,6 +77,10 @@ class TranslateActionLink(widgets.Span):
   def __init__(self, href, contents, id=None):
     link = widgets.Link(href, contents)
     widgets.Span.__init__(self, link, id=id, cls="translation-action")
+
+class TranslationHeaders(widgets.Span):
+  def __init__(self, contents):
+    widgets.Span.__init__(self, contents, cls="translation-text-headers")
 
 class PootleSidebar(widgets.Division):
   """the bar at the side describing current login details etc"""
@@ -168,8 +176,95 @@ class PootlePage(widgets.Page):
       currentfolderlink.overrideattribs({"title": tooltip})
     self.links.addcontents(SidebarText(currentfolderlink))
 
+  def geticon(self, type=None):
+    """create the correct icon for the type sypplied"""
+    if type is None:
+      return []
+    if type == "folder":
+      icon = "folder.png"
+    elif type == "file":
+      icon = "file.png"
+    elif type == "language":
+      icon = "language.png"
+    elif type == "edit":
+      icon = "edit.png"
+    elif type == "project":
+      icon = "folder.png"
+    return Icon(icon)
+
+  def makenavbarpath(self, project=None, session=None, currentfolder=None, language=None):
+    """create the navbar location line"""
+    rootlink = ""
+    languagelink = []
+    projectlink = []
+    pathlinks = []
+    if currentfolder:
+      dirs = currentfolder.split("/")
+      depth = len(dirs)
+      if currentfolder.endswith(".po"):
+        depth = depth - 1
+        rootlink = "/".join([".."] * depth) 
+      else:
+        rootlink = "/".join([".."] * depth) + "/"
+      for backlinkdir in dirs:
+        if backlinkdir.endswith(".po"):
+          backlinks = "../" * depth + backlinkdir
+        else:
+          backlinks = "../" * depth + backlinkdir + "/"
+        depth = depth - 1
+        dirlink = widgets.Link(self.getbrowseurl(backlinks), backlinkdir)
+        pathlinks.append(dirlink)
+      pathlinks = widgets.SeparatedList(pathlinks, " / ")
+    if project:
+      if isinstance(project, tuple):
+        projectcode, projectname = project
+        projectlink = widgets.Link("/projects/%s/" % projectcode, projectname)
+      else:
+        languagelink = widgets.Link("../" + rootlink + "index.html", project.languagename)
+        projectlink = widgets.Link(self.getbrowseurl(rootlink), project.projectname)
+        if session:
+          if "admin" in project.getrights(session) or session.issiteadmin():
+            adminlink = widgets.Link(rootlink + "admin.html", self.localize("Admin"))
+            projectlink = [projectlink, ": ", adminlink]
+        languagelink = ["[", languagelink, "]"]
+      projectlink = ["[", projectlink, "]"]
+    elif language:
+      languagecode, languagename = language
+      languagelink = widgets.Link("/%s/" % languagecode, languagename)
+      languagelink = ["[", languagelink, "]"]
+    return Title([widgets.SeparatedList(languagelink + projectlink, " "), " ", pathlinks])
+
+  def makenavbar(self, icon=None, path=[], actions=[], stats=[], pagelinks=[]):
+    """create a navbar"""
+    icon = self.geticon(icon)
+    actions = ActionLinks(actions)
+    stats = ItemStatistics(stats)
+    return Navbar([icon, path, actions, stats, pagelinks])
+
   def getcontents(self):
     """returns the actual contents of the page, wrapped appropriately"""
     contents = widgets.Division(self.contents, "content")
     return self.getcontentshtml([self.banner, contents, self.links])
 
+  def polarizeitems(self, itemlist):
+    """take an item list and alternate the background colour"""
+    polarity = False
+    for item in itemlist:
+      item.setpolarity(polarity)
+      polarity = not polarity
+    return itemlist
+
+  def initpagestats(self):
+    """initialise the top level (language/project) stats"""
+    self.alltranslated = 0
+    self.grandtotal = 0
+    
+  def getpagestats(self):
+    """return the top level stats"""
+    return (self.alltranslated*100/max(self.grandtotal, 1))
+
+  def updatepagestats(self, translated, total):
+    """updates the top level stats"""
+    self.alltranslated += translated
+    self.grandtotal += total
+    
