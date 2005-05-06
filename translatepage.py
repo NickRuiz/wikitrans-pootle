@@ -51,18 +51,23 @@ class TranslatePage(pagelayout.PootlePage):
     contextinfo = widgets.HiddenFieldList({"pofilename": self.pofilename})
     translateform = widgets.Form([self.transtable, searchcontextinfo, contextinfo], {"name": "translate", "action":""})
     title = self.localize("Pootle: translating %s into %s: %s") % (self.project.projectname, self.project.languagename, self.pofilename)
+    mainstats = []
+    if self.pofilename is not None:
+      postats = self.project.getpostats(self.pofilename)
+      blank, fuzzy = postats["blank"], postats["fuzzy"]
+      translated, total = postats["translated"], postats["total"]
+      mainstats = self.localize("%d/%d translated\n(%d blank, %d fuzzy)") % (translated, total, blank, fuzzy)
     if self.viewmode:
-      pagelinks = self.getpagelinks("?translate=1&view=1", 10)
+      rows = self.getdisplayrows("view")
+      pagelinks = self.getpagelinks("?translate=1&view=1", rows)
+      icon="file"
     else:
       pagelinks = []
-    translatediv = pagelayout.TranslateForm([notice, pagelinks, translateform, pagelinks])
-    pagelayout.PootlePage.__init__(self, title, translatediv, session, bannerheight=81, returnurl="%s/%s/%s" % (self.project.languagecode, self.project.projectcode, dirfilter))
+      icon="edit"
+    mainitem = self.makenavbar(icon=icon, path=self.makenavbarpath(self.project, self.session, dirfilter), stats=mainstats, pagelinks=pagelinks)
+    translatediv = pagelayout.TranslateForm([notice, translateform, pagelinks])
+    pagelayout.PootlePage.__init__(self, title, [mainitem, translatediv], session, bannerheight=81, returnurl="%s/%s/%s" % (self.project.languagecode, self.project.projectcode, dirfilter))
     self.addfilelinks(self.pofilename, self.matchnames)
-    if dirfilter and dirfilter.endswith(".po"):
-      currentfolder = "/".join(dirfilter.split("/")[:-1])
-    else:
-      currentfolder = dirfilter
-    self.addfolderlinks(self.localize("current folder"), currentfolder, "index.html")
     autoexpandscript = widgets.Script('text/javascript', '', newattribs={'src': self.instance.baseurl + 'js/autoexpand.js'})
     self.headerwidgets.append(autoexpandscript)
 
@@ -115,10 +120,6 @@ class TranslatePage(pagelayout.PootlePage):
       if matchnames:
         checknames = [matchname.replace("check-", "", 1) for matchname in matchnames]
         self.links.addcontents(pagelayout.SidebarText(self.localize("checking %s") % ", ".join(checknames)))
-      postats = self.project.getpostats(self.pofilename)
-      blank, fuzzy = postats["blank"], postats["fuzzy"]
-      translated, total = postats["translated"], postats["total"]
-      self.links.addcontents(pagelayout.SidebarText(self.localize("%d/%d translated\n(%d blank, %d fuzzy)") % (translated, total, blank, fuzzy)))
 
   def addassignbox(self):
     """adds a box that lets the user assign strings"""
@@ -238,6 +239,28 @@ class TranslatePage(pagelayout.PootlePage):
       self.pofilename = self.argdict.get("pofilename", self.dirfilter)
     self.project.track(self.pofilename, self.item, "being edited by %s" % self.session.username)
 
+  def getdisplayrows(self, mode):
+    """get the number of rows to display for the given mode"""
+    if mode == "view":
+      prefsfield = "viewrows"
+      default = 10
+      maximum = 100
+    elif mode == "translate":
+      prefsfield = "translaterows"
+      default = 7
+      maximum = 20
+    else:
+      raise ValueError("getdisplayrows has no mode '%s'" % mode)
+    usernode = getattr(self.session.loginchecker.users, self.session.username, None)
+    rowsdesired = getattr(usernode, prefsfield, default)
+    if isinstance(rowsdesired, str):
+      if rowsdesired == "":
+        rowsdesired = default
+      else:
+        rowsdesired = int(rowsdesired)
+    rowsdesired = min(rowsdesired, maximum)
+    return rowsdesired
+
   def gettranslations(self):
     """gets the list of translations desired for the view, and sets editable and firstitem parameters"""
     if self.item is None:
@@ -247,12 +270,15 @@ class TranslatePage(pagelayout.PootlePage):
     elif self.viewmode:
       self.editable = []
       self.firstitem = self.item
-      return self.project.getitems(self.pofilename, self.item, self.item+10)
+      rows = self.getdisplayrows("view")
+      return self.project.getitems(self.pofilename, self.item, self.item+rows)
     else:
       self.editable = [self.item]
-      fromitem = self.item - 3
-      self.firstitem = max(self.item - 3, 0)
-      toitem = self.firstitem + 7
+      rows = self.getdisplayrows("translate")
+      before = rows / 2
+      fromitem = self.item - before
+      self.firstitem = max(self.item - before, 0)
+      toitem = self.firstitem + rows
       return self.project.getitems(self.pofilename, fromitem, toitem)
 
   def maketable(self):
