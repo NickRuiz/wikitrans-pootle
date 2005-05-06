@@ -370,19 +370,6 @@ class ProjectIndex(pagelayout.PootlePage):
         return False
     raise ValueError("Invalid boolean value for %s: %r" % (argname, value))
 
-  def makelink(self, link, **newargs):
-    """constructs a link that keeps sticky arguments e.g. showchecks"""
-    combinedargs = self.argdict.copy()
-    combinedargs.update(newargs)
-    if '?' in link:
-      if not (link.endswith("&") or link.endswith("?")):
-        link += "&"
-    else:
-      link += '?'
-    # TODO: check escaping
-    link += "&".join(["%s=%s" % (arg, value) for arg, value in combinedargs.iteritems()])
-    return link
-
   def addfolderlinks(self, title, foldername, folderlink, tooltip=None, enhancelink=True):
     """adds a folder link to the sidebar"""
     if enhancelink:
@@ -589,13 +576,6 @@ class ProjectIndex(pagelayout.PootlePage):
     body = pagelayout.ContentsItem([folderimage, bodytitle, bodydescription])
     stats = self.getitemstats(basename, projectstats, None)
     return pagelayout.Item([body, stats])
-
-  def getbrowseurl(self, basename):
-    """gets the link to browse the item"""
-    if not basename or basename.endswith("/"):
-      return self.makelink(basename or "index.html")
-    else:
-      return self.makelink(basename, translate=1, view=1)
 
   def getactionlinks(self, basename, projectstats, linksrequired=None, filepath=None, goal=None):
     """get links to the actions that can be taken on an item (directory / file)"""

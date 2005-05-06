@@ -237,6 +237,26 @@ class PootlePage(widgets.Page):
     stats = ItemStatistics(stats)
     return Navbar([icon, path, actions, stats, pagelinks])
 
+  def getbrowseurl(self, basename):
+    """gets the link to browse the item"""
+    if not basename or basename.endswith("/"):
+      return self.makelink(basename or "index.html")
+    else:
+      return self.makelink(basename, translate=1, view=1)
+
+  def makelink(self, link, **newargs):
+    """constructs a link that keeps sticky arguments e.g. showchecks"""
+    combinedargs = self.argdict.copy()
+    combinedargs.update(newargs)
+    if '?' in link:
+      if not (link.endswith("&") or link.endswith("?")):
+        link += "&"
+    else:
+      link += '?'
+    # TODO: check escaping
+    link += "&".join(["%s=%s" % (arg, value) for arg, value in combinedargs.iteritems()])
+    return link
+
   def getcontents(self):
     """returns the actual contents of the page, wrapped appropriately"""
     contents = widgets.Division(self.contents, "content")
