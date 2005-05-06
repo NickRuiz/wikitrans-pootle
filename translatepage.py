@@ -456,8 +456,8 @@ class TranslatePage(pagelayout.PootlePage):
       suggestiontext = pagelayout.TranslationText(suggdiff)
       suggestionhidden = widgets.Input({'type': 'hidden', "name": "sugg%d.%d" % (item, suggid), 'value': suggestion})
       if "review" in self.rights:
-        acceptbutton = widgets.Input({"type":"submit", "name":"accept%d.%d" % (item, suggid), "value":"accept"}, "accept")
-        rejectbutton = widgets.Input({"type":"submit", "name":"reject%d.%d" % (item, suggid), "value":"reject"}, "reject")
+        acceptbutton = widgets.Input({"type":"submit", "name":"accept%d.%d" % (item, suggid), "value":self.localize("accept")})
+        rejectbutton = widgets.Input({"type":"submit", "name":"reject%d.%d" % (item, suggid), "value":self.localize("reject")})
         buttons = [acceptbutton, rejectbutton]
       else:
         buttons = []
