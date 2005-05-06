@@ -328,7 +328,7 @@ class TranslatePage(pagelayout.PootlePage):
     """gets a link to edit the given item, if the user has permission"""
     if "translate" in self.rights or "suggest" in self.rights:
       translateurl = "?translate=1&item=%d&pofilename=%s" % (item, self.quote(self.pofilename))
-      return pagelayout.TranslateActionLink(translateurl , "Edit", "editlink%d" % item)
+      return pagelayout.TranslateActionLink(translateurl , self.localize("Edit"), "editlink%d" % item)
     else:
       return ""
 
