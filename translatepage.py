@@ -327,10 +327,10 @@ class TranslatePage(pagelayout.PootleNavPage):
       origpuresingular = widgets.Input({"type": "hidden", "id": "orig-hidden%d.0" % item, "value": orig[0]})
       origpureplural = widgets.Input({"type": "hidden", "id": "orig-hidden%d.1" % item, "value": orig[1]})
       origpure = [origpuresingular, origpureplural]
-      htmlbreak = ("<br />\n")
+      htmlbreak = "<br/>\n"
       origpretty = [pagelayout.TranslationHeaders(self.localize("Singular")), htmlbreak, 
-                    self.escapetext(orig[0]), htmlbreak, 
-                    pagelayout.TranslationHeaders(self.localize("Plural")), htmlbreak, 
+                    self.escapetext(orig[0]), htmlbreak,
+                    pagelayout.TranslationHeaders(self.localize("Plural")), htmlbreak,
                     self.escapetext(orig[1])]
       origdiv = widgets.Division([origpure, origpretty], "orig%d" % item, cls=origclass)
     return origdiv
@@ -481,10 +481,10 @@ class TranslatePage(pagelayout.PootleNavPage):
       text = pagelayout.TranslationText([editlink, self.escape(trans[0])])
     else:
       text = [editlink]
-      for item in range(len(trans)):
-        label = "<b>%s</b></br />" % item
-        htmlbreak = "<br />"
-        text += [label, self.escape(trans[item]), htmlbreak]
+      htmlbreak = "<br />"
+      for pluralitem in range(len(trans)):
+        pluraltext = self.localize("Plural Form %d") % pluralitem
+        text += [pagelayout.TranslationHeaders(pluraltext), htmlbreak, self.escape(trans[pluralitem]), htmlbreak]
       text = pagelayout.TranslationText(text)
     transdiv = widgets.Division(text, "trans%d" % item, cls="translate-translation autoexpand")
     return transdiv
