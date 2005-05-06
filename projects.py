@@ -822,7 +822,7 @@ class TranslationProject:
           msgstr += [po.unquotefrompo(poel.msgstr[i])]
       else:
         msgstr = [po.unquotefrompo(poel.msgstr)]
-      messages += [(msgid, msgstr, poel.hasplural())]
+      messages += [(msgid, msgstr)]
     return messages
 
   def updatetranslation(self, pofilename, item, trans, session):
