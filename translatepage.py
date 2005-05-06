@@ -63,7 +63,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     else:
       pagelinks = []
       icon="edit"
-    mainitem = self.makenavbar(icon=icon, path=self.makenavbarpath(self.project, self.session, dirfilter), stats=mainstats, pagelinks=pagelinks)
+    mainitem = self.makenavbar(icon=icon, path=self.makenavbarpath(self.project, self.session, self.pofilename), stats=mainstats, pagelinks=pagelinks)
     translatediv = pagelayout.TranslateForm([notice, translateform, pagelinks])
     pagelayout.PootleNavPage.__init__(self, title, [mainitem, translatediv], session, bannerheight=81, returnurl="%s/%s/%s" % (self.project.languagecode, self.project.projectcode, dirfilter))
     self.addfilelinks(self.pofilename, self.matchnames)
@@ -217,16 +217,11 @@ class TranslatePage(pagelayout.PootleNavPage):
   def getmatchnames(self, checker): 
     """returns any checker filters the user has asked to match..."""
     matchnames = []
-    delkeys = []
     for checkname in self.argdict:
       if checkname in ["fuzzy", "blank", "translated", "has-suggestion"]:
         matchnames.append(checkname)
-        delkeys.append(checkname)
       elif checkname in checker.getfilters():
         matchnames.append("check-" + checkname)
-        delkeys.append(checkname)
-    for key in delkeys:
-      del self.argdict[key]
     matchnames.sort()
     return matchnames
 
