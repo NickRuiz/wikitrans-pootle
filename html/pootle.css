@@ -43,6 +43,12 @@ div.mainitem
 	background-color: #cfd1d3;
 	padding: 5px;
 }
+div.navbar
+{
+	margin-bottom:10px;
+	background-color: #cfd1d3;
+	padding: 5px;
+}
 div.goalitem 
 {
 	margin-bottom:6px;
@@ -205,11 +211,38 @@ div.intro {
 	float: left;
 	text-align: left;
 }
+.translation-text-headers
+{
+	float: left;
+	text-align: left;
+    font-weight: bold;
+}
 .translation-action
 {
 	float: right;
 	text-align: right;
 	display: none;
+}
+.translation-highlight-space
+{
+	background-color: lightgray;
+}
+.translation-highlight-accelerator
+{
+	color: darkyellow;
+	background-color: lightblue;
+}
+.translation-highlight-variable
+{
+	color: darkred;
+}
+.translation-highlight-escape
+{
+	color: purple;
+}
+.translation-highlight-html
+{
+	color: green;
 }
 .trackerdetails
 {
