@@ -800,7 +800,18 @@ class TranslationProject:
     """returns a set of items from the pofile, converted to original and translation strings"""
     pofile = self.getpofile(pofilename)
     elements = pofile.transelements[max(itemstart,0):itemstop]
-    return [(self.unquotefrompo(poel.msgid), self.unquotefrompo(poel.msgstr)) for poel in elements]
+    messages = []
+    for poel in elements:
+      msgid = [po.unquotefrompo(poel.msgid)]
+      if poel.hasplural():
+        msgid += [po.unquotefrompo(poel.msgid_plural)]
+        msgstr = []
+        for i in range(len(poel.msgstr)):
+          msgstr += [po.unquotefrompo(poel.msgstr[i])]
+      else:
+        msgstr = [po.unquotefrompo(poel.msgstr)]
+      messages += [(msgid, msgstr, poel.hasplural())]
+    return messages
 
   def updatetranslation(self, pofilename, item, trans, session):
     """updates a translation with a new value..."""
