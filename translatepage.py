@@ -321,7 +321,9 @@ class TranslatePage(pagelayout.PootlePage):
       origclass += "translate-original-focus "
     else:
       origclass += "autoexpand "
-    origdiv = widgets.Division(self.escapetext(orig), "orig%d" % item, cls=origclass)
+    origpure = widgets.Input({"type": "hidden", "id": "orig-hidden%d" % item, "value": orig[0]})
+    origpretty = self.escapetext(orig[0])
+    origdiv = widgets.Division([origpure, origpretty], "orig%d" % item, cls=origclass)
     return origdiv
 
   def geteditlink(self, item):
@@ -339,7 +341,7 @@ class TranslatePage(pagelayout.PootlePage):
       skipbutton = widgets.Input({"type":"submit", "name":"skip%d" % item, "value":"skip"}, self.localize("skip"))
       buttons.append(skipbutton)
     if "copy" in desiredbuttons:
-      copyscript = "document.forms.translate.trans%d.value = document.getElementById('orig%d').innerHTML" % (item, item)
+      copyscript = "document.forms.translate.trans%d.value = document.getElementById('orig-hidden%d').value" % (item, item)
       copybutton = widgets.Button({"onclick": copyscript}, self.localize("copy"))
       buttons.append(copybutton)
     if "suggest" in desiredbuttons and "suggest" in self.rights:
