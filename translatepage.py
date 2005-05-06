@@ -369,26 +369,14 @@ class TranslatePage(pagelayout.PootlePage):
     """returns a widget for editing the given item and translation"""
     trans = self.escape(trans).decode("utf8")
     if "translate" in self.rights or "suggest" in self.rights:
-      min = 3
-      max = 10
-      cols = 40
-      chars_orig = len(orig)
-      chars_trans = len(trans)
-      if chars_orig > chars_trans:
-        ideal_rows = chars_orig/cols
-      else:
-        ideal_rows = chars_trans/cols
-      if ideal_rows < min:
-        rows = min
-      elif ideal_rows > max:
-        rows = max
-      else:
-        rows = ideal_rows
+      usernode = getattr(self.session.loginchecker.users, self.session.username, None)
+      rows = getattr(usernode, "inputheight", 5)
+      cols = getattr(usernode, "inputwidth", 40)
       text = widgets.TextArea({"name":"trans%d" % item, "rows":rows, "cols":cols}, contents=trans)
     else:
       text = pagelayout.TranslationText(trans)
     buttons = self.gettransbuttons(item)
-    transdiv = widgets.Division([text, buttons], "trans%d" % item, cls="translate-translation")
+    transdiv = widgets.Division([text, "<br />", buttons], "trans%d" % item, cls="translate-translation")
     return transdiv
 
   def highlightdiffs(self, text, diffs, issrc=True):
