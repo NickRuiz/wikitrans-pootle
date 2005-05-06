@@ -376,20 +376,24 @@ class TranslatePage(pagelayout.PootleNavPage):
 
   def gettransedit(self, item, orig, trans, isplural):
     """returns a widget for editing the given item and translation"""
-    if isplural:
-      text = self.localize("Pootle cannot edit plural messages at this time.<br />")
-      buttons = self.gettransbuttons(item, "skip")
-    else:
-      trans = self.escape(trans[0]).decode("utf8")
-      if "translate" in self.rights or "suggest" in self.rights:
-        usernode = getattr(self.session.loginchecker.users, self.session.username, None)
-        rows = getattr(usernode, "inputheight", 5)
-        cols = getattr(usernode, "inputwidth", 40)
-        text = widgets.TextArea({"name":"trans%d" % item, "rows":rows, "cols":cols}, contents=trans)
+    buttons = self.gettransbuttons(item)
+    if "translate" in self.rights or "suggest" in self.rights:
+      usernode = getattr(self.session.loginchecker.users, self.session.username, None)
+      rows = getattr(usernode, "inputheight", 5)
+      cols = getattr(usernode, "inputwidth", 40)
+      if isplural:
+        transdiv = self.gettransview(item, trans, isplural)
+        text = self.localize("Pootle cannot edit plural messages at this time.<br />")
+        buttons = self.gettransbuttons(item, "skip")
+        transdiv.addcontentsbefore(text)
+        transdiv.addcontents(buttons)
       else:
-        text = pagelayout.TranslationText(trans)
-      buttons = self.gettransbuttons(item)
-    transdiv = widgets.Division([text, "<br />", buttons], "trans%d" % item, cls="translate-translation")
+        trans = self.escape(trans[0]).decode("utf8")
+        text = widgets.TextArea({"name":"trans%d" % item, "rows":rows, "cols":cols}, contents=trans)
+        transdiv = widgets.Division([text, "<br />", buttons], "trans%d" % item, cls="translate-translation")
+    else:
+      transdiv = self.gettransview(item, trans, isplural)
+      transdiv.addcontents(buttons)
     return transdiv
 
   def highlightdiffs(self, text, diffs, issrc=True):
@@ -477,15 +481,15 @@ class TranslatePage(pagelayout.PootleNavPage):
   def gettransview(self, item, trans, isplural):
     """returns a widget for viewing the given item's translation"""
     editlink = self.geteditlink(item)
-    if not isplural:
-      text = pagelayout.TranslationText([editlink, self.escape(trans[0])])
-    else:
+    if isplural:
       text = [editlink]
       htmlbreak = "<br />"
       for pluralitem in range(len(trans)):
         pluraltext = self.localize("Plural Form %d") % pluralitem
         text += [pagelayout.TranslationHeaders(pluraltext), htmlbreak, self.escape(trans[pluralitem]), htmlbreak]
       text = pagelayout.TranslationText(text)
+    else:
+      text = pagelayout.TranslationText([editlink, self.escape(trans[0])])
     transdiv = widgets.Division(text, "trans%d" % item, cls="translate-translation autoexpand")
     return transdiv
 
