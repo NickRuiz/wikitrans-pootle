@@ -188,6 +188,20 @@ class PootlePage(widgets.Page):
       icon = "folder.png"
     return Icon(icon)
 
+  def getcontents(self):
+    """returns the actual contents of the page, wrapped appropriately"""
+    contents = widgets.Division(self.contents, "content")
+    return self.getcontentshtml([self.banner, contents, self.links])
+
+  def polarizeitems(self, itemlist):
+    """take an item list and alternate the background colour"""
+    polarity = False
+    for item in itemlist:
+      item.setpolarity(polarity)
+      polarity = not polarity
+    return itemlist
+
+class PootleNavPage(PootlePage):
   def makenavbarpath(self, project=None, session=None, currentfolder=None, language=None):
     """create the navbar location line"""
     rootlink = ""
@@ -257,19 +271,6 @@ class PootlePage(widgets.Page):
     link += "&".join(["%s=%s" % (arg, value) for arg, value in combinedargs.iteritems()])
     return link
 
-  def getcontents(self):
-    """returns the actual contents of the page, wrapped appropriately"""
-    contents = widgets.Division(self.contents, "content")
-    return self.getcontentshtml([self.banner, contents, self.links])
-
-  def polarizeitems(self, itemlist):
-    """take an item list and alternate the background colour"""
-    polarity = False
-    for item in itemlist:
-      item.setpolarity(polarity)
-      polarity = not polarity
-    return itemlist
-
   def initpagestats(self):
     """initialise the top level (language/project) stats"""
     self.alltranslated = 0
@@ -283,4 +284,4 @@ class PootlePage(widgets.Page):
     """updates the top level stats"""
     self.alltranslated += translated
     self.grandtotal += total
-    
+

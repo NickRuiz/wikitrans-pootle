@@ -89,6 +89,8 @@ class UserIndex(pagelayout.PootlePage):
     quicklinkstitle = pagelayout.Title(self.localize("Quick Links"))
     quicklinks = []
     for languagecode in self.session.getlanguages():
+      if not self.potree.haslanguage(languagecode):
+        continue
       languagename = self.potree.getlanguagename(languagecode)
       languagelink = widgets.Link("../%s/" % languagecode, languagename)
       quicklinks.append(pagelayout.Title(languagelink))
@@ -143,7 +145,7 @@ class LanguagesIndex(PootleIndex):
     """we don't need project links on the language page"""
     return ""
 
-class LanguageIndex(pagelayout.PootlePage):
+class LanguageIndex(pagelayout.PootleNavPage):
   """the main page"""
   def __init__(self, potree, languagecode, session):
     self.potree = potree
@@ -181,7 +183,7 @@ class LanguageIndex(pagelayout.PootlePage):
     stats = pagelayout.ItemStatistics(self.localize("%d files, %d/%d strings (%d%%) translated") % (numfiles, translated, total, percentfinished))
     return pagelayout.Item([body, stats])
 
-class ProjectLanguageIndex(pagelayout.PootlePage):
+class ProjectLanguageIndex(pagelayout.PootleNavPage):
   """list of languages belonging to a project"""
   def __init__(self, potree, projectcode, session):
     self.potree = potree
@@ -221,7 +223,7 @@ class ProjectLanguageIndex(pagelayout.PootlePage):
     stats = pagelayout.ItemStatistics(self.localize("%d files, %d/%d strings (%d%%) translated") % (numfiles, translated, total, percentfinished))
     return pagelayout.Item([body, stats])
 
-class ProjectIndex(pagelayout.PootlePage):
+class ProjectIndex(pagelayout.PootleNavPage):
   """the main page"""
   def __init__(self, project, session, argdict, dirfilter=None):
     self.project = project

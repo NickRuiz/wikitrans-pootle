@@ -13,7 +13,7 @@ def oddoreven(polarity):
   elif polarity % 2== 1:
     return "odd"
 
-class TranslatePage(pagelayout.PootlePage):
+class TranslatePage(pagelayout.PootleNavPage):
   """the page which lets people edit translations"""
   def __init__(self, project, session, argdict, dirfilter=None):
     self.argdict = argdict
