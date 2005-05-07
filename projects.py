@@ -724,10 +724,9 @@ class TranslationProject:
       postats = self.getpostats(pofilename)
       for name, items in postats.iteritems():
         totalstats[name] = totalstats.get(name, []) + [(pofilename, item) for item in items]
-      # FIXME: handle assignstats similarly
-      # assignstats = self.getassignstats(pofilename)
-      # for name, count in assignstats.iteritems():
-      #   totalstats["assign-"+name] = totalstats.get("assign-"+name, 0) + count
+      assignstats = self.getassignstats(pofilename)
+      for name, items in assignstats.iteritems():
+        totalstats["assign-"+name] = totalstats.get("assign-"+name, []) + [(pofilename, item) for item in items]
     return totalstats
 
   def track(self, pofilename, item, message):
@@ -758,10 +757,10 @@ class TranslationProject:
     assigns = self.pofiles[pofilename].getassigns()
     assignstats = {}
     for username, userassigns in assigns.iteritems():
-      count = 0
+      allitems = []
       for action, items in userassigns.iteritems():
-        count += len(items)
-      assignstats[username] = count
+        allitems += [item for item in items if not item in allitems]
+      assignstats[username] = allitems
     return assignstats
 
   def getpofile(self, pofilename):
