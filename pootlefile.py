@@ -20,6 +20,10 @@ def getmodtime(filename, default=None):
   else:
     return default
 
+def wordcount(unquotedstr):
+  """returns the number of words in an unquoted str"""
+  return len(unquotedstr.split())
+
 class pootleelement(po.poelement, object):
   """a poelement with helpful methods for pootle"""
   def getunquotedmsgid(self, joinwithlinebreak=True):
@@ -179,6 +183,7 @@ class pootlefile(po.pofile):
         self.readstats()
       except Exception, e:
         print "Error reading stats from %s, so recreating (Error was %s)" % (self.statsfilename, e)
+        raise
         self.statspomtime = None
     pomtime = getmodtime(self.filename)
     pendingmtime = getmodtime(self.pendingfilename, None)
@@ -204,6 +209,8 @@ class pootlefile(po.pofile):
       frompomtime = int(mtimes[0])
       frompendingmtime = int(mtimes[1])
     postats = {}
+    msgidwordcounts = []
+    msgstrwordcounts = []
     for line in postatsstring.split("\n"):
       if not line.strip():
         continue
@@ -211,14 +218,23 @@ class pootlefile(po.pofile):
         print "invalid stats line in", self.statsfilename,line
         continue
       name, items = line.split(":", 1)
-      items = [int(item.strip()) for item in items.strip().split(",") if item]
-      postats[name.strip()] = items
+      if name == "msgidwordcounts":
+        msgidwordcounts = [[int(subitem.strip()) for subitem in item.strip().split("/")] for item in items.strip().split(",") if item]
+      elif name == "msgstrwordcounts":
+        msgstrwordcounts = [[int(subitem.strip()) for subitem in item.strip().split("/")] for item in items.strip().split(",") if item]
+      else:
+        items = [int(item.strip()) for item in items.strip().split(",") if item]
+        postats[name.strip()] = items
     # save all the read times, data simultaneously
-    self.statspomtime, self.statspendingmtime, self.statsmtime, self.stats = frompomtime, frompendingmtime, statsmtime, postats
+    self.statspomtime, self.statspendingmtime, self.statsmtime, self.stats, self.msgidwordcounts, self.msgstrwordcounts = frompomtime, frompendingmtime, statsmtime, postats, msgidwordcounts, msgstrwordcounts
     # if in old-style format (counts instead of items), recalculate
     totalitems = postats.get("total", [])
     if len(totalitems) == 1 and totalitems[0] != 0:
       self.calcstats()
+      self.savestats()
+    if (len(msgidwordcounts) < len(totalitems)) or (len(msgstrwordcounts) < len(totalitems)):
+      self.pofreshen()
+      self.countwords()
       self.savestats()
 
   def savestats(self):
@@ -226,12 +242,14 @@ class pootlefile(po.pofile):
     # assumes self.stats is up to date
     try:
       postatsstring = "\n".join(["%s:%s" % (name, ",".join(map(str,items))) for name, items in self.stats.iteritems()])
+      wordcountsstring = "msgidwordcounts:" + ",".join(["/".join(map(str,subitems)) for subitems in self.msgidwordcounts])
+      wordcountsstring += "\nmsgstrwordcounts:" + ",".join(["/".join(map(str,subitems)) for subitems in self.msgstrwordcounts])
       statsfile = open(self.statsfilename, "w")
       if os.path.exists(self.pendingfilename):
         statsfile.write("%d %d\n" % (getmodtime(self.filename), getmodtime(self.pendingfilename)))
       else:
         statsfile.write("%d\n" % getmodtime(self.filename))
-      statsfile.write(postatsstring)
+      statsfile.write(postatsstring + "\n" + wordcountsstring)
       statsfile.close()
     except IOError:
       # TODO: log a warning somewhere. we don't want an error as this is an optimization
@@ -382,10 +400,21 @@ class pootlefile(po.pofile):
           self.classify[classname].append(item)
         else:
           self.classify[classname] = item
+    self.countwords()
+
+  def countwords(self):
+    """counts the words in each of the elements"""
+    self.msgidwordcounts = []
+    self.msgstrwordcounts = []
+    for poel in self.transelements:
+      self.msgidwordcounts.append([wordcount(text) for text in poel.unquotedmsgid])
+      self.msgstrwordcounts.append([wordcount(text) for text in poel.unquotedmsgstr])
 
   def reclassifyelement(self, item):
     """updates the classification of poel in self.classify"""
     poel = self.transelements[item]
+    self.msgidwordcounts[item] = [wordcount(text) for text in poel.unquotedmsgid]
+    self.msgstrwordcounts[item] = [wordcount(text) for text in poel.unquotedmsgstr]
     classes = poel.classify(self.checker)
     if self.getsuggestions(item):
       classes.append("has-suggestion")
