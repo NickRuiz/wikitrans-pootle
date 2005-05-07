@@ -210,17 +210,22 @@ class pootlefile(po.pofile):
       if not ":" in line:
         print "invalid stats line in", self.statsfilename,line
         continue
-      name, count = line.split(":", 1)
-      count = int(count.strip())
-      postats[name.strip()] = count
+      name, items = line.split(":", 1)
+      items = [int(item.strip()) for item in items.strip().split(",") if item]
+      postats[name.strip()] = items
     # save all the read times, data simultaneously
     self.statspomtime, self.statspendingmtime, self.statsmtime, self.stats = frompomtime, frompendingmtime, statsmtime, postats
+    # if in old-style format (counts instead of items), recalculate
+    totalitems = postats.get("total", [])
+    if len(totalitems) == 1 and totalitems[0] != 0:
+      self.calcstats()
+      self.savestats()
 
   def savestats(self):
     """saves the current statistics to file"""
     # assumes self.stats is up to date
     try:
-      postatsstring = "\n".join(["%s:%d" % (name, count) for name, count in self.stats.iteritems()])
+      postatsstring = "\n".join(["%s:%s" % (name, ",".join(map(str,items))) for name, items in self.stats.iteritems()])
       statsfile = open(self.statsfilename, "w")
       if os.path.exists(self.pendingfilename):
         statsfile.write("%d %d\n" % (getmodtime(self.filename), getmodtime(self.pendingfilename)))
@@ -235,7 +240,7 @@ class pootlefile(po.pofile):
   def calcstats(self):
     """calculates translation statistics for the given po file"""
     self.pofreshen()
-    postats = dict([(name, len(items)) for name, items in self.classify.iteritems()])
+    postats = dict([(name, items) for name, items in self.classify.iteritems()])
     self.stats = postats
 
   def getassigns(self):

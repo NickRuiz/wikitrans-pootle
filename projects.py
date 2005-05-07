@@ -713,8 +713,8 @@ class TranslationProject:
           assigncount += 1
     return assigncount
 
-  def calculatestats(self, pofilenames=None):
-    """calculates translation statistics for the given po files (or all if None given)"""
+  def combinestats(self, pofilenames=None):
+    """combines translation statistics for the given po files (or all if None given)"""
     totalstats = {}
     if pofilenames is None:
       pofilenames = self.pofilenames
@@ -722,11 +722,12 @@ class TranslationProject:
       if not pofilename or os.path.isdir(pofilename):
         continue
       postats = self.getpostats(pofilename)
-      for name, count in postats.iteritems():
-        totalstats[name] = totalstats.get(name, 0) + count
-      assignstats = self.getassignstats(pofilename)
-      for name, count in assignstats.iteritems():
-        totalstats["assign-"+name] = totalstats.get("assign-"+name, 0) + count
+      for name, items in postats.iteritems():
+        totalstats[name] = totalstats.get(name, []) + [(pofilename, item) for item in items]
+      # FIXME: handle assignstats similarly
+      # assignstats = self.getassignstats(pofilename)
+      # for name, count in assignstats.iteritems():
+      #   totalstats["assign-"+name] = totalstats.get("assign-"+name, 0) + count
     return totalstats
 
   def track(self, pofilename, item, message):

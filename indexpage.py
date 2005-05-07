@@ -175,9 +175,9 @@ class LanguageIndex(pagelayout.PootleNavPage):
     body = pagelayout.ContentsItem([projecticon, projecttitle])
     project = self.potree.getproject(self.languagecode, projectcode)
     numfiles = len(project.pofilenames)
-    projectstats = project.calculatestats()
-    translated = projectstats.get("translated", 0)
-    total = projectstats.get("total", 0)
+    projectstats = project.combinestats()
+    translated = len(projectstats.get("translated", []))
+    total = len(projectstats.get("total", []))
     self.updatepagestats(translated, total)
     percentfinished = (translated*100/max(total, 1))
     stats = pagelayout.ItemStatistics(self.localize("%d files, %d/%d strings (%d%%) translated") % (numfiles, translated, total, percentfinished))
@@ -215,9 +215,9 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     body = pagelayout.ContentsItem([languageicon, languagetitle])
     language = self.potree.getproject(languagecode, self.projectcode)
     numfiles = len(language.pofilenames)
-    languagestats = language.calculatestats()
-    translated = languagestats.get("translated", 0)
-    total = languagestats.get("total", 0)
+    languagestats = language.combinestats()
+    translated = len(languagestats.get("translated", []))
+    total = len(languagestats.get("total", []))
     self.updatepagestats(translated, total)
     percentfinished = (translated*100/max(total, 1))
     stats = pagelayout.ItemStatistics(self.localize("%d files, %d/%d strings (%d%%) translated") % (numfiles, translated, total, percentfinished))
@@ -253,7 +253,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
       mainicon = "file"
     else:
       pofilenames = self.project.browsefiles(dirfilter)
-      projectstats = self.project.calculatestats(pofilenames)
+      projectstats = self.project.combinestats(pofilenames)
       actionlinks = self.getactionlinks("", projectstats, ["review", "check", "assign", "goal", "quick", "all", "zip"], dirfilter)
       mainstats = self.getitemstats("", projectstats, len(pofilenames))
       mainicon = "folder"
@@ -496,7 +496,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     for goalfile in goalfiles:
       recursefiles = self.project.browsefiles(goalfile)
       pofilenames.extend(recursefiles)
-    projectstats = self.project.calculatestats(pofilenames)
+    projectstats = self.project.combinestats(pofilenames)
     bodytitle = pagelayout.Title(goalname)
     folderimage = pagelayout.Icon("goal.png")
     browseurl = self.makelink("index.html", goal=goalname)
@@ -531,7 +531,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
   def getdiritem(self, direntry, linksrequired=None):
     """returns an item showing a directory entry"""
     pofilenames = self.project.browsefiles(direntry)
-    projectstats = self.project.calculatestats(pofilenames)
+    projectstats = self.project.combinestats(pofilenames)
     basename = os.path.basename(direntry)
     bodytitle = pagelayout.Title(basename)
     basename += "/"
@@ -549,7 +549,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     if linksrequired is None:
       linksrequired = ["review", "quick", "all", "po", "xliff", "csv", "mo", "update"]
     basename = os.path.basename(fileentry)
-    projectstats = self.project.calculatestats([fileentry])
+    projectstats = self.project.combinestats([fileentry])
     folderimage = pagelayout.Icon("file.png")
     browseurl = self.getbrowseurl(basename)
     bodytitle = pagelayout.Title(widgets.Link(browseurl, basename))
@@ -627,7 +627,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
         editfileuser = widgets.Input({"type": "submit", "name": "doedituser", "value": self.localize("Set User")})
         goalform = widgets.Form([goalfile, goalselect, editfilegoal, userselect, editfileuser], {"action": "", "name":"goalform-%s" % basename})
         actionlinks.append(goalform)
-    if "review" in linksrequired and projectstats.get("has-suggestion", 0):
+    if "review" in linksrequired and projectstats.get("has-suggestion", []):
       if "review" in self.rights:
         reviewlink = self.localize("Review Suggestions")
       else:
@@ -639,7 +639,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
         quicklink = self.localize("Quick Translate")
       else:
         quicklink = self.localize("View Untranslated")
-      if projectstats.get("translated", 0) < projectstats.get("total", 0):
+      if len(projectstats.get("translated", [])) < len(projectstats.get("total", [])):
         quicklink = widgets.Link(self.makelink(baseactionlink, fuzzy=1, blank=1), quicklink)
       else:
         quicklink = widgets.Tooltip(self.localize("No untranslated items"), quicklink)
@@ -669,8 +669,8 @@ class ProjectIndex(pagelayout.PootleNavPage):
 
   def getitemstats(self, basename, projectstats, numfiles):
     """returns a widget summarizing item statistics"""
-    translated = projectstats.get("translated", 0)
-    total = projectstats.get("total", 0)
+    translated = len(projectstats.get("translated", []))
+    total = len(projectstats.get("total", []))
     percentfinished = (translated*100/max(total, 1))
     if numfiles is None:
       statssummary = ""
@@ -705,14 +705,14 @@ class ProjectIndex(pagelayout.PootleNavPage):
 
   def getcheckdetails(self, projectstats, linkbase):
     """return a list of strings describing the results of checks"""
-    total = max(projectstats.get("total", 0), 1)
+    total = max(len(projectstats.get("total", [])), 1)
     checklinks = []
     keys = projectstats.keys()
     keys.sort()
     for checkname in keys:
       if not checkname.startswith("check-"):
         continue
-      checkcount = projectstats[checkname]
+      checkcount = len(projectstats[checkname])
       checkname = checkname.replace("check-", "", 1)
       if total and checkcount:
         checklink = widgets.Link(self.makelink(linkbase, **{checkname:1}), checkname)
@@ -722,14 +722,14 @@ class ProjectIndex(pagelayout.PootleNavPage):
 
   def getassigndetails(self, projectstats, linkbase, removelinkbase):
     """return a list of strings describing the assigned strings"""
-    total = max(projectstats.get("total", 0), 1)
+    total = max(len(projectstats.get("total", [])), 1)
     assignlinks = []
     keys = projectstats.keys()
     keys.sort()
     for assignname in keys: 
       if not assignname.startswith("assign-"):
         continue
-      assigncount = projectstats[assignname]
+      assigncount = len(projectstats[assignname])
       assignname = assignname.replace("assign-", "", 1)
       if total and assigncount:
         assignlink = widgets.Link(self.makelink(linkbase, assignedto=assignname), assignname)
