@@ -213,9 +213,7 @@ class PootleNavPage(PootlePage):
       depth = len(dirs)
       if currentfolder.endswith(".po"):
         depth = depth - 1
-        rootlink = "/".join([".."] * depth) 
-      else:
-        rootlink = "/".join([".."] * depth) + "/"
+      rootlink = "/".join([".."] * depth) + "/"
       for backlinkdir in dirs:
         if backlinkdir.endswith(".po"):
           backlinks = "../" * depth + backlinkdir
@@ -234,7 +232,7 @@ class PootleNavPage(PootlePage):
         projectlink = widgets.Link(self.getbrowseurl(rootlink), project.projectname)
         if session:
           if "admin" in project.getrights(session) or session.issiteadmin():
-            adminlink = widgets.Link(rootlink + "/admin.html", self.localize("Admin"))
+            adminlink = widgets.Link(rootlink + "admin.html", self.localize("Admin"))
             projectlink = [projectlink, ": ", adminlink]
         languagelink = ["[", languagelink, "]"]
       projectlink = ["[", projectlink, "]"]
