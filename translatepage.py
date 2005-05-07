@@ -55,7 +55,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       postats = self.project.getpostats(self.pofilename)
       blank, fuzzy = postats["blank"], postats["fuzzy"]
       translated, total = postats["translated"], postats["total"]
-      mainstats = self.localize("%d/%d translated\n(%d blank, %d fuzzy)") % (translated, total, blank, fuzzy)
+      mainstats = self.localize("%d/%d translated\n(%d blank, %d fuzzy)") % (len(translated), len(total), len(blank), len(fuzzy))
     if self.viewmode:
       rows = self.getdisplayrows("view")
       pagelinks = self.getpagelinks("?translate=1&view=1", rows)
