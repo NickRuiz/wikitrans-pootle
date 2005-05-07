@@ -55,6 +55,26 @@ class pootleelement(po.poelement, object):
 
   unquotedmsgstr = property(getunquotedmsgstr, setunquotedmsgstr)
 
+  def classify(self, checker):
+    """returns all classify keys that this element should match, using the checker"""
+    classes = ["total"]
+    if self.isfuzzy():
+      classes.append("fuzzy")
+    if self.isblankmsgstr():
+      classes.append("blank")
+    if not ("fuzzy" in classes or "blank" in classes):
+      classes.append("translated")
+    # TODO: we don't handle checking plurals at all yet, as this is tricky...
+    unquotedid = self.unquotedmsgid[0]
+    unquotedstr = self.unquotedmsgstr[0]
+    if isinstance(unquotedid, str) and isinstance(unquotedstr, unicode):
+      unquotedid = unquotedid.decode("utf-8")
+    failures = checker.run_filters(self, unquotedid, unquotedstr)
+    for failure in failures:
+      functionname = failure.split(":",2)[0]
+      classes.append("check-" + functionname)
+    return classes
+
 class pootlefile(po.pofile):
   """this represents a pootle-managed .po file and its associated files"""
   def __init__(self, project, pofilename):
@@ -349,7 +369,7 @@ class pootlefile(po.pofile):
     for checkname in self.checker.getfilters().keys():
       self.classify["check-" + checkname] = []
     for item, poel in enumerate(self.transelements):
-      classes = self.classifyelement(poel)
+      classes = poel.classify(self.checker)
       if self.getsuggestions(item):
         classes.append("has-suggestion")
       for classname in classes:
@@ -358,29 +378,10 @@ class pootlefile(po.pofile):
         else:
           self.classify[classname] = item
 
-  def classifyelement(self, poel):
-    """returns all classify keys that this element should match"""
-    classes = ["total"]
-    if poel.isfuzzy():
-      classes.append("fuzzy")
-    if poel.isblankmsgstr():
-      classes.append("blank")
-    if not ("fuzzy" in classes or "blank" in classes):
-      classes.append("translated")
-    unquotedid = po.getunquotedstr(poel.msgid, joinwithlinebreak=False)
-    unquotedstr = po.getunquotedstr(poel.msgstr, joinwithlinebreak=False)
-    if isinstance(unquotedid, str) and isinstance(unquotedstr, unicode):
-      unquotedid = unquotedid.decode("utf-8")
-    failures = self.checker.run_filters(poel, unquotedid, unquotedstr)
-    for failure in failures:
-      functionname = failure.split(":",2)[0]
-      classes.append("check-" + functionname)
-    return classes
-
   def reclassifyelement(self, item):
     """updates the classification of poel in self.classify"""
     poel = self.transelements[item]
-    classes = self.classifyelement(poel)
+    classes = poel.classify(self.checker)
     if self.getsuggestions(item):
       classes.append("has-suggestion")
     for classname, matchingitems in self.classify.items():
@@ -524,7 +525,7 @@ class pootlefile(po.pofile):
     else:
       for item, matchpo in enumerate(self.transelements):
         if matchpo == oldpo:
-          self.addsuggestion(item, newpo.msgstr, username)
+          self.addsuggestion(item, newpo.unquotedmsgstr, username)
           return
       raise KeyError("Could not find item for merge")
 
