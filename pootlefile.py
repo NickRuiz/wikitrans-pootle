@@ -20,10 +20,45 @@ def getmodtime(filename, default=None):
   else:
     return default
 
+class pootleelement(po.poelement, object):
+  """a poelement with helpful methods for pootle"""
+  def getunquotedmsgid(self, joinwithlinebreak=True):
+    """returns the msgid as a list of unquoted strings (one per plural form present)"""
+    msgid = [po.unquotefrompo(self.msgid, joinwithlinebreak)]
+    if self.hasplural():
+      msgid += [po.unquotefrompo(self.msgid_plural, joinwithlinebreak)]
+    return msgid
+
+  unquotedmsgid = property(getunquotedmsgid)
+
+  def getunquotedmsgstr(self, joinwithlinebreak=True):
+    """returns the msgstr as a list of unquoted strings (one per plural form present)"""
+    if self.hasplural():
+      msgstr = []
+      for i in range(len(self.msgstr)):
+        msgstr.append(po.unquotefrompo(self.msgstr[i], joinwithlinebreak))
+    else:
+      msgstr = [po.unquotefrompo(self.msgstr, joinwithlinebreak)]
+    return msgstr
+
+  def setunquotedmsgstr(self, text):
+    """quotes text in po-style"""
+    if isinstance(text, dict):
+      quotedtext = {}
+      for pluralid in text:
+        pluraltext = text[pluralid].replace("\r\n", "\n")
+        quotedtext[pluralid] = po.quoteforpo(pluraltext)
+      self.msgstr = quotedtext
+    else:
+      text = text.replace("\r\n", "\n")
+      self.msgstr = po.quoteforpo(text)
+
+  unquotedmsgstr = property(getunquotedmsgstr, setunquotedmsgstr)
+
 class pootlefile(po.pofile):
   """this represents a pootle-managed .po file and its associated files"""
   def __init__(self, project, pofilename):
-    po.pofile.__init__(self)
+    po.pofile.__init__(self, elementclass=pootleelement)
     self.project = project
     self.checker = self.project.checker
     self.pofilename = pofilename
@@ -104,11 +139,11 @@ class pootlefile(po.pofile):
       if pendingmtime == getattr(self, "pendingmtime", None):
         return
       inputfile = open(self.pendingfilename, "r")
-      self.pendingmtime, self.pendingfile = pendingmtime, po.pofile(inputfile)
+      self.pendingmtime, self.pendingfile = pendingmtime, po.pofile(inputfile, elementclass=self.elementclass)
       if self.pomtime:
         self.reclassifysuggestions()
     else:
-      self.pendingfile = po.pofile()
+      self.pendingfile = po.pofile(elementclass=self.elementclass)
       self.savependingfile()
 
   def savependingfile(self):
@@ -289,7 +324,7 @@ class pootlefile(po.pofile):
     """updates a translation with a new msgstr value"""
     self.pofreshen()
     thepo = self.transelements[item]
-    thepo.msgstr = newmsgstr
+    thepo.unquotedmsgstr = newmsgstr
     thepo.markfuzzy(False)
     self.updateheader(add=True, PO_Revision_Date = time.strftime("%F %H:%M%z"))
     if userprefs:
@@ -393,7 +428,7 @@ class pootlefile(po.pofile):
     newpo = thepo.copy()
     if username is not None:
       newpo.msgidcomments.append('"_: suggested by %s"' % username)
-    newpo.msgstr = suggmsgstr
+    newpo.unquotedmsgstr = suggmsgstr
     newpo.markfuzzy(False)
     self.pendingfile.poelements.append(newpo)
     self.savependingfile()

@@ -306,12 +306,15 @@ class TranslatePage(pagelayout.PootleNavPage):
     transtitle = table.TableCell(self.localize("translation"), {"class":"translate-table-title"})
     self.transtable.setcell(-1, 0, origtitle)
     self.transtable.setcell(-1, 1, transtitle)
-    for row, (orig, trans) in enumerate(self.translations):
+    for row, thepo in enumerate(self.translations):
+      orig = thepo.unquotedmsgid
+      trans = thepo.unquotedmsgstr
       item = self.firstitem + row
       origdiv = self.getorigdiv(item, orig, item in self.editable)
       if item in self.editable:
         if self.reviewmode:
-          transdiv = self.gettransreview(item, trans, suggestions[item])
+          itemsuggestions = [suggestion.unquotedmsgstr for suggestion in suggestions[item]]
+          transdiv = self.gettransreview(item, trans, itemsuggestions)
         else:
           transdiv = self.gettransedit(item, trans)
       else:
@@ -468,7 +471,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     diffcodes = {}
     htmlbreak = "<br/>"
     for pluralitem, pluraltrans in enumerate(trans):
-      pluraldiffcodes = [self.getdiffcodes(pluraltrans, msgstr[pluralitem]) for msgid, msgstr in suggestions]
+      pluraldiffcodes = [self.getdiffcodes(pluraltrans, suggestion[pluralitem]) for suggestion in suggestions]
       diffcodes[pluralitem] = pluraldiffcodes
       combineddiffs = reduce(list.__add__, pluraldiffcodes, [])
       transdiff = self.highlightdiffs(pluraltrans, combineddiffs, issrc=True)
@@ -477,7 +480,7 @@ class TranslatePage(pagelayout.PootleNavPage):
         currenttext.append([pagelayout.TranslationHeaders(pluralform), htmlbreak])
       currenttext.append([transdiff, htmlbreak])
     suggitems = []
-    for suggid, (msgid, msgstr) in enumerate(suggestions):
+    for suggid, msgstr in enumerate(suggestions):
       suggtext = []
       suggestedby = self.project.getsuggester(self.pofilename, item, suggid)
       if len(suggestions) > 1:

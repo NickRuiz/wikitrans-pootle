@@ -384,7 +384,7 @@ class TranslationProject:
                 newmatches.append((newpo, localpo))
                 continue
         if not foundsource:
-          msgid = po.getunquotedstr(origpo.msgid)
+          msgid = origpo.unquotedmsgid
           if msgid in newpofile.msgidindex:
             newpo = newpofile.msgidindex[msgid]
             newmatches.append((newpo, localpo))
@@ -798,56 +798,28 @@ class TranslationProject:
     else:
       return po.unquotefrompo(postr)
 
-  def quoteforpo(self, text):
-    """quotes text in po-style"""
-    if isinstance(text, dict):
-      quotedtext = {}
-      for pluralid in text:
-        quotedtext[pluralid] = self.quoteforpo(text[pluralid])
-      return quotedtext
-    else:
-      text = text.replace("\r\n", "\n")
-      return po.quoteforpo(text)
-
   def getitems(self, pofilename, itemstart, itemstop):
     """returns a set of items from the pofile, converted to original and translation strings"""
     pofile = self.getpofile(pofilename)
     elements = pofile.transelements[max(itemstart,0):itemstop]
-    return self.makeitems(elements)
-
-  def makeitems(self, poelements):
-    """makes the po elements into items that translatepage can use"""
-    messages = []
-    for poel in poelements:
-      msgid = [po.unquotefrompo(poel.msgid)]
-      if poel.hasplural():
-        msgid += [po.unquotefrompo(poel.msgid_plural)]
-        msgstr = []
-        for i in range(len(poel.msgstr)):
-          msgstr[i] = po.unquotefrompo(poel.msgstr[i])
-      else:
-        msgstr = [po.unquotefrompo(poel.msgstr)]
-      messages += [(msgid, msgstr)]
-    return messages
+    return elements
 
   def updatetranslation(self, pofilename, item, trans, session):
     """updates a translation with a new value..."""
     if "translate" not in self.getrights(session):
       raise RightsError(session.localize("You do not have rights to change translations here"))
-    newmsgstr = self.quoteforpo(trans)
     pofile = self.pofiles[pofilename]
     pofile.track(item, "edited by %s" % session.username)
     languageprefs = getattr(session.instance.languages, self.languagecode, None)
-    pofile.setmsgstr(item, newmsgstr, session.prefs, languageprefs)
+    pofile.setmsgstr(item, trans, session.prefs, languageprefs)
 
   def suggesttranslation(self, pofilename, item, trans, session):
     """stores a new suggestion for a translation..."""
     if "suggest" not in self.getrights(session):
       raise RightsError(session.localize("You do not have rights to suggest changes here"))
-    suggmsgstr = self.quoteforpo(trans)
     pofile = self.getpofile(pofilename)
     pofile.track(item, "suggestion made by %s" % session.username)
-    pofile.addsuggestion(item, suggmsgstr, session.username)
+    pofile.addsuggestion(item, trans, session.username)
 
   def getsuggestions(self, pofile, item):
     """find all the suggestions submitted for the given (pofile or pofilename) and item"""
@@ -855,7 +827,7 @@ class TranslationProject:
       pofilename = pofile
       pofile = self.getpofile(pofilename)
     suggestpos = pofile.getsuggestions(item)
-    return self.makeitems(suggestpos)
+    return suggestpos
 
   def acceptsuggestion(self, pofile, item, suggitem, newtrans, session):
     """accepts the suggestion into the main pofile"""
