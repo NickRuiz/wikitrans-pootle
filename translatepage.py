@@ -231,6 +231,13 @@ class TranslatePage(pagelayout.PootleNavPage):
     matchnames.sort()
     return matchnames
 
+  def getusernode(self):
+    """gets the user's prefs node"""
+    if self.session.isopen:
+      return getattr(self.session.loginchecker.users, self.session.username, None)
+    else:
+      return None
+
   def finditem(self):
     """finds the focussed item for this page, searching as neccessary"""
     item = self.argdict.pop("item", None)
@@ -267,7 +274,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       maximum = 20
     else:
       raise ValueError("getdisplayrows has no mode '%s'" % mode)
-    usernode = getattr(self.session.loginchecker.users, self.session.username, None)
+    usernode = self.getusernode()
     rowsdesired = getattr(usernode, prefsfield, default)
     if isinstance(rowsdesired, str):
       if rowsdesired == "":
@@ -387,7 +394,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       shrinklink = widgets.Link('#', self.localize("Shrink"), newattribs={"onclick": 'return contracttextarea(this)'})
       broadenlink = widgets.Link('#', self.localize("Broaden"), newattribs={"onclick": 'return broadentextarea(this)'})
       narrowlink = widgets.Link('#', self.localize("Narrow"), newattribs={"onclick": 'return narrowtextarea(this)'})
-      usernode = getattr(self.session.loginchecker.users, self.session.username, None)
+      usernode = self.getusernode()
       rows = getattr(usernode, "inputheight", 5)
       cols = getattr(usernode, "inputwidth", 40)
       resetlink = widgets.Link('#', self.localize("Reset"), newattribs={"onclick": 'return resettextarea(this, %s, %s)' % (rows, cols)})
@@ -397,7 +404,7 @@ class TranslatePage(pagelayout.PootleNavPage):
   def gettransedit(self, item, trans):
     """returns a widget for editing the given item and translation"""
     if "translate" in self.rights or "suggest" in self.rights:
-      usernode = getattr(self.session.loginchecker.users, self.session.username, None)
+      usernode = self.getusernode()
       rows = getattr(usernode, "inputheight", 5)
       cols = getattr(usernode, "inputwidth", 40)
       if len(trans) > 1:
