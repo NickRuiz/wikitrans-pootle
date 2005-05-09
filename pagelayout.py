@@ -283,3 +283,16 @@ class PootleNavPage(PootlePage):
     self.alltranslated += translated
     self.grandtotal += total
 
+  def describestats(self, projectstats, numfiles):
+    """returns a sentence summarizing item statistics"""
+    translated = len(projectstats.get("translated", []))
+    total = len(projectstats.get("total", []))
+    percentfinished = (translated*100/max(total, 1))
+    if numfiles is None:
+      statssummary = ""
+    else:
+      statssummary = self.localize("%d files, ") % numfiles
+    statssummary += self.localize("%d/%d strings (%d%%) translated") % (translated, total, percentfinished)
+    return statssummary
+
+    

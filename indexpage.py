@@ -154,8 +154,8 @@ class LanguageIndex(pagelayout.PootleNavPage):
     languagename = self.potree.getlanguagename(self.languagecode)
     self.initpagestats()
     projectlinks = self.getprojectlinks()
-    self.average = self.getpagestats()
-    languagestats = self.localize("%d projects, average %d%% translated" % (self.projectcount, self.average))
+    average = self.getpagestats()
+    languagestats = self.localize("%d projects, average %d%% translated" % (self.projectcount, average))
     navbar = self.makenavbar(icon="language", path=self.makenavbarpath(language=(self.languagecode, languagename)), stats=languagestats)
     pagelayout.PootleNavPage.__init__(self, self.localize("Pootle: %s") % languagename, [navbar, projectlinks], session, bannerheight=81, returnurl="%s/" % self.languagecode)
 
@@ -174,13 +174,7 @@ class LanguageIndex(pagelayout.PootleNavPage):
     projecticon = self.geticon("project")
     body = pagelayout.ContentsItem([projecticon, projecttitle])
     project = self.potree.getproject(self.languagecode, projectcode)
-    numfiles = len(project.pofilenames)
-    projectstats = project.combinestats()
-    translated = len(projectstats.get("translated", []))
-    total = len(projectstats.get("total", []))
-    self.updatepagestats(translated, total)
-    percentfinished = (translated*100/max(total, 1))
-    stats = pagelayout.ItemStatistics(self.localize("%d files, %d/%d strings (%d%%) translated") % (numfiles, translated, total, percentfinished))
+    stats = pagelayout.ItemStatistics(self.describestats(project.combinestats(), len(project.pofilenames)))
     return pagelayout.Item([body, stats])
 
 class ProjectLanguageIndex(pagelayout.PootleNavPage):
@@ -195,8 +189,8 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
       adminlink = widgets.Link("admin.html", self.localize("Admin"))
     self.initpagestats()
     languagelinks = self.getlanguagelinks()
-    self.average = self.getpagestats()
-    projectstats = self.localize("%d languages, average %d%% translated" % (self.languagecount, self.average))
+    average = self.getpagestats()
+    projectstats = self.localize("%d languages, average %d%% translated" % (self.languagecount, average))
     navbar = self.makenavbar(icon="project", path=self.makenavbarpath(session=session, project=(self.projectcode, projectname)), actions=adminlink, stats=projectstats)
     pagelayout.PootleNavPage.__init__(self, self.localize("Pootle: %s") % projectname, [navbar, languagelinks], session, bannerheight=81, returnurl="projects/%s/" % self.projectcode)
 
@@ -216,11 +210,13 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     language = self.potree.getproject(languagecode, self.projectcode)
     numfiles = len(language.pofilenames)
     languagestats = language.combinestats()
-    translated = len(languagestats.get("translated", []))
-    total = len(languagestats.get("total", []))
-    self.updatepagestats(translated, total)
-    percentfinished = (translated*100/max(total, 1))
-    stats = pagelayout.ItemStatistics(self.localize("%d files, %d/%d strings (%d%%) translated") % (numfiles, translated, total, percentfinished))
+    translated = languagestats.get("translated", [])
+    total = languagestats.get("total", [])
+    translatedwords = language.countwords(translated)
+    totalwords = language.countwords(total)
+    self.updatepagestats(translatedwords, totalwords)
+    percentfinished = (translatedwords*100/max(totalwords, 1))
+    stats = pagelayout.ItemStatistics(self.localize("%d files, %d/%d words (%d%%) translated [%d/%d strings]") % (numfiles, translatedwords, totalwords, percentfinished, len(translated), len(total)))
     return pagelayout.Item([body, stats])
 
 class ProjectIndex(pagelayout.PootleNavPage):
@@ -669,32 +665,26 @@ class ProjectIndex(pagelayout.PootleNavPage):
 
   def getitemstats(self, basename, projectstats, numfiles):
     """returns a widget summarizing item statistics"""
-    translated = len(projectstats.get("translated", []))
-    total = len(projectstats.get("total", []))
-    percentfinished = (translated*100/max(total, 1))
-    if numfiles is None:
-      statssummary = ""
-    else:
-      statssummary = self.localize("%d files, ") % numfiles
-    statssummary += self.localize("%d/%d strings (%d%%) translated") % (translated, total, percentfinished)
+    statssummary = self.describestats(projectstats, numfiles)
     statsdetails = [statssummary]
     if not basename or basename.endswith("/"):
       linkbase = basename + "translate.html?"
     else:
       linkbase = basename + "?translate=1"
-    if total and self.showchecks:
-      statsdetails = statsdetails + self.getcheckdetails(projectstats, linkbase)
-    if total and self.showtracks:
-      trackfilter = (self.dirfilter or "") + basename
-      trackpofilenames = self.project.browsefiles(trackfilter)
-      projecttracks = self.project.gettracks(trackpofilenames)
-      statsdetails += self.gettrackdetails(projecttracks, linkbase)
-    if total and self.showassigns:
-      if not basename or basename.endswith("/"):
-        removelinkbase = "?showassigns=1&removeassigns=1"
-      else:
-        removelinkbase = "?showassigns=1&removeassigns=1&removefilter=%s" % basename
-      statsdetails = statsdetails + self.getassigndetails(projectstats, linkbase, removelinkbase)
+    if projectstats:
+      if self.showchecks:
+        statsdetails = statsdetails + self.getcheckdetails(projectstats, linkbase)
+      if self.showtracks:
+        trackfilter = (self.dirfilter or "") + basename
+        trackpofilenames = self.project.browsefiles(trackfilter)
+        projecttracks = self.project.gettracks(trackpofilenames)
+        statsdetails += self.gettrackdetails(projecttracks, linkbase)
+      if self.showassigns:
+        if not basename or basename.endswith("/"):
+          removelinkbase = "?showassigns=1&removeassigns=1"
+        else:
+          removelinkbase = "?showassigns=1&removeassigns=1&removefilter=%s" % basename
+        statsdetails = statsdetails + self.getassigndetails(projectstats, linkbase, removelinkbase)
     statsdetails = widgets.SeparatedList(statsdetails, "<br/>\n")
     return pagelayout.ItemStatistics(statsdetails)
 
