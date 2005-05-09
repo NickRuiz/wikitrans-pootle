@@ -729,6 +729,13 @@ class TranslationProject:
         totalstats["assign-"+name] = totalstats.get("assign-"+name, []) + [(pofilename, item) for item in items]
     return totalstats
 
+  def countwords(self, stats):
+    """counts the number of words in the items represented by the stats list"""
+    wordcount = 0
+    for pofilename, item in stats:
+      wordcount += sum(self.pofiles[pofilename].msgidwordcounts[item])
+    return wordcount
+
   def track(self, pofilename, item, message):
     """sends a track message to the pofile"""
     self.pofiles[pofilename].track(item, message)
