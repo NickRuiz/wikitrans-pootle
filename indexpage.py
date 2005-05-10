@@ -454,15 +454,17 @@ class ProjectIndex(pagelayout.PootleNavPage):
       allchildren.append(childname+"/")
     for childname in self.project.browsefiles(dirfilter=dirfilter, depth=depth, includedirs=False, includefiles=True):
       allchildren.append(childname)
+    initial = dirfilter
+    if initial and not initial.endswith(os.path.extsep + "po"):
+      initial += os.path.sep
+    if initial:
+      maxdepth = initial.count(os.path.sep)
+    else:
+      maxdepth = 0
     for goalname in self.project.getgoalnames():
-      goalfiles = self.project.getgoalfiles(goalname, dirfilter)
+      goalfiles = self.project.getgoalfiles(goalname, dirfilter, maxdepth=maxdepth, expanddirs=True)
       if not goalfiles: continue
-      initial = dirfilter
-      if initial and not initial.endswith(os.path.extsep + "po"):
-        initial += os.path.sep
-      # TODO: fix the problem where the current directory in a goal displays as ""
-      if initial:
-        goalfiles = [goalfile.replace(initial, "", 1) for goalfile in goalfiles]
+      goalfiles = [goalfile for goalfile in goalfiles if goalfile != initial]
       goalusers = self.project.getgoalusers(goalname)
       goalitem = self.getgoalitem(goalname, goalfiles, goalusers)
       allitems.append(goalitem)
@@ -506,7 +508,8 @@ class ProjectIndex(pagelayout.PootleNavPage):
       goaluserslist = widgets.SeparatedList(goalusers)
     if self.argdict.get("goal", "") == goalname:
       unassignedusers = [username for username, userprefs in self.session.loginchecker.users.iteritems()]
-      unassignedusers.remove("__dummy__")
+      if "__dummy__" in unassignedusers:
+        unassignedusers.remove("__dummy__")
       for user in goalusers:
         if user in unassignedusers:
           unassignedusers.remove(user)

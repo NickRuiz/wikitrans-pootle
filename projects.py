@@ -162,29 +162,48 @@ class TranslationProject:
     goallist.sort()
     return goallist
 
-  def getgoalfiles(self, goalname, dirfilter=None):
+  def getgoalfiles(self, goalname, dirfilter=None, maxdepth=None, includedirs=True, expanddirs=False):
     """gets the files for the given goal"""
     goals = getattr(self.prefs, "goals", {})
     for testgoalname, goalnode in goals.iteritems():
       if goalname != testgoalname: continue
-      goalfiles = getattr(goalnode, "files", "")
-      goalfiles = [goalfile.strip() for goalfile in goalfiles.split(",") if goalfile.strip()]
+      goalmembers = getattr(goalnode, "files", "")
+      goalmembers = [goalfile.strip() for goalfile in goalmembers.split(",") if goalfile.strip()]
+      goaldirs = [goalfile for goalfile in goalmembers if goalfile.endswith(os.path.sep)]
+      goalfiles = [goalfile for goalfile in goalmembers if not goalfile.endswith(os.path.sep)]
+      if expanddirs:
+        expandgoalfiles = []
+        for goalfile in goaldirs:
+          expandgoalfiles.extend(self.browsefiles(dirfilter=goalfile, includedirs=False, includefiles=True))
+        goalfiles += expandgoalfiles
       if dirfilter:
         if not dirfilter.endswith(os.path.sep) and not dirfilter.endswith(os.path.extsep + "po"):
           dirfilter += os.path.sep
         goalfiles = [goalfile for goalfile in goalfiles if goalfile.startswith(dirfilter)]
-      return goalfiles
+        goaldirs = [goalfile for goalfile in goaldirs if goalfile.startswith(dirfilter)]
+      if maxdepth is not None:
+        goalfiles = [goalfile for goalfile in goalfiles if goalfile.count(os.path.sep) <= maxdepth]
+        goaldirs = [goalfile for goalfile in goaldirs if goalfile.count(os.path.sep) <= maxdepth+1]
+      if includedirs:
+        return goalfiles + goaldirs
+      else:
+        return goalfiles
     return []
 
-  def getfilegoals(self, filename):
-    """gets the goals the given file is part of"""
-    goals = getattr(self.prefs, "goals", {})
-    filegoals = []
+  def getancestry(self, filename):
+    """returns parent directories of the file"""
     ancestry = []
     parts = filename.split(os.path.sep)
     for i in range(1, len(parts)):
       ancestor = os.path.join(*parts[:i]) + os.path.sep
       ancestry.append(ancestor)
+    return ancestry
+
+  def getfilegoals(self, filename):
+    """gets the goals the given file is part of"""
+    goals = getattr(self.prefs, "goals", {})
+    filegoals = []
+    ancestry = self.getancestry(filename)
     for goalname, goalnode in goals.iteritems():
       goalfiles = getattr(goalnode, "files", "")
       goalfiles = [goalfile.strip() for goalfile in goalfiles.split(",") if goalfile.strip()]
@@ -215,6 +234,20 @@ class TranslationProject:
     if filename in goalfiles:
       goalfiles.remove(filename)
       self.setgoalfiles(session, goalname, goalfiles)
+    else:
+      ancestry = self.getancestry(filename)
+      for ancestor in ancestry:
+        if ancestor in goalfiles:
+          maxdepth = ancestor.count(os.path.sep)
+          ancestorfiles = self.getgoalfiles(goalname, ancestor, maxdepth=maxdepth, expanddirs=True)
+          if not filename in ancestorfiles:
+            raise KeyError("expected to find file %s in ancestor %s files %r" % (filename, ancestor, ancestorfiles))
+          ancestorfiles.remove(filename)
+          ancestorfiles.remove(ancestor)
+          goalfiles.remove(ancestor)
+          goalfiles.extend(ancestorfiles)
+          self.setgoalfiles(session, goalname, goalfiles)
+          continue
 
   def setgoalfiles(self, session, goalname, goalfiles):
     """sets the goalfiles for the given goalname"""
