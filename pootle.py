@@ -85,9 +85,37 @@ class PootleServer(users.OptionalLoginAppServer):
         self.errorhandler.logerror("Could not get translation for language %r" % language)
         return self.translation
 
-  def refreshstats(self):
+  def refreshstats(self, args):
     """refreshes all the available statistics..."""
-    self.potree.refreshstats()
+    if args:
+      def filtererrorhandler(functionname, str1, str2, e):
+        print "error in filter %s: %r, %r, %s" % (functionname, str1, str2, e)
+        return False
+      checkerclasses = [projects.checks.StandardChecker, projects.pofilter.StandardPOChecker]
+      stdchecker = projects.pofilter.POTeeChecker(checkerclasses=checkerclasses, errorhandler=filtererrorhandler)
+      for arg in args:
+        if not os.path.exists(arg):
+          print "file not found:", arg
+        if os.path.isdir(arg):
+          def refreshdir(dummy, dirname, fnames):
+            class dummyproject:
+              checker = stdchecker
+              podir = dirname
+            for fname in fnames:
+              if fname.endswith(".po"):
+                fpath = os.path.join(dirname, fname)
+                print "refreshing stats for", fpath
+                projects.pootlefile.pootlefile(dummyproject, fpath)
+          os.path.walk(arg, refreshdir, None)
+        elif os.path.isfile(arg):
+          class dummyproject:
+            checker = stdchecker
+            podir = "."
+          print "refreshing stats for", arg
+          projects.pootlefile.pootlefile(dummyproject, arg)
+    else:
+      print "refreshing stats for all files in all projects"
+      self.potree.refreshstats()
 
   def generateactivationcode(self):
     """generates a unique activation code"""
@@ -320,7 +348,7 @@ def main():
   if options.action == "runwebserver":
     simplewebserver.run(server, options)
   elif options.action == "refreshstats":
-    server.refreshstats()
+    server.refreshstats(args)
 
 if __name__ == '__main__':
   main()
