@@ -308,14 +308,14 @@ class POTree:
     poext = os.extsep + "po"
     subdirs = []
     for fn in fnames:
-      if fn.endswith(poext):
-        if self.languagematch(languagecode, fn[:-len(poext)]):
-          return True
-      elif os.path.isdir(os.path.join(podir, fn)):
+      if os.path.isdir(os.path.join(podir, fn)):
         # if we have a language subdirectory, we're probably not GNU-style
         if self.languagematch(languagecode, fn):
           return False
         subdirs.append(os.path.join(podir, fn))
+      elif fn.endswith(poext):
+        if self.languagematch(languagecode, fn[:-len(poext)]):
+          return True
     for subdir in subdirs:
       if self.hasgnufiles(subdir, languagecode):
         return True
