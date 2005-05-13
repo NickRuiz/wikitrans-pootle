@@ -102,10 +102,10 @@ class PootleServer(users.OptionalLoginAppServer):
               checker = stdchecker
               podir = dirname
             for fname in fnames:
-              if fname.endswith(".po"):
-                fpath = os.path.join(dirname, fname)
+              fpath = os.path.join(dirname, fname)
+              if fname.endswith(".po") and not os.path.isdir(fpath):
                 print "refreshing stats for", fpath
-                projects.pootlefile.pootlefile(dummyproject, fpath)
+                projects.pootlefile.pootlefile(dummyproject, fname)
           os.path.walk(arg, refreshdir, None)
         elif os.path.isfile(arg):
           class dummyproject:
