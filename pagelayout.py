@@ -213,7 +213,9 @@ class PootleNavPage(PootlePage):
       depth = len(dirs)
       if currentfolder.endswith(".po"):
         depth = depth - 1
-      rootlink = "/".join([".."] * depth) + "/"
+      rootlink = "/".join([".."] * depth)
+      if rootlink:
+        rootlink += "/"
       for backlinkdir in dirs:
         if backlinkdir.endswith(".po"):
           backlinks = "../" * depth + backlinkdir
