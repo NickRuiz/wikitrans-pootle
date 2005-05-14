@@ -461,16 +461,18 @@ class ProjectIndex(pagelayout.PootleNavPage):
       maxdepth = initial.count(os.path.sep)
     else:
       maxdepth = 0
-    for goalname in self.project.getgoalnames():
+    currentgoal = self.argdict.get("goal", None)
+    # using a goal of "" means that the file has no goal
+    nogoal = ""
+    if currentgoal is None:
+      goalnames = self.project.getgoalnames() + [nogoal]
+    else:
+      goalnames = [currentgoal]
+    goalfiledict = {}
+    for goalname in goalnames:
       goalfiles = self.project.getgoalfiles(goalname, dirfilter, maxdepth=maxdepth, expanddirs=True)
-      if not goalfiles: continue
       goalfiles = [goalfile for goalfile in goalfiles if goalfile != initial]
-      goalusers = self.project.getgoalusers(goalname)
-      goalitem = self.getgoalitem(goalname, goalfiles, goalusers)
-      allitems.append(goalitem)
-      if self.argdict.get("goal", None) == goalname:
-        goalchilditems = self.getitems(goalfiles, linksrequired=["editgoal"])
-        allitems.extend(goalchilditems)
+      goalfiledict[goalname] = goalfiles
       for goalfile in goalfiles:
         goalchildren[goalfile] = True
     goalless = []
@@ -478,14 +480,16 @@ class ProjectIndex(pagelayout.PootleNavPage):
       itemgoals = self.project.getfilegoals(item)
       if not itemgoals:
         goalless.append(item)
-    goallessitems = self.getitems(goalless, linksrequired=["editgoal"])
-    if goallessitems:
-      goalicon = pagelayout.Icon("goal.png")
-      goaltitle = pagelayout.Title(self.localize("No goal"))
-      goalstats = []
-      goalitem = pagelayout.GoalItem([goalicon, goaltitle, goalstats])
+    goalfiledict[nogoal] = goalless
+    for goalname in goalnames:
+      goalfiles = goalfiledict[goalname]
+      if not goalfiles: continue
+      goalusers = self.project.getgoalusers(goalname)
+      goalitem = self.getgoalitem(goalname, goalfiles, goalusers)
       allitems.append(goalitem)
-      allitems.extend(goallessitems)
+      if currentgoal == goalname:
+        goalchilditems = self.getitems(goalfiles, linksrequired=["editgoal"])
+        allitems.extend(goalchilditems)
     return allitems
 
   def getgoalitem(self, goalname, goalfiles, goalusers):
@@ -495,7 +499,10 @@ class ProjectIndex(pagelayout.PootleNavPage):
       recursefiles = self.project.browsefiles(goalfile)
       pofilenames.extend(recursefiles)
     projectstats = self.project.combinestats(pofilenames)
-    bodytitle = pagelayout.Title(goalname)
+    if goalname:
+      bodytitle = pagelayout.Title(goalname)
+    else:
+      bodytitle = pagelayout.Title(self.localize("No goal"))
     folderimage = pagelayout.Icon("goal.png")
     browseurl = self.makelink("index.html", goal=goalname)
     bodytitle = widgets.Link(browseurl, bodytitle)
@@ -506,7 +513,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     if goalusers:
       goalusers.sort()
       goaluserslist = widgets.SeparatedList(goalusers)
-    if self.argdict.get("goal", "") == goalname:
+    if goalname and self.argdict.get("goal", None) == goalname:
       unassignedusers = [username for username, userprefs in self.session.loginchecker.users.iteritems()]
       if "__dummy__" in unassignedusers:
         unassignedusers.remove("__dummy__")
@@ -622,9 +629,13 @@ class ProjectIndex(pagelayout.PootleNavPage):
           goalselect = widgets.Select({"name": "editgoal", "value": ''.join(filegoals)}, goaloptions)
         goalfile = widgets.HiddenFieldList({"editgoalfile": basename})
         editfilegoal = widgets.Input({"type": "submit", "name": "doeditgoal", "value": self.localize("Set Goal")})
-        userselect = widgets.Select({"name": "editfileuser", "value": ""}, useroptions)
-        editfileuser = widgets.Input({"type": "submit", "name": "doedituser", "value": self.localize("Set User")})
-        goalform = widgets.Form([goalfile, goalselect, editfilegoal, userselect, editfileuser], {"action": "", "name":"goalform-%s" % basename})
+        if len(useroptions) > 1:
+          userselect = widgets.Select({"name": "editfileuser", "value": ""}, useroptions)
+          editfileuser = widgets.Input({"type": "submit", "name": "doedituser", "value": self.localize("Set User")})
+          changeuser = [userselect, editfileuser]
+        else:
+          changeuser = []
+        goalform = widgets.Form([goalfile, goalselect, editfilegoal, changeuser], {"action": "", "name":"goalform-%s" % basename})
         actionlinks.append(goalform)
     if "review" in linksrequired and projectstats.get("has-suggestion", []):
       if "review" in self.rights:
