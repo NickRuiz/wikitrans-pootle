@@ -64,7 +64,7 @@ class PootleServer(users.OptionalLoginAppServer):
     self.languagenames = dict([(code, self.potree.getlanguagename(code)) for code in self.languagelist])
     self.defaultlanguage = defaultlanguage
     if self.defaultlanguage is None:
-      self.defaultlanguage = 'en'
+      self.defaultlanguage = getattr(self.instance, "defaultlanguage", "en")
     if self.potree.hasproject(self.defaultlanguage, 'pootle'):
       try:
         self.translation = self.potree.getproject(self.defaultlanguage, 'pootle')
