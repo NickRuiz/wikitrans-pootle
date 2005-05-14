@@ -483,7 +483,6 @@ class ProjectIndex(pagelayout.PootleNavPage):
     goalfiledict[nogoal] = goalless
     for goalname in goalnames:
       goalfiles = goalfiledict[goalname]
-      if not goalfiles: continue
       goalusers = self.project.getgoalusers(goalname)
       goalitem = self.getgoalitem(goalname, goalfiles, goalusers)
       allitems.append(goalitem)
@@ -506,8 +505,11 @@ class ProjectIndex(pagelayout.PootleNavPage):
     folderimage = pagelayout.Icon("goal.png")
     browseurl = self.makelink("index.html", goal=goalname)
     bodytitle = widgets.Link(browseurl, bodytitle)
-    actionlinks = self.getactionlinks("index.html", projectstats, linksrequired=["review", "translate", "zip"], goal=goalname)
-    bodydescription = pagelayout.ActionLinks(actionlinks)
+    if goalfiles:
+      actionlinks = self.getactionlinks("index.html", projectstats, linksrequired=["review", "translate", "zip"], goal=goalname)
+      bodydescription = pagelayout.ActionLinks(actionlinks)
+    else:
+      bodydescription = []
     usericon = pagelayout.Icon("person.png")
     goaluserslist = []
     if goalusers:
