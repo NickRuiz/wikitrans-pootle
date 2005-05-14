@@ -284,7 +284,7 @@ class PootleServer(users.OptionalLoginAppServer):
 	  xlifffilename = os.path.join(*pathwords)
 	  contents = project.getxliff(xlifffilename)
 	  page = widgets.PlainContents(contents)
-	  page.content_type = "text/plain; charset=UTF-8"
+	  page.content_type = "text/xml; charset=UTF-8"
 	  return page
 	elif bottom.endswith(".mo"):
           if not "pocompile" in project.getrights(session):
