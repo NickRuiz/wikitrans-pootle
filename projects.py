@@ -162,8 +162,13 @@ class TranslationProject:
     goallist.sort()
     return goallist
 
-  def getgoalfiles(self, goalname, dirfilter=None, maxdepth=None, includedirs=True, expanddirs=False):
-    """gets the files for the given goal"""
+  def getgoalfiles(self, goalname, dirfilter=None, maxdepth=None, includedirs=True, expanddirs=False, includepartial=False):
+    """gets the files for the given goal, with many options!
+    dirfilter limits to files in a certain subdirectory
+    maxdepth limits to files / directories of a certain depth
+    includedirs specifies whether to return directory names
+    expanddirs specifies whether to expand directories and return all files in them
+    includepartial specifies whether to return directories that are not in the goal, but have files below maxdepth in the goal"""
     goals = getattr(self.prefs, "goals", {})
     for testgoalname, goalnode in goals.iteritems():
       if goalname != testgoalname: continue
@@ -182,8 +187,16 @@ class TranslationProject:
         goalfiles = [goalfile for goalfile in goalfiles if goalfile.startswith(dirfilter)]
         goaldirs = [goalfile for goalfile in goaldirs if goalfile.startswith(dirfilter)]
       if maxdepth is not None:
+        if includepartial:
+          partialdirs = [goalfile for goalfile in goalfiles if goalfile.count(os.path.sep) > maxdepth]
+          partialdirs += [goalfile for goalfile in goaldirs if goalfile.count(os.path.sep) > maxdepth]
+          partialdirs = [os.path.sep.join(partialdir.split(os.path.sep)[:maxdepth+1]) for partialdir in partialdirs]
+          partialdirs = dict.fromkeys(partialdirs)
         goalfiles = [goalfile for goalfile in goalfiles if goalfile.count(os.path.sep) <= maxdepth]
         goaldirs = [goalfile for goalfile in goaldirs if goalfile.count(os.path.sep) <= maxdepth+1]
+        for partialdir in partialdirs:
+          if partialdir not in goaldirs:
+            goaldirs.append(partialdir)
       if includedirs:
         return goalfiles + goaldirs
       else:
