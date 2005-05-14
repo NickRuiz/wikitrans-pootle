@@ -7,20 +7,75 @@ importmodules:
 Pootle:
   serverclass = pootleserver.PootleServer
   sessionkey='p00tl3'
-  # set this to the URL people will access pootle from
+
+  # Set to the URL from which people will access Pootle
   baseurl = "/"
+
+  # The name of this instance of Pootle. This will appear on the title bar of
+  # most Pootle pages.
   title = "Pootle"
+
+  # A short description of this instance of Pootle
   description = "this is a demo installation of pootle"
+
+  # The default language that will be used on this
+  # instance of Pootle.  Users may change this to another language on login but
+  # this will be the default for users that are not logged in.  if not present
+  # Pootle will run in English
+  # defaultlanguage = "en"
+
+  # When users register their details will be sent from "fromaddress" using the
+  # SMTP server "smtpserver"
   registration:
     fromaddress = "pootle-registration@localhost"
     smtpserver = "localhost"
+
+  # The file that contains the user preferences.
   userprefs = "users.prefs"
+
+  # All projects are stored in this directory in this layout:
+  #   $podirectory/$project/$language
+  podirectory = "po"
+
+  # The projects section defines what projects are available on this instance
+  # of Pootle.  This describes the fields listed in the following pootle
+  # project.
+  #
+  # pootle:
+  # This is the projects internal name and corresponds to the
+  # directory entry that stores all the translations.
+  #
+  #   fullname = "Pootles
+  # The human readable version of the projects internal name.
+  #
+  #   description = "Web translation software"
+  # A short description of the project
+  #
+  #   checkerstyle = "standard"
+  # Defines what checks shoudl be used for this project.  One of: mozilla, kde,
+  # openoffice or standard
   projects:
     pootle:
       fullname = "Pootle"
       description = "Web translation software"
       checkstyle = "standard"
-  podirectory = "po"
+
+  # The languages section defines the languages being translated into on this
+  # instance of Pootle.  This describes the fields listed in the following
+  # language.
+  #
+  # af:
+  # Languages are defined by using their ISO639 language code, thus af is for
+  # Afrikaans
+  #
+  #   fullname = Afrikaans"
+  # The fullname of the language, also from ISO639 but can be the name of the
+  # language in your language not necisarily in English.
+  #
+  #   specialchars = "ÄËÏÖÜäëïöü ÂÊÎÔÛâêîôû"
+  # Special characters used by the language that you wish users to be able to
+  # see then they are editing translations. Usefull for people who do not have
+  # a properly configured keyboard for the language.
   languages:
     af:
       fullname = "Afrikaans"
