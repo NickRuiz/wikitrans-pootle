@@ -5,6 +5,13 @@ from jToolkit.web import session
 from jToolkit import prefs
 from jToolkit import localize
 from jToolkit.widgets import widgets
+try:
+  from jToolkit.web import templateserver
+except ImportError:
+  # give people a chance to upgrade jToolkit without this falling over
+  class templateserver:
+    class TemplateCacheServer(object):
+      pass
 from Pootle import indexpage
 from Pootle import adminpages
 from Pootle import translatepage
@@ -16,13 +23,14 @@ import sys
 import os
 import random
 
-class PootleServer(users.OptionalLoginAppServer):
+class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheServer):
   """the Server that serves the Pootle Pages"""
   def __init__(self, instance, webserver, sessioncache=None, errorhandler=None, loginpageclass=users.LoginPage):
     if sessioncache is None:
       sessioncache = session.SessionCache(sessionclass=users.PootleSession)
     self.potree = potree.POTree(instance)
     super(PootleServer, self).__init__(instance, webserver, sessioncache, errorhandler, loginpageclass)
+    self.templatedir = os.path.join(os.path.dirname(__file__), "templates")
     self.setdefaultoptions()
 
   def saveprefs(self):

@@ -301,4 +301,3 @@ class PootleNavPage(PootlePage):
     statssummary += self.localize("%d/%d words (%d%%) translated [%d/%d strings]") % (translatedwords, totalwords, percentfinished, len(translated), len(total))
     return statssummary
 
-    
