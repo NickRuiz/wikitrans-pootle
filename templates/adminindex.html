@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:tal="http://xml.zope.org/namespaces/tal" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta name="generator" content="HTML Tidy for Linux/x86 (vers 1st January 2004), see www.w3.org" />
+
+  <title>Pootle Admin Page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+  <link rel="stylesheet" type="text/css" href="/pootle.css" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+</head>
+
+<body bgcolor="#FFFFFF">
+  <div id="banner">
+    <table cellpadding="0" width="100%" border="0" cellspacing="0">
+      <tr>
+        <td rowspan="1" colspan="1" align="left" width="180" valign="top" type="td"><img src="/images/pootle-medium.jpg" height="135" type="button" width=
+        "180" /></td>
+
+        <td colspan="1" rowspan="1" type="td" width="5"><img src="/images/gap.png" height="5" type="button" width="5" /></td>
+
+        <td colspan="1" rowspan="1" type="td" width="100%">
+          <table cellspacing="0" height="135" width="100%" cellpadding="0" border="0" class="header">
+            <tr>
+              <td colspan="1" align="center" rowspan="1" type="td" valign="middle"><img src="/images/top.png" height="81" type="button" width="238" /></td>
+            </tr>
+
+            <tr>
+              <td rowspan="1" colspan="1" align="right" valign="middle" type="td" class="border_top"></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="content" tal:condition="not session/issiteadmin">
+    <div class="intro">
+      You do not have the rights to administer Pootle
+    </div>
+  </div>
+  <div id="content" tal:condition="session/issiteadmin">
+    <div class="intro">
+      <a href="../home/">Home page</a>
+    </div>
+
+    <div class="intro">
+      <a href="users.html">Users</a>
+    </div>
+
+    <div class="intro">
+      <a href="languages.html">Languages</a>
+    </div>
+
+    <div class="intro">
+      <a href="projects.html">Projects</a>
+    </div>
+
+    <div class="contents">
+      <h3 class="title">General Options</h3>
+
+      <form action="" method="post" name="general" id="general">
+        <table cellpadding="1" cellspacing="1">
+          <tr>
+            <td colspan="1" rowspan="1" type="td">
+              <h3 class="title">Option</h3>
+            </td>
+
+            <td colspan="1" rowspan="1" type="td">
+              <h3 class="title">Current value</h3>
+            </td>
+          </tr>
+
+          <tr tal:repeat="option options">
+            <td colspan="1" rowspan="1" type="td" tal:content="option/title">Description</td>
+
+            <td colspan="1" rowspan="1" type="td"><input type="text" tal:attributes="name option/name; value option/value"/></td>
+          </tr>
+
+        </table><input type="submit" name="changegeneral" value="Save changes" />
+      </form>
+    </div>
+  </div>
+
+  <div id="links">
+    <div class="sidetitle">
+      Pootle
+    </div>
+
+    <div class="side">
+      <a href="/doc/index.html">Docs &amp; Help</a> | <a href="/projects/">All Projects</a> | <a href="/languages/">All Languages</a> | <a href=
+      "/home/">Home</a> | <a href="/admin/">Admin</a>
+    </div>
+
+    <div class="side">
+      <img src="/images/person.png" type="button" class="icon"/>
+      <span tal:content="session/status">logged in as <b>somebody</b></span>
+    </div>
+
+    <div class="side" tal:condition="session/isopen">
+      <a href="/?islogout=1">Log Out</a>
+    </div>
+    <div class="side" tal:condition="not session/isopen">
+      <a href="/login.html">Log In</a> <a href="/register.html">Register</a> <a href="/activate.html">Activate</a>
+    </div>
+  </div>
+</body>
+</html>
