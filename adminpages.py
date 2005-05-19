@@ -2,7 +2,10 @@
 
 from jToolkit.widgets import widgets
 from jToolkit.widgets import table
-from jToolkit.xml import taldom
+try:
+    from jToolkit.xml import taldom
+except ImportError:
+    taldom = None
 from Pootle import pagelayout
 from Pootle import projects
 from translate.filters import checks
@@ -23,9 +26,10 @@ class AdminPage(pagelayout.PootlePage):
     else:
       contents = pagelayout.IntroText(self.localize("You do not have the rights to administer pootle."))
     pagelayout.PootlePage.__init__(self, self.localize("Pootle Admin Page"), contents, session)
-    self.templatename = "adminindex"
-    sessionvars = {"status": taldom.escapedunicode(self.session.status), "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
-    self.templatevars = {"options": self.getoptions(), "session": sessionvars}
+    if taldom is not None:
+        self.templatename = "adminindex"
+        sessionvars = {"status": taldom.escapedunicode(self.session.status), "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
+        self.templatevars = {"options": self.getoptions(), "session": sessionvars}
 
   def getoptions(self):
     optiontitles = {"title": self.localize("Title"), "description": self.localize("Description"), "baseurl": self.localize("Base URL")}
