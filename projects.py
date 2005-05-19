@@ -15,6 +15,7 @@ from jToolkit import prefs
 import time
 import os
 import cStringIO
+import gettext
 try:
   import PyLucene
 except:
@@ -980,6 +981,34 @@ class TranslationProject:
       except Exception, e:
         print "error reading translation from pofile %s: %s" % (pofilename, e)
     return unicode(message)
+
+  def ungettext(self, singular, plural, n):
+    """gets the plural translation of the message by searching through all the pofiles (unicode version)"""
+    for pofilename, pofile in self.pofiles.iteritems():
+      try:
+        if pofile.pomtime != pootlefile.getmodtime(pofile.filename):
+          pofile.readpofile()
+          pofile.makeindex()
+        elif not hasattr(pofile, "msgidindex"):
+          pofile.makeindex()
+        nplural, pluralequation = pofile.getheaderplural()
+        if pluralequation:
+          pluralfn = gettext.c2py(pluralequation)
+          thepo = pofile.msgidindex.get(singular, None)
+          if not thepo or thepo.isblankmsgstr():
+            continue
+          tmsg = po.unquotefrompo(thepo.msgstr[pluralfn(n)])
+          if tmsg is not None:
+            if isinstance(tmsg, unicode):
+              return tmsg
+            else:
+              return unicode(tmsg, pofile.encoding)
+      except Exception, e:
+        print "error reading translation from pofile %s: %s" % (pofilename, e)
+    if n == 1:
+      return unicode(singular)
+    else:
+      return unicode(plural)
 
   def hascreatemofiles(self, projectcode):
     """returns whether the project has createmofile set"""
