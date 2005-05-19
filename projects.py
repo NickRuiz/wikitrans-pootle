@@ -171,38 +171,43 @@ class TranslationProject:
     expanddirs specifies whether to expand directories and return all files in them
     includepartial specifies whether to return directories that are not in the goal, but have files below maxdepth in the goal"""
     goals = getattr(self.prefs, "goals", {})
+    poext = os.path.extsep + "po"
+    pathsep = os.path.sep
+    unique = lambda filelist: dict.fromkeys(filelist).keys()
     for testgoalname, goalnode in goals.iteritems():
       if goalname != testgoalname: continue
       goalmembers = getattr(goalnode, "files", "")
       goalmembers = [goalfile.strip() for goalfile in goalmembers.split(",") if goalfile.strip()]
-      goaldirs = [goalfile for goalfile in goalmembers if goalfile.endswith(os.path.sep)]
-      goalfiles = [goalfile for goalfile in goalmembers if not goalfile.endswith(os.path.sep)]
+      goaldirs = [goaldir for goaldir in goalmembers if goaldir.endswith(pathsep)]
+      goalfiles = [goalfile for goalfile in goalmembers if not goalfile.endswith(pathsep)]
       if expanddirs:
+        expandgoaldirs = []
         expandgoalfiles = []
-        for goalfile in goaldirs:
-          expandgoalfiles.extend(self.browsefiles(dirfilter=goalfile, includedirs=False, includefiles=True))
-        goalfiles += expandgoalfiles
+        for goaldir in goaldirs:
+          expandedfiles = self.browsefiles(dirfilter=goaldir, includedirs=includedirs, includefiles=True)
+          expandgoalfiles.extend([expandfile for expandfile in expandedfiles if expandfile.endswith(poext)])
+          expandgoaldirs.extend([expanddir + pathsep for expanddir in expandedfiles if not expanddir.endswith(poext)])
+        goaldirs = unique(goaldirs + expandgoaldirs)
+        goalfiles = unique(goalfiles + expandgoalfiles)
       if dirfilter:
-        if not dirfilter.endswith(os.path.sep) and not dirfilter.endswith(os.path.extsep + "po"):
-          dirfilter += os.path.sep
+        if not dirfilter.endswith(pathsep) and not dirfilter.endswith(poext):
+          dirfilter += pathsep
         goalfiles = [goalfile for goalfile in goalfiles if goalfile.startswith(dirfilter)]
-        goaldirs = [goalfile for goalfile in goaldirs if goalfile.startswith(dirfilter)]
+        goaldirs = [goaldir for goaldir in goaldirs if goaldir.startswith(dirfilter)]
       if maxdepth is not None:
         if includepartial:
-          partialdirs = [goalfile for goalfile in goalfiles if goalfile.count(os.path.sep) > maxdepth]
-          partialdirs += [goalfile for goalfile in goaldirs if goalfile.count(os.path.sep) > maxdepth]
-          makepartial = lambda goalfile: os.path.sep.join(goalfile.split(os.path.sep)[:maxdepth+1])+os.path.sep
+          partialdirs = [goalfile for goalfile in goalfiles if goalfile.count(pathsep) > maxdepth]
+          partialdirs += [goalfile for goalfile in goaldirs if goalfile.count(pathsep) > maxdepth]
+          makepartial = lambda goalfile: pathsep.join(goalfile.split(pathsep)[:maxdepth+1])+pathsep
           partialdirs = [makepartial(goalfile) for goalfile in partialdirs]
-          partialdirs = dict.fromkeys(partialdirs)
-          partialdirs = [partialdir for partialdir in partialdirs if partialdir not in goaldirs]
-        goalfiles = [goalfile for goalfile in goalfiles if goalfile.count(os.path.sep) <= maxdepth]
-        goaldirs = [goalfile for goalfile in goaldirs if goalfile.count(os.path.sep) <= maxdepth+1]
+        goalfiles = [goalfile for goalfile in goalfiles if goalfile.count(pathsep) <= maxdepth]
+        goaldirs = [goaldir for goaldir in goaldirs if goaldir.count(pathsep) <= maxdepth+1]
         if includepartial:
           goaldirs += partialdirs
       if includedirs:
-        return goalfiles + goaldirs
+        return unique(goalfiles + goaldirs)
       else:
-        return goalfiles
+        return unique(goalfiles)
     return []
 
   def getancestry(self, filename):
@@ -250,11 +255,18 @@ class TranslationProject:
       goalfiles.remove(filename)
       self.setgoalfiles(session, goalname, goalfiles)
     else:
+      unique = lambda filelist: dict.fromkeys(filelist).keys()
       ancestry = self.getancestry(filename)
       for ancestor in ancestry:
         if ancestor in goalfiles:
-          maxdepth = ancestor.count(os.path.sep)
-          ancestorfiles = self.getgoalfiles(goalname, ancestor, maxdepth=maxdepth, expanddirs=True)
+          filedepth = filename.count(os.path.sep)
+          ancestordirs = self.getgoalfiles(goalname, ancestor, maxdepth=filedepth+1, includedirs=True, expanddirs=True)
+          ancestordirs = [ancestorfile for ancestorfile in ancestordirs if ancestorfile.endswith(os.path.sep)]
+          if filename.endswith(os.path.sep):
+            ancestorfiles = self.getgoalfiles(goalname, ancestor, maxdepth=filedepth-1, expanddirs=True)
+          else:
+            ancestorfiles = self.getgoalfiles(goalname, ancestor, maxdepth=filedepth, expanddirs=True)
+          ancestorfiles = unique(ancestordirs + ancestorfiles)
           if not filename in ancestorfiles:
             raise KeyError("expected to find file %s in ancestor %s files %r" % (filename, ancestor, ancestorfiles))
           ancestorfiles.remove(filename)
@@ -270,6 +282,7 @@ class TranslationProject:
       raise RightsError(session.localize("You do not have rights to alter goals here"))
     if isinstance(goalfiles, list):
       goalfiles = [goalfile.strip() for goalfile in goalfiles if goalfile.strip()]
+      goalfiles.sort()
       goalfiles = ", ".join(goalfiles)
     if not hasattr(self.prefs, "goals"):
       self.prefs.goals = prefs.PrefNode(self.prefs, "goals")
