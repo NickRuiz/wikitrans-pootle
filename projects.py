@@ -191,7 +191,8 @@ class TranslationProject:
         if includepartial:
           partialdirs = [goalfile for goalfile in goalfiles if goalfile.count(os.path.sep) > maxdepth]
           partialdirs += [goalfile for goalfile in goaldirs if goalfile.count(os.path.sep) > maxdepth]
-          partialdirs = [os.path.sep.join(partialdir.split(os.path.sep)[:maxdepth+1]) for partialdir in partialdirs]
+          makepartial = lambda goalfile: os.path.sep.join(goalfile.split(os.path.sep)[:maxdepth+1])+os.path.sep
+          partialdirs = [makepartial(goalfile) for goalfile in partialdirs]
           partialdirs = dict.fromkeys(partialdirs)
         goalfiles = [goalfile for goalfile in goalfiles if goalfile.count(os.path.sep) <= maxdepth]
         goaldirs = [goalfile for goalfile in goaldirs if goalfile.count(os.path.sep) <= maxdepth+1]
