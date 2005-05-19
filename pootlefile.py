@@ -374,10 +374,10 @@ class pootlefile(po.pofile):
       if getattr(userprefs, "name", None) and getattr(userprefs, "email", None):
         self.updateheader(add=True, Last_Translator = "%s <%s>" % (userprefs.name, userprefs.email))
     if languageprefs:
-      nplural = getattr(languageprefs, "nplural", None)
+      nplurals = getattr(languageprefs, "nplurals", None)
       pluralequation = getattr(languageprefs, "pluralequation", None)
-      if nplural and pluralequation:
-        self.updateheaderplural(nplural, pluralequation)
+      if nplurals and pluralequation:
+        self.updateheaderplural(nplurals, pluralequation)
     self.savepofile()
     self.reclassifyelement(item)
 
