@@ -121,10 +121,13 @@ class TranslatePage(pagelayout.PootleNavPage):
   def addassignbox(self):
     """adds a box that lets the user assign strings"""
     self.links.addcontents(pagelayout.SidebarTitle(self.localize("Assign Strings")))
-    assigntobox = widgets.Input({"name": "assignto", "value": "", "title": self.localize("Assign to User")})
+    users = [username for username, userprefs in self.session.loginchecker.users.iteritems()]
+    users.remove("__dummy__")
+    users.sort()
+    assigntoselect = widgets.Select({"name": "assignto", "value": "", "title": self.localize("Assign to User")}, options=[(user, user) for user in users])
     actionbox = widgets.Input({"name": "action", "value": "translate", "title": self.localize("Assign Action")})
     submitbutton = widgets.Input({"type": "submit", "name": "doassign", "value": self.localize("Assign Strings")})
-    assignform = widgets.Form([assigntobox, actionbox, submitbutton], {"action": "?index=1", "name":"assignform"})
+    assignform = widgets.Form([assigntoselect, actionbox, submitbutton], {"action": "?index=1", "name":"assignform"})
     self.links.addcontents(assignform)
 
   def receivetranslations(self):
