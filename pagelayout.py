@@ -208,6 +208,7 @@ class PootleNavPage(PootlePage):
     languagelink = []
     projectlink = []
     pathlinks = []
+    goallinks = []
     if currentfolder:
       dirs = currentfolder.split("/")
       depth = len(dirs)
@@ -224,10 +225,11 @@ class PootleNavPage(PootlePage):
         depth = depth - 1
         dirlink = widgets.Link(self.getbrowseurl(backlinks), backlinkdir)
         pathlinks.append(dirlink)
+      pathlinks = widgets.SeparatedList(pathlinks, " / ")
     if goal is not None:
-      goallink = widgets.Link(self.getbrowseurl(currentfolder, goal=goal), self.localize("Goal %s" % goal))
-      pathlinks.append(goallink)
-    pathlinks = widgets.SeparatedList(pathlinks, " / ")
+      # goallink = widgets.Link(self.getbrowseurl("", goal=goal), goal)
+      allgoalslink = widgets.Link(self.getbrowseurl(""), self.localize("All goals"))
+      goallinks = ["<i>", allgoalslink, "</i>"]
     if project:
       if isinstance(project, tuple):
         projectcode, projectname = project
@@ -246,7 +248,7 @@ class PootleNavPage(PootlePage):
       languagecode, languagename = language
       languagelink = widgets.Link("/%s/" % languagecode, languagename)
       languagelink = ["[", languagelink, "]"]
-    return Title([widgets.SeparatedList(languagelink + projectlink, " "), " ", pathlinks])
+    return Title([widgets.SeparatedList(languagelink + projectlink, " "), " ", pathlinks, goallinks])
 
   def makenavbar(self, icon=None, path=[], actions=[], stats=[], pagelinks=[]):
     """create a navbar"""
