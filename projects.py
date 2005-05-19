@@ -644,7 +644,9 @@ class TranslationProject:
       for thepo in pofile.transelements:
         if thepo.hasplural():
           orig = self.unquotefrompo(thepo.msgid) + "\n" + self.unquotefrompo(thepo.msgid_plural)
-          trans = "\n".join(self.unquotefrompo(thepo.msgstr).itervalues())
+          trans = self.unquotefrompo(thepo.msgstr)
+          if isinstance(trans, dict):
+            trans = "\n".join(trans.itervalues())
         else:
           orig = self.unquotefrompo(thepo.msgid)
           trans = self.unquotefrompo(thepo.msgstr)
