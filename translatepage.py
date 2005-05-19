@@ -540,10 +540,10 @@ class TranslatePage(pagelayout.PootleNavPage):
       htmlbreak = "<br />"
       for pluralitem, pluraltext in enumerate(trans):
         pluralform = self.localize("Plural Form %d") % pluralitem
-        text += [pagelayout.TranslationHeaders(pluralform), htmlbreak, self.escape(pluraltext), htmlbreak]
+        text += [pagelayout.TranslationHeaders(pluralform), htmlbreak, self.escapetext(pluraltext), htmlbreak]
       text = pagelayout.TranslationText(text)
     else:
-      text = pagelayout.TranslationText([editlink, self.escape(trans[0])])
+      text = pagelayout.TranslationText([editlink, self.escapetext(trans[0])])
     transdiv = widgets.Division(text, "trans%d" % item, cls="translate-translation autoexpand")
     return transdiv
 
