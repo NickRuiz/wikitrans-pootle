@@ -40,6 +40,7 @@ class PootleIndex(pagelayout.PootlePage):
   def __init__(self, potree, session):
     self.potree = potree
     self.localize = session.localize
+    self.nlocalize = session.nlocalize
     aboutlink = pagelayout.IntroText(widgets.Link("/about.html", self.localize("About this Pootle server")))
     languagelinks = self.getlanguagelinks()
     projectlinks = self.getprojectlinks()
@@ -77,6 +78,7 @@ class UserIndex(pagelayout.PootlePage):
     self.potree = potree
     self.session = session
     self.localize = session.localize
+    self.nlocalize = session.nlocalize
     optionslink = pagelayout.IntroText(widgets.Link("options.html", self.localize("Change options")))
     contents = [self.getquicklinks(), optionslink]
     if session.issiteadmin():
@@ -151,11 +153,12 @@ class LanguageIndex(pagelayout.PootleNavPage):
     self.potree = potree
     self.languagecode = languagecode
     self.localize = session.localize
+    self.nlocalize = session.nlocalize
     languagename = self.potree.getlanguagename(self.languagecode)
     self.initpagestats()
     projectlinks = self.getprojectlinks()
     average = self.getpagestats()
-    languagestats = self.localize("%d projects, average %d%% translated" % (self.projectcount, average))
+    languagestats = self.nlocalize("%d project, average %d%% translated", "%d projects, average %d%% translated", self.projectcount) % (self.projectcount, average)
     navbar = self.makenavbar(icon="language", path=self.makenavbarpath(language=(self.languagecode, languagename)), stats=languagestats)
     pagelayout.PootleNavPage.__init__(self, self.localize("Pootle: %s") % languagename, [navbar, projectlinks], session, bannerheight=81, returnurl="%s/" % self.languagecode)
 
@@ -183,6 +186,7 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     self.potree = potree
     self.projectcode = projectcode
     self.localize = session.localize
+    self.nlocalize = session.nlocalize
     projectname = self.potree.getprojectname(self.projectcode)
     adminlink = []
     if session.issiteadmin():
@@ -190,7 +194,7 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     self.initpagestats()
     languagelinks = self.getlanguagelinks()
     average = self.getpagestats()
-    projectstats = self.localize("%d languages, average %d%% translated" % (self.languagecount, average))
+    projectstats = self.nlocalize("%d language, average %d%% translated", "%d languages, average %d%% translated", self.languagecount) % (self.languagecount, average)
     navbar = self.makenavbar(icon="project", path=self.makenavbarpath(session=session, project=(self.projectcode, projectname)), actions=adminlink, stats=projectstats)
     pagelayout.PootleNavPage.__init__(self, self.localize("Pootle: %s") % projectname, [navbar, languagelinks], session, bannerheight=81, returnurl="projects/%s/" % self.projectcode)
 
@@ -216,7 +220,7 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     totalwords = language.countwords(total)
     self.updatepagestats(translatedwords, totalwords)
     percentfinished = (translatedwords*100/max(totalwords, 1))
-    stats = pagelayout.ItemStatistics(self.localize("%d files, %d/%d words (%d%%) translated [%d/%d strings]") % (numfiles, translatedwords, totalwords, percentfinished, len(translated), len(total)))
+    stats = pagelayout.ItemStatistics(self.nlocalize("%d file, %d/%d words (%d%%) translated [%d/%d strings]", "%d files, %d/%d words (%d%%) translated [%d/%d strings]", numfiles) % (numfiles, translatedwords, totalwords, percentfinished, len(translated), len(total)))
     return pagelayout.Item([body, stats])
 
 class ProjectIndex(pagelayout.PootleNavPage):
@@ -225,6 +229,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     self.project = project
     self.session = session
     self.localize = session.localize
+    self.nlocalize = session.nlocalize
     self.rights = self.project.getrights(self.session)
     message = argdict.get("message", "")
     if message:
@@ -726,7 +731,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
       checkname = checkname.replace("check-", "", 1)
       if total and checkcount:
         checklink = widgets.Link(self.makelink(linkbase, **{checkname:1}), checkname)
-        stats = self.localize("%d strings (%d%%) failed") % (checkcount, (checkcount * 100 / total))
+        stats = self.nlocalize("%d string (%d%%) failed", "%d strings (%d%%) failed", checkcount) % (checkcount, (checkcount * 100 / total))
         checklinks += [[checklink, stats]]
     return checklinks
 
@@ -743,7 +748,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
       assignname = assignname.replace("assign-", "", 1)
       if total and assigncount:
         assignlink = widgets.Link(self.makelink(linkbase, assignedto=assignname), assignname)
-        stats = self.localize("%d strings (%d%%) assigned") % (assigncount, (assigncount * 100 / total))
+        stats = self.nlocalize("%d string (%d%%) assigned", "%d strings (%d%%) assigned", assigncount) % (assigncount, (assigncount * 100 / total))
         if "assign" in self.rights:
           removetext = self.localize("Remove")
           removelink = widgets.Link(self.makelink(removelinkbase, assignedto=assignname), removetext)
