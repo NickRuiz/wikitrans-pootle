@@ -202,7 +202,7 @@ class PootlePage(widgets.Page):
     return itemlist
 
 class PootleNavPage(PootlePage):
-  def makenavbarpath(self, project=None, session=None, currentfolder=None, language=None):
+  def makenavbarpath(self, project=None, session=None, currentfolder=None, language=None, goal=None):
     """create the navbar location line"""
     rootlink = ""
     languagelink = []
@@ -224,14 +224,18 @@ class PootleNavPage(PootlePage):
         depth = depth - 1
         dirlink = widgets.Link(self.getbrowseurl(backlinks), backlinkdir)
         pathlinks.append(dirlink)
-      pathlinks = widgets.SeparatedList(pathlinks, " / ")
+    if goal is not None:
+      goallink = widgets.Link(self.getbrowseurl(currentfolder, goal=goal), self.localize("Goal %s" % goal))
+      pathlinks.append(goallink)
+    pathlinks = widgets.SeparatedList(pathlinks, " / ")
     if project:
       if isinstance(project, tuple):
         projectcode, projectname = project
         projectlink = widgets.Link("/projects/%s/" % projectcode, projectname)
       else:
         languagelink = widgets.Link(rootlink + "../index.html", project.languagename)
-        projectlink = widgets.Link(self.getbrowseurl(rootlink), project.projectname)
+        # don't getbrowseurl on the project link, so sticky options won't apply here
+        projectlink = widgets.Link(rootlink or "index.html", project.projectname)
         if session:
           if "admin" in project.getrights(session) or session.issiteadmin():
             adminlink = widgets.Link(rootlink + "admin.html", self.localize("Admin"))
@@ -251,12 +255,12 @@ class PootleNavPage(PootlePage):
     stats = ItemStatistics(stats)
     return Navbar([icon, path, actions, stats, pagelinks])
 
-  def getbrowseurl(self, basename):
+  def getbrowseurl(self, basename, **newargs):
     """gets the link to browse the item"""
     if not basename or basename.endswith("/"):
-      return self.makelink(basename or "index.html")
+      return self.makelink(basename or "index.html", **newargs)
     else:
-      return self.makelink(basename, translate=1, view=1)
+      return self.makelink(basename, translate=1, view=1, **newargs)
 
   def makelink(self, link, **newargs):
     """constructs a link that keeps sticky arguments e.g. showchecks"""

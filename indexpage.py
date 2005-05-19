@@ -258,7 +258,8 @@ class ProjectIndex(pagelayout.PootleNavPage):
       actionlinks = self.getactionlinks("", projectstats, ["review", "check", "assign", "goal", "quick", "all", "zip"], dirfilter)
       mainstats = self.getitemstats("", projectstats, len(pofilenames))
       mainicon = "folder"
-    navbar = self.makenavbar(icon=mainicon, path=self.makenavbarpath(project=self.project, session=self.session, currentfolder=dirfilter), actions=actionlinks, stats=mainstats)
+    self.currentgoal = self.argdict.pop("goal", None)
+    navbar = self.makenavbar(icon=mainicon, path=self.makenavbarpath(project=self.project, session=self.session, currentfolder=dirfilter, goal=self.currentgoal), actions=actionlinks, stats=mainstats)
     if self.showgoals:
       childitems = self.getgoalitems(dirfilter)
     else:
@@ -429,17 +430,17 @@ class ProjectIndex(pagelayout.PootleNavPage):
     self.polarizeitems(childitems)
     return childitems
 
-  def getitems(self, itempaths, linksrequired=None):
+  def getitems(self, itempaths, linksrequired=None, **newargs):
     """gets the listed dir and fileitems"""
     diritems, fileitems = [], []
     for item in itempaths:
       if item.endswith(os.path.extsep + "po"):
-        fileitem = self.getfileitem(item, linksrequired=linksrequired)
+        fileitem = self.getfileitem(item, linksrequired=linksrequired, **newargs)
         fileitems.append((item, fileitem))
       else:
         if item.endswith(os.path.sep):
           item = item.rstrip(os.path.sep)
-        diritem = self.getdiritem(item, linksrequired=linksrequired)
+        diritem = self.getdiritem(item, linksrequired=linksrequired, **newargs)
         diritems.append((item, diritem))
       diritems.sort()
       fileitems.sort()
@@ -469,13 +470,12 @@ class ProjectIndex(pagelayout.PootleNavPage):
       maxdepth = initial.count(os.path.sep)
     else:
       maxdepth = 0
-    currentgoal = self.argdict.get("goal", None)
     # using a goal of "" means that the file has no goal
     nogoal = ""
-    if currentgoal is None:
+    if self.currentgoal is None:
       goalnames = self.project.getgoalnames() + [nogoal]
     else:
-      goalnames = [currentgoal]
+      goalnames = [self.currentgoal]
     goalfiledict = {}
     for goalname in goalnames:
       goalfiles = self.project.getgoalfiles(goalname, dirfilter, maxdepth=maxdepth, expanddirs=True, includepartial=True)
@@ -494,8 +494,8 @@ class ProjectIndex(pagelayout.PootleNavPage):
       goalusers = self.project.getgoalusers(goalname)
       goalitem = self.getgoalitem(goalname, dirfilter, goalusers)
       allitems.append(goalitem)
-      if currentgoal == goalname:
-        goalchilditems = self.getitems(goalfiles, linksrequired=["editgoal"])
+      if self.currentgoal == goalname:
+        goalchilditems = self.getitems(goalfiles, linksrequired=["editgoal"], goal=self.currentgoal)
         allitems.extend(goalchilditems)
     return allitems
 
@@ -520,7 +520,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     if goalusers:
       goalusers.sort()
       goaluserslist = widgets.SeparatedList(goalusers)
-    if goalname and self.argdict.get("goal", None) == goalname:
+    if goalname and self.currentgoal == goalname:
       unassignedusers = [username for username, userprefs in self.session.loginchecker.users.iteritems()]
       if "__dummy__" in unassignedusers:
         unassignedusers.remove("__dummy__")
@@ -541,11 +541,11 @@ class ProjectIndex(pagelayout.PootleNavPage):
     stats = self.getitemstats(goalname, projectstats, len(pofilenames))
     return pagelayout.GoalItem([body, stats])
 
-  def getdiritem(self, direntry, linksrequired=None):
+  def getdiritem(self, direntry, linksrequired=None, **newargs):
     """returns an item showing a directory entry"""
     pofilenames = self.project.browsefiles(direntry)
     if self.showgoals and "goal" in self.argdict:
-      goalfilenames = self.project.getgoalfiles(self.argdict["goal"], dirfilter=direntry, includedirs=False, expanddirs=True)
+      goalfilenames = self.project.getgoalfiles(self.currentgoal, dirfilter=direntry, includedirs=False, expanddirs=True)
       projectstats = self.project.combinestats(goalfilenames)
     else:
       projectstats = self.project.combinestats(pofilenames)
@@ -553,7 +553,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     bodytitle = pagelayout.Title(basename)
     basename += "/"
     folderimage = pagelayout.Icon("folder.png")
-    browseurl = self.getbrowseurl(basename)
+    browseurl = self.getbrowseurl(basename, **newargs)
     bodytitle = widgets.Link(browseurl, bodytitle)
     actionlinks = self.getactionlinks(basename, projectstats, linksrequired=linksrequired)
     bodydescription = pagelayout.ActionLinks(actionlinks)
@@ -564,14 +564,14 @@ class ProjectIndex(pagelayout.PootleNavPage):
       stats = self.getitemstats(basename, projectstats, len(pofilenames))
     return pagelayout.Item([body, stats])
 
-  def getfileitem(self, fileentry, linksrequired=None):
+  def getfileitem(self, fileentry, linksrequired=None, **newargs):
     """returns an item showing a file entry"""
     if linksrequired is None:
       linksrequired = ["review", "quick", "all", "po", "xliff", "csv", "mo", "update"]
     basename = os.path.basename(fileentry)
     projectstats = self.project.combinestats([fileentry])
     folderimage = pagelayout.Icon("file.png")
-    browseurl = self.getbrowseurl(basename)
+    browseurl = self.getbrowseurl(basename, **newargs)
     bodytitle = pagelayout.Title(widgets.Link(browseurl, basename))
     actionlinks = self.getactionlinks(basename, projectstats, linksrequired=linksrequired)
     if "po" in linksrequired:
