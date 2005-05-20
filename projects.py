@@ -854,7 +854,8 @@ class TranslationProject:
       for assignaction, items in userassigns.iteritems():
         if action is None or assignaction == action:
           allitems += [item for item in items if not item in allitems]
-      assignstats[username] = allitems
+      if allitems:
+        assignstats[username] = allitems
     return assignstats
 
   def getpofile(self, pofilename):
