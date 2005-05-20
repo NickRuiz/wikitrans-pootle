@@ -274,7 +274,7 @@ class PootleNavPage(PootlePage):
     else:
       link += '?'
     # TODO: check escaping
-    link += "&".join(["%s=%s" % (arg, value) for arg, value in combinedargs.iteritems()])
+    link += "&".join(["%s=%s" % (arg, value) for arg, value in combinedargs.iteritems() if arg != "allowmultikey"])
     return link
 
   def initpagestats(self):
