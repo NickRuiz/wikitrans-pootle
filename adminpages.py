@@ -32,7 +32,7 @@ class AdminPage(pagelayout.PootlePage):
         self.templatevars = {"options": self.getoptions(), "session": sessionvars}
 
   def getoptions(self):
-    optiontitles = {"title": self.localize("Title"), "description": self.localize("Description"), "baseurl": self.localize("Base URL")}
+    optiontitles = {"title": self.localize("Title"), "description": self.localize("Description"), "baseurl": self.localize("Base URL"), "homepage": self.localize("Home Page")}
     options = []
     for optionname, optiontitle in optiontitles.items():
       optionvalue = getattr(self.instance, optionname, "")
