@@ -284,7 +284,7 @@ class pootlefile(po.pofile):
       if not line.strip():
         continue
       if not line.count(":") == 2:
-        print "invalid assigns line in", self.assignsfilename, line
+        print "invalid assigns line in %s: %r" % (self.assignsfilename, line)
         continue
       username, action, itemranges = line.split(":", 2)
       username, action = username.strip(), action.strip()
@@ -296,8 +296,8 @@ class pootlefile(po.pofile):
       items = userassigns[action]
       for itemrange in itemranges.split(","):
         if "-" in itemrange:
-          if not line.count("-") == 1:
-            print "invalid assigns range in", self.assignsfilename, line, itemrange
+          if not itemrange.count("-") == 1:
+            print "invalid assigns range in %s: %r (from line %r)" % (self.assignsfilename, itemrange, line)
             continue
           itemstart, itemstop = [int(item.strip()) for item in itemrange.split("-", 1)]
           items.extend(range(itemstart, itemstop+1))
