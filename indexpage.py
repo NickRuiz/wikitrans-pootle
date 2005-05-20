@@ -501,6 +501,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
 
   def getgoalitem(self, goalname, dirfilter, goalusers):
     """returns an item showing a goal entry"""
+    # TODO: fix stats for goalless
     pofilenames = self.project.getgoalfiles(goalname, dirfilter, expanddirs=True, includedirs=False)
     projectstats = self.project.combinestats(pofilenames)
     if goalname:
@@ -740,18 +741,23 @@ class ProjectIndex(pagelayout.PootleNavPage):
 
   def getassigndetails(self, projectstats, linkbase, removelinkbase):
     """return a list of strings describing the assigned strings"""
-    total = max(len(projectstats.get("total", [])), 1)
+    total = projectstats.get("total", [])
+    totalcount = len(total)
+    totalwords = self.project.countwords(total)
     assignlinks = []
     keys = projectstats.keys()
     keys.sort()
     for assignname in keys: 
       if not assignname.startswith("assign-"):
         continue
-      assigncount = len(projectstats[assignname])
+      assigned = projectstats[assignname]
+      assigncount = len(assigned)
+      assignwords = self.project.countwords(assigned)
       assignname = assignname.replace("assign-", "", 1)
-      if total and assigncount:
+      if totalcount and assigncount:
         assignlink = widgets.Link(self.makelink(linkbase, assignedto=assignname), assignname)
-        stats = self.nlocalize("%d string (%d%%) assigned", "%d strings (%d%%) assigned", assigncount) % (assigncount, (assigncount * 100 / total))
+        percentassigned = assignwords * 100 / max(totalwords, 1)
+        stats = self.localize("%d/%d words (%d%%) assigned [%d/%d strings]") % (assignwords, totalwords, percentassigned, assigncount, totalcount)
         if "assign" in self.rights:
           removetext = self.localize("Remove")
           removelink = widgets.Link(self.makelink(removelinkbase, assignedto=assignname), removetext)
