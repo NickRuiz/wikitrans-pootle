@@ -649,9 +649,9 @@ class ProjectIndex(pagelayout.PootleNavPage):
           actionlinks.append(self.localize("All Goals: %s") % (", ".join(filegoals)))
       if "editgoal" in linksrequired and "admin" in self.rights:
         goaloptions = [('', '')] + [(goalname, goalname) for goalname in self.project.getgoalnames()]
-        useroptions = [('', '')]
+        useroptions = ['']
         for goalname in filegoals:
-          useroptions += [(username, username) for username in self.project.getgoalusers(goalname)]
+          useroptions += self.project.getgoalusers(goalname)
         if len(filegoals) > 1:
           goalselect = widgets.MultiSelect({"name": "editgoal", "value": filegoals}, goaloptions)
         else:
@@ -666,6 +666,9 @@ class ProjectIndex(pagelayout.PootleNavPage):
             action = None
           assignstats = self.project.combineassignstats(assignfilenames, action)
           assignusers = [username.replace("assign-", "", 1) for username in assignstats.iterkeys()]
+          useroptions += [username for username in assignusers if username not in useroptions]
+          # need code and description for options list
+          useroptions = [(username, username) for username in useroptions]
           if len(assignusers) > 1:
             userselect = widgets.MultiSelect({"name": "editfileuser", "value": assignusers}, useroptions)
           else:
