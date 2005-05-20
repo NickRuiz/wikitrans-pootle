@@ -280,6 +280,7 @@ class pootlefile(po.pofile):
       return
     assignsstring = open(self.assignsfilename, "r").read()
     poassigns = {}
+    itemcount = len(getattr(self, "classify", {}).get("total", []))
     for line in assignsstring.split("\n"):
       if not line.strip():
         continue
@@ -304,6 +305,8 @@ class pootlefile(po.pofile):
         else:
           item = int(itemrange.strip())
           items.append(item)
+      if itemcount:
+        items = [item for item in items if 0 <= item < itemcount]
       userassigns[action] = items
     return poassigns
 
