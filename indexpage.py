@@ -553,7 +553,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     else:
       userlist = []
     body = pagelayout.ContentsItem([folderimage, bodytitle, bodydescription, userlist])
-    stats = self.getitemstats(goalname, projectstats, len(pofilenames))
+    stats = self.getitemstats("", projectstats, len(pofilenames))
     return pagelayout.GoalItem([body, stats])
 
   def getdiritem(self, direntry, linksrequired=None, **newargs):
@@ -768,6 +768,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
 
   def getassigndetails(self, projectstats, linkbase, removelinkbase):
     """return a list of strings describing the assigned strings"""
+    # TODO: allow setting of action, so goals can only show the appropriate action assigns
     total = projectstats.get("total", [])
     # quick lookup of what has been translated
     translated = dict.fromkeys(projectstats.get("translated", []))
