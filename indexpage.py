@@ -363,10 +363,10 @@ class ProjectIndex(pagelayout.PootleNavPage):
       if not isinstance(goalnames, list):
         goalnames = [goalnames]
       goalnames = [goalname.strip() for goalname in goalnames if goalname.strip()]
-      action = "goal-" + "-".join(goalnames)
       search = pootlefile.Search(dirfilter=goalfile)
-      for goaluser in goalusers:
-        self.project.assignpoitems(self.session, search, goaluser, action)
+      for goalname in goalnames:
+        action = "goal-" + goalname
+        self.project.reassignpoitems(self.session, search, goalusers, action)
       del self.argdict["doedituser"]
 
   def getboolarg(self, argname, default=False):
