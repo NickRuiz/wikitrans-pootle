@@ -259,7 +259,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     else:
       pofilenames = self.project.browsefiles(dirfilter)
       projectstats = self.project.combinestats(pofilenames)
-      actionlinks = self.getactionlinks("", projectstats, ["review", "check", "assign", "goal", "quick", "all", "zip"], dirfilter)
+      actionlinks = self.getactionlinks("", projectstats, ["mine", "review", "check", "assign", "goal", "quick", "all", "zip"], dirfilter)
       mainstats = self.getitemstats("", projectstats, len(pofilenames))
       mainicon = "folder"
     navbar = self.makenavbar(icon=mainicon, path=self.makenavbarpath(project=self.project, session=self.session, currentfolder=dirfilter, goal=self.currentgoal), actions=actionlinks, stats=mainstats)
@@ -523,7 +523,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     browseurl = self.makelink("index.html", goal=goalname)
     bodytitle = widgets.Link(browseurl, bodytitle)
     if pofilenames:
-      actionlinks = self.getactionlinks("index.html", projectstats, linksrequired=["review", "translate", "zip"], goal=goalname)
+      actionlinks = self.getactionlinks("", projectstats, linksrequired=["mine", "review", "translate", "zip"], goal=goalname)
       bodydescription = pagelayout.ActionLinks(actionlinks)
     else:
       bodydescription = []
@@ -582,7 +582,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
   def getfileitem(self, fileentry, linksrequired=None, **newargs):
     """returns an item showing a file entry"""
     if linksrequired is None:
-      linksrequired = ["review", "quick", "all", "po", "xliff", "csv", "mo", "update"]
+      linksrequired = ["mine", "review", "quick", "all", "po", "xliff", "csv", "mo", "update"]
     basename = os.path.basename(fileentry)
     projectstats = self.project.combinestats([fileentry])
     folderimage = pagelayout.Icon("file.png")
@@ -617,7 +617,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
   def getactionlinks(self, basename, projectstats, linksrequired=None, filepath=None, goal=None):
     """get links to the actions that can be taken on an item (directory / file)"""
     if linksrequired is None:
-      linksrequired = ["review", "quick", "all"]
+      linksrequired = ["mine", "review", "quick", "all"]
     actionlinks = []
     if not basename or basename.endswith("/"):
       baseactionlink = basename + "translate.html?"
@@ -685,6 +685,17 @@ class ProjectIndex(pagelayout.PootleNavPage):
           changeuser = []
         goalform = widgets.Form([editgoalfile, goalselect, editfilegoal, changeuser], {"action": "", "name":goalformname})
         actionlinks.append(goalform)
+    if "mine" in linksrequired and self.session.isopen:
+      if "translate" in self.rights:
+        minelink = self.localize("Translate My Strings")
+      else:
+        minelink = self.localize("View My Strings")
+      mystats = projectstats.get("assign-%s" % self.session.username, [])
+      if len(mystats):
+        minelink = widgets.Link(self.makelink(baseactionlink, assignedto=self.session.username), minelink)
+      else:
+        minelink = widgets.Tooltip(self.localize("No strings assigned to you"), minelink)
+      actionlinks.append(minelink)
     if "review" in linksrequired and projectstats.get("has-suggestion", []):
       if "review" in self.rights:
         reviewlink = self.localize("Review Suggestions")
