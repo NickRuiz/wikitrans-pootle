@@ -248,6 +248,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     self.showchecks = self.getboolarg("showchecks")
     self.showassigns = self.getboolarg("showassigns")
     self.showgoals = self.getboolarg("showgoals")
+    self.currentgoal = self.argdict.pop("goal", None)
     if dirfilter and dirfilter.endswith(".po"):
       actionlinks = []
       mainstats = []
@@ -258,7 +259,6 @@ class ProjectIndex(pagelayout.PootleNavPage):
       actionlinks = self.getactionlinks("", projectstats, ["review", "check", "assign", "goal", "quick", "all", "zip"], dirfilter)
       mainstats = self.getitemstats("", projectstats, len(pofilenames))
       mainicon = "folder"
-    self.currentgoal = self.argdict.pop("goal", None)
     navbar = self.makenavbar(icon=mainicon, path=self.makenavbarpath(project=self.project, session=self.session, currentfolder=dirfilter, goal=self.currentgoal), actions=actionlinks, stats=mainstats)
     if self.showgoals:
       childitems = self.getgoalitems(dirfilter)
@@ -625,12 +625,12 @@ class ProjectIndex(pagelayout.PootleNavPage):
         actionlinks.append(link)
     addoptionlink("track", None, "showtracks", self.localize("Show Tracks"), self.localize("Hide Tracks"))
     addoptionlink("check", "translate", "showchecks", self.localize("Show Checks"), self.localize("Hide Checks"))
-    addoptionlink("goal", "admin", "showgoals", self.localize("Show Goals"), self.localize("Hide Goals"))
+    addoptionlink("goal", None, "showgoals", self.localize("Show Goals"), self.localize("Hide Goals"))
     addoptionlink("assign", "translate", "showassigns", self.localize("Show Assigns"), self.localize("Hide Assigns"))
     if not goal:
       goalfile = os.path.join(self.dirname, basename)
       filegoals = self.project.getfilegoals(goalfile)
-      if self.showgoals and "admin" in self.rights:
+      if self.showgoals:
         if len(filegoals) > 1:
           actionlinks.append(self.localize("All Goals: %s") % (", ".join(filegoals)))
       if "editgoal" in linksrequired and "admin" in self.rights:
