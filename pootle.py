@@ -144,7 +144,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
       return indexpage.AboutPage(session)
     elif top == "login.html":
       if session.isopen:
-        returnurl = argdict.get('returnurl', None) or 'home/'
+        returnurl = argdict.get('returnurl', None) or getattr(self.instance, 'homepage', 'home/')
         return server.Redirect(returnurl)
       if 'username' in argdict:
         session.username = argdict["username"]
