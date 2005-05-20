@@ -735,35 +735,51 @@ class TranslationProject:
       item = None
 
   def reassignpoitems(self, session, search, assignto, action):
-    """reassign all the items matching the search to the assignto user(s) with the given action"""
+    """reassign all the items matching the search to the assignto user(s) evenly, with the given action"""
     # remove all assignments for the given action
     self.unassignpoitems(session, search, None, action)
-    if not isinstance(assignto, list):
-      assignto = [assignto]
-    assigncount = 0
-    for username in assignto:
-      assigncount = self.assignpoitems(session, search, username, action)
+    assigncount = self.assignpoitems(session, search, assignto, action)
     return assigncount
 
   def assignpoitems(self, session, search, assignto, action):
-    """assign all the items matching the search to the assignto user with the given action"""
+    """assign all the items matching the search to the assignto user(s) evenly, with the given action"""
     if not "assign" in self.getrights(session):
       raise RightsError(session.localize("You do not have rights to alter assignments here"))
     if search.searchtext:
       pogrepfilter = pogrep.pogrepfilter(search.searchtext, None, ignorecase=True)
+    if not isinstance(assignto, list):
+      assignto = [assignto]
+    usercount = len(assignto)
     assigncount = 0
-    for pofilename in self.searchpofilenames(None, search, includelast=True):
+    if not usercount:
+      return assigncount
+    docountwords = lambda pofilename: self.countwords([(pofilename, item) for item in range(len(self.pofiles[pofilename].transelements))])
+    pofilenames = [pofilename for pofilename in self.searchpofilenames(None, search, includelast=True)]
+    wordcounts = [(pofilename, docountwords(pofilename)) for pofilename in pofilenames]
+    totalwordcount = sum([wordcount for pofilename, wordcount in wordcounts])
+
+    wordsperuser = totalwordcount / usercount
+    print "assigning", totalwordcount, "words to", usercount, "user(s)", wordsperuser, "words per user"
+    usernum = 0
+    userwords = 0
+    for pofilename, wordcount in wordcounts:
       pofile = self.getpofile(pofilename)
       for item in pofile.iteritems(search, None):
         # TODO: move this to iteritems
         if search.searchtext:
+          validitem = False
           thepo = pofile.transelements[item]
           if pogrepfilter.filterelement(thepo):
-            pofile.assignto(item, assignto, action)
-            assigncount += 1
-        else:
-          pofile.assignto(item, assignto, action)
-          assigncount += 1
+            validitem = True
+          if not validitem:
+            continue
+        itemwordcount = self.countwords([(pofilename, item)])
+        if userwords + itemwordcount > wordsperuser:
+          usernum = min(usernum+1, len(assignto)-1)
+          userwords = 0
+        userwords += itemwordcount
+        pofile.assignto(item, assignto[usernum], action)
+        assigncount += 1
     return assigncount
 
   def unassignpoitems(self, session, search, assignedto, action=None):
