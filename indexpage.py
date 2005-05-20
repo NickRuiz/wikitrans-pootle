@@ -351,7 +351,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
       del self.argdict["doeditgoalusers"]
     if "doedituser" in self.argdict:
       goalnames = self.argdict.pop("editgoal", None)
-      goalusers = self.argdict.pop("editfileuser", "").strip()
+      goalusers = self.argdict.pop("editfileuser", "")
       goalfile = self.argdict.pop("editgoalfile", None)
       if not goalfile:
         raise ValueError("cannot add user to file for goal, no filename given")
@@ -656,15 +656,25 @@ class ProjectIndex(pagelayout.PootleNavPage):
           goalselect = widgets.MultiSelect({"name": "editgoal", "value": filegoals}, goaloptions)
         else:
           goalselect = widgets.Select({"name": "editgoal", "value": ''.join(filegoals)}, goaloptions)
-        goalfile = widgets.HiddenFieldList({"editgoalfile": basename})
+        editgoalfile = widgets.HiddenFieldList({"editgoalfile": basename})
         editfilegoal = widgets.Input({"type": "submit", "name": "doeditgoal", "value": self.localize("Set Goal")})
         if len(useroptions) > 1:
-          userselect = widgets.Select({"name": "editfileuser", "value": ""}, useroptions)
-          editfileuser = widgets.Input({"type": "submit", "name": "doedituser", "value": self.localize("Set User")})
+          assignfilenames = self.project.browsefiles(dirfilter=goalfile)
+          if self.currentgoal:
+            action = "goal-" + self.currentgoal
+          else:
+            action = None
+          assignstats = self.project.combineassignstats(assignfilenames, action)
+          assignusers = [username.replace("assign-", "", 1) for username in assignstats.iterkeys()]
+          if len(assignusers) > 1:
+            userselect = widgets.MultiSelect({"name": "editfileuser", "value": assignusers}, useroptions)
+          else:
+            userselect = widgets.Select({"name": "editfileuser", "value": ''.join(assignusers)}, useroptions)
+          editfileuser = widgets.Input({"type": "submit", "name": "doedituser", "value": self.localize("Assign To")})
           changeuser = [userselect, editfileuser]
         else:
           changeuser = []
-        goalform = widgets.Form([goalfile, goalselect, editfilegoal, changeuser], {"action": "", "name":"goalform-%s" % basename})
+        goalform = widgets.Form([editgoalfile, goalselect, editfilegoal, changeuser], {"action": "", "name":"goalform-%s" % basename})
         actionlinks.append(goalform)
     if "review" in linksrequired and projectstats.get("has-suggestion", []):
       if "review" in self.rights:
