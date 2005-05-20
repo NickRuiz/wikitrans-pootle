@@ -642,6 +642,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     addoptionlink("goal", None, "showgoals", self.localize("Show Goals"), self.localize("Hide Goals"))
     addoptionlink("assign", "translate", "showassigns", self.localize("Show Assigns"), self.localize("Hide Assigns"))
     if not goal:
+      goalformname = "goal_%s" % (basename.replace("/", "_").replace(".", "_"))
       goalfile = os.path.join(self.dirname, basename)
       filegoals = self.project.getfilegoals(goalfile)
       if self.showgoals:
@@ -672,12 +673,17 @@ class ProjectIndex(pagelayout.PootleNavPage):
           if len(assignusers) > 1:
             userselect = widgets.MultiSelect({"name": "editfileuser", "value": assignusers}, useroptions)
           else:
+            # use a normal Select, but allow the user to convert it to a Multi at a click
             userselect = widgets.Select({"name": "editfileuser", "value": ''.join(assignusers)}, useroptions)
+            multiscript = 'var userselect = document.forms.%s.editfileuser; userselect.multiple = true; return false' % goalformname
+            allowmulti = widgets.HiddenFieldList({"allowmultikey": "editfileuser"})
+            multilink = widgets.Link("#", self.localize("Select Multiple"), {"onclick": multiscript})
+            userselect = [userselect, multilink, allowmulti]
           editfileuser = widgets.Input({"type": "submit", "name": "doedituser", "value": self.localize("Assign To")})
           changeuser = [userselect, editfileuser]
         else:
           changeuser = []
-        goalform = widgets.Form([editgoalfile, goalselect, editfilegoal, changeuser], {"action": "", "name":"goalform-%s" % basename})
+        goalform = widgets.Form([editgoalfile, goalselect, editfilegoal, changeuser], {"action": "", "name":goalformname})
         actionlinks.append(goalform)
     if "review" in linksrequired and projectstats.get("has-suggestion", []):
       if "review" in self.rights:
