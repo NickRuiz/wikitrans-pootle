@@ -534,9 +534,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
       goaluserslist = widgets.SeparatedList(goalusers)
     if goalname and self.currentgoal == goalname:
       if "admin" in self.rights:
-        unassignedusers = [username for username, userprefs in self.session.loginchecker.users.iteritems()]
-        if "__dummy__" in unassignedusers:
-          unassignedusers.remove("__dummy__")
+        unassignedusers = [username for username, userprefs in self.session.loginchecker.users.iteritems() if username != "__dummy__"]
         for user in goalusers:
           if user in unassignedusers:
             unassignedusers.remove(user)
