@@ -742,6 +742,8 @@ class ProjectIndex(pagelayout.PootleNavPage):
   def getassigndetails(self, projectstats, linkbase, removelinkbase):
     """return a list of strings describing the assigned strings"""
     total = projectstats.get("total", [])
+    # quick lookup of what has been translated
+    translated = dict.fromkeys(projectstats.get("translated", []))
     totalcount = len(total)
     totalwords = self.project.countwords(total)
     assignlinks = []
@@ -753,16 +755,21 @@ class ProjectIndex(pagelayout.PootleNavPage):
       assigned = projectstats[assignname]
       assigncount = len(assigned)
       assignwords = self.project.countwords(assigned)
+      complete = [statsitem for statsitem in assigned if statsitem in translated]
+      completecount = len(complete)
+      completewords = self.project.countwords(complete)
       assignname = assignname.replace("assign-", "", 1)
       if totalcount and assigncount:
         assignlink = widgets.Link(self.makelink(linkbase, assignedto=assignname), assignname)
         percentassigned = assignwords * 100 / max(totalwords, 1)
+        percentcomplete = completewords * 100 / max(assignwords, 1)
         stats = self.localize("%d/%d words (%d%%) assigned [%d/%d strings]") % (assignwords, totalwords, percentassigned, assigncount, totalcount)
+        completestats = self.localize("%d/%d words (%d%%) translated [%d/%d strings]") % (completewords, assignwords, percentcomplete, completecount, assigncount)
         if "assign" in self.rights:
           removetext = self.localize("Remove")
           removelink = widgets.Link(self.makelink(removelinkbase, assignedto=assignname), removetext)
         else:
           removelink = []
-        assignlinks += [[assignlink, ": ", stats, " ", removelink]]
+        assignlinks += [[assignlink, ": ", stats, " - ", completestats, " ", removelink]]
     return assignlinks
 
