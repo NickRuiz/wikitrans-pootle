@@ -796,7 +796,9 @@ class TranslationProject:
     """counts the number of words in the items represented by the stats list"""
     wordcount = 0
     for pofilename, item in stats:
-      wordcount += sum(self.pofiles[pofilename].msgidwordcounts[item])
+      pofile = self.pofiles[pofilename]
+      if 0 <= item < len(pofile.msgidwordcounts):
+        wordcount += sum(pofile.msgidwordcounts[item])
     return wordcount
 
   def track(self, pofilename, item, message):
