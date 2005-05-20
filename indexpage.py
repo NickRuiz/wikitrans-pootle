@@ -220,7 +220,9 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     totalwords = language.countwords(total)
     self.updatepagestats(translatedwords, totalwords)
     percentfinished = (translatedwords*100/max(totalwords, 1))
-    stats = pagelayout.ItemStatistics(self.nlocalize("%d file, %d/%d words (%d%%) translated [%d/%d strings]", "%d files, %d/%d words (%d%%) translated [%d/%d strings]", numfiles) % (numfiles, translatedwords, totalwords, percentfinished, len(translated), len(total)))
+    wordstats = self.nlocalize("%d file, %d/%d words (%d%%) translated", "%d files, %d/%d words (%d%%) translated") % (numfiles, translatedwords, totalwords, percentfinished)
+    stringstats = widgets.Span(self.localize("[%d/%d strings]") % (len(translated), len(total)), cls="string-statistics")
+    stats = pagelayout.ItemStatistics([wordstats, stringstats])
     return pagelayout.Item([body, stats])
 
 class ProjectIndex(pagelayout.PootleNavPage):
@@ -763,13 +765,15 @@ class ProjectIndex(pagelayout.PootleNavPage):
         assignlink = widgets.Link(self.makelink(linkbase, assignedto=assignname), assignname)
         percentassigned = assignwords * 100 / max(totalwords, 1)
         percentcomplete = completewords * 100 / max(assignwords, 1)
-        stats = self.localize("%d/%d words (%d%%) assigned [%d/%d strings]") % (assignwords, totalwords, percentassigned, assigncount, totalcount)
-        completestats = self.localize("%d/%d words (%d%%) translated [%d/%d strings]") % (completewords, assignwords, percentcomplete, completecount, assigncount)
+        stats = self.localize("%d/%d words (%d%%) assigned") % (assignwords, totalwords, percentassigned)
+        stringstats = widgets.Span(self.localize("[%d/%d strings]") % (assigncount, totalcount), cls="string-statistics")
+        completestats = self.localize("%d/%d words (%d%%) translated") % (completewords, assignwords, percentcomplete)
+        completestringstats = widgets.Span(self.localize("[%d/%d strings]") % (completecount, assigncount), cls="string-statistics")
         if "assign" in self.rights:
           removetext = self.localize("Remove")
           removelink = widgets.Link(self.makelink(removelinkbase, assignedto=assignname), removetext)
         else:
           removelink = []
-        assignlinks += [[assignlink, ": ", stats, " - ", completestats, " ", removelink]]
+        assignlinks += [[assignlink, ": ", stats, " ", stringstats, " - ", completestats, " ", completestringstats, " ", removelink]]
     return assignlinks
 

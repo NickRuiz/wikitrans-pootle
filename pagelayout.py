@@ -299,11 +299,12 @@ class PootleNavPage(PootlePage):
     totalwords = project.countwords(total)
     percentfinished = (translatedwords*100/max(totalwords, 1))
     if numfiles is None:
-      statssummary = ""
+      filestats = ""
     elif isinstance(numfiles, tuple):
-      statssummary = self.localize("%d/%d files, ") % numfiles
+      filestats = self.localize("%d/%d files, ") % numfiles
     else:
-      statssummary = self.localize("%d files, ") % numfiles
-    statssummary += self.localize("%d/%d words (%d%%) translated [%d/%d strings]") % (translatedwords, totalwords, percentfinished, len(translated), len(total))
-    return statssummary
+      filestats = self.localize("%d files, ") % numfiles
+    wordstats = self.localize("%d/%d words (%d%%) translated") % (translatedwords, totalwords, percentfinished)
+    stringstats = widgets.Span(self.localize("[%d/%d strings]") % (len(translated), len(total)), cls="string-statistics")
+    return [filestats, wordstats, " ", stringstats]
 

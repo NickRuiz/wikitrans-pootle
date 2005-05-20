@@ -67,6 +67,10 @@ div.item-statistics
 	font-size: x-small; 
 	color: #000000; 
 }
+.string-statistics
+{
+	color: #505050;
+}
 div.translate-form
 {
 	font-family:verdana, arial, sans-serif; 
