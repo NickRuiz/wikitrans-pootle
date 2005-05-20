@@ -798,7 +798,17 @@ class TranslationProject:
       postats = self.getpostats(pofilename)
       for name, items in postats.iteritems():
         totalstats[name] = totalstats.get(name, []) + [(pofilename, item) for item in items]
-      assignstats = self.getassignstats(pofilename)
+    assignstats = self.combineassignstats(pofilenames)
+    totalstats.update(assignstats)
+    return totalstats
+
+  def combineassignstats(self, pofilenames=None, action=None):
+    """combines assign statistics for the given po files (or all if None given)"""
+    totalstats = {}
+    if pofilenames is None:
+      pofilenames = self.pofilenames
+    for pofilename in pofilenames:
+      assignstats = self.getassignstats(pofilename, action)
       for name, items in assignstats.iteritems():
         totalstats["assign-"+name] = totalstats.get("assign-"+name, []) + [(pofilename, item) for item in items]
     return totalstats
@@ -835,14 +845,15 @@ class TranslationProject:
     """calculates translation statistics for the given po file"""
     return self.pofiles[pofilename].getstats()
 
-  def getassignstats(self, pofilename):
-    """calculates translation statistics for the given po file"""
+  def getassignstats(self, pofilename, action=None):
+    """calculates translation statistics for the given po file (can filter by action if given)"""
     assigns = self.pofiles[pofilename].getassigns()
     assignstats = {}
     for username, userassigns in assigns.iteritems():
       allitems = []
-      for action, items in userassigns.iteritems():
-        allitems += [item for item in items if not item in allitems]
+      for assignaction, items in userassigns.iteritems():
+        if action is None or assignaction == action:
+          allitems += [item for item in items if not item in allitems]
       assignstats[username] = allitems
     return assignstats
 
