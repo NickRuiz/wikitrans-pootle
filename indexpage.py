@@ -350,14 +350,23 @@ class ProjectIndex(pagelayout.PootleNavPage):
         self.project.addusertogoal(self.session, goalname, addusername)
       del self.argdict["doeditgoalusers"]
     if "doedituser" in self.argdict:
+      goalnames = self.argdict.pop("editgoal", None)
       goalusers = self.argdict.pop("editfileuser", "").strip()
       goalfile = self.argdict.pop("editgoalfile", None)
       if not goalfile:
-        raise ValueError("cannot add goal, no filename given")
+        raise ValueError("cannot add user to file for goal, no filename given")
       if self.dirname:
         goalfile = os.path.join(self.dirname, goalfile)
+      if not isinstance(goalusers, list):
+        goalusers = [goalusers]
       goalusers = [goaluser.strip() for goaluser in goalusers if goaluser.strip()]
-      # self.project.setfilegoals(self.session, goalnames, goalfile)
+      if not isinstance(goalnames, list):
+        goalnames = [goalnames]
+      goalnames = [goalname.strip() for goalname in goalnames if goalname.strip()]
+      action = "goal-" + "-".join(goalnames)
+      search = pootlefile.Search(dirfilter=goalfile)
+      for goaluser in goalusers:
+        self.project.assignpoitems(self.session, search, goaluser, action)
       del self.argdict["doedituser"]
 
   def getboolarg(self, argname, default=False):
@@ -386,8 +395,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
   def addassignbox(self):
     """adds a box that lets the user assign strings"""
     self.links.addcontents(pagelayout.SidebarTitle(self.localize("Assign Strings")))
-    users = [username for username, userprefs in self.session.loginchecker.users.iteritems()]
-    users.remove("__dummy__")
+    users = [username for username, userprefs in self.session.loginchecker.users.iteritems() if username != "__dummy__"]
     users.sort()
     assigntoselect = widgets.Select({"name": "assignto", "value": "", "title": self.localize("Assign to User")}, options=[(user, user) for user in users])
     actionbox = widgets.Input({"name": "action", "value": "translate", "title": self.localize("Assign Action")})
@@ -525,18 +533,21 @@ class ProjectIndex(pagelayout.PootleNavPage):
       goalusers.sort()
       goaluserslist = widgets.SeparatedList(goalusers)
     if goalname and self.currentgoal == goalname:
-      unassignedusers = [username for username, userprefs in self.session.loginchecker.users.iteritems()]
-      if "__dummy__" in unassignedusers:
-        unassignedusers.remove("__dummy__")
-      for user in goalusers:
-        if user in unassignedusers:
-          unassignedusers.remove(user)
-      unassignedusers.sort()
-      adduserlist = widgets.Select({"name": "newgoaluser"}, options=[(user, user) for user in unassignedusers])
-      editgoalname = widgets.HiddenFieldList({"editgoalname": goalname})
-      submitbutton = widgets.Input({"type": "submit", "name": "doeditgoalusers", "value": self.localize("Add User")})
-      userwidgets = [usericon, editgoalname, goaluserslist, adduserlist, submitbutton]
-      userlist = widgets.Division(widgets.Form(userwidgets, {"action": "", "name": "goaluserform"}))
+      if "admin" in self.rights:
+        unassignedusers = [username for username, userprefs in self.session.loginchecker.users.iteritems()]
+        if "__dummy__" in unassignedusers:
+          unassignedusers.remove("__dummy__")
+        for user in goalusers:
+          if user in unassignedusers:
+            unassignedusers.remove(user)
+        unassignedusers.sort()
+        adduserlist = widgets.Select({"name": "newgoaluser"}, options=[(user, user) for user in unassignedusers])
+        editgoalname = widgets.HiddenFieldList({"editgoalname": goalname})
+        submitbutton = widgets.Input({"type": "submit", "name": "doeditgoalusers", "value": self.localize("Add User")})
+        userwidgets = [usericon, editgoalname, goaluserslist, adduserlist, submitbutton]
+        userlist = widgets.Division(widgets.Form(userwidgets, {"action": "", "name": "goaluserform"}))
+      else:
+        userlist = widgets.Division([usericon, goaluserslist])
     elif goalusers:
       userlist = widgets.Division([usericon, goaluserslist])
     else:
