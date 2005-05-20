@@ -734,6 +734,17 @@ class TranslationProject:
           yield pofilename, item
       item = None
 
+  def reassignpoitems(self, session, search, assignto, action):
+    """reassign all the items matching the search to the assignto user(s) with the given action"""
+    # remove all assignments for the given action
+    self.unassignpoitems(session, search, None, action)
+    if not isinstance(assignto, list):
+      assignto = [assignto]
+    assigncount = 0
+    for username in assignto:
+      assigncount = self.assignpoitems(session, search, username, action)
+    return assigncount
+
   def assignpoitems(self, session, search, assignto, action):
     """assign all the items matching the search to the assignto user with the given action"""
     if not "assign" in self.getrights(session):

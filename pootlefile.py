@@ -315,16 +315,21 @@ class pootlefile(po.pofile):
       items.append(item)
     self.saveassigns()
 
-  def unassign(self, item, username, action=None):
-    """removes assignments of the item to the given username for the given action (or all actions)"""
-    userassigns = self.assigns.setdefault(username, {})
-    if action is None:
-      itemlist = [userassigns.get(action, []) for action in userassigns]
+  def unassign(self, item, username=None, action=None):
+    """removes assignments of the item to the given username (or all users) for the given action (or all actions)"""
+    if username is None:
+      usernames = self.assigns.keys()
     else:
-      itemlist = [userassigns.get(action, [])]
-    for items in itemlist:
-      if item in items:
-        items.remove(item)
+      usernames = [username]
+    for username in usernames:
+      userassigns = self.assigns.setdefault(username, {})
+      if action is None:
+        itemlist = [userassigns.get(action, []) for action in userassigns]
+      else:
+        itemlist = [userassigns.get(action, [])]
+      for items in itemlist:
+        if item in items:
+          items.remove(item)
     self.saveassigns()
 
   def saveassigns(self):
