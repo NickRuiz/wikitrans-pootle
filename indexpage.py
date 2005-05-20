@@ -695,9 +695,9 @@ class ProjectIndex(pagelayout.PootleNavPage):
         minelink = widgets.Tooltip(self.localize("No strings assigned to you"), minelink)
       actionlinks.append(minelink)
       if "quick" in linksrequired and "translate" in self.rights:
-        quickstats = [statsitem for statsitem in mystats if statsitem not in projectstats.get("translated", [])]
+        mytranslatedstats = [statsitem for statsitem in mystats if statsitem in projectstats.get("translated", [])]
         quickminelink = self.localize("Quick Translate My Strings")
-        if len(quickstats) < len(mystats):
+        if len(mytranslatedstats) < len(mystats):
           quickminelink = widgets.Link(self.makelink(baseactionlink, assignedto=self.session.username, fuzzy=1, blank=1), quickminelink)
         else:
           quickminelink = widgets.Tooltip(self.localize("No untranslated strings assigned to you"), quickminelink)
