@@ -220,9 +220,10 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     totalwords = language.countwords(total)
     self.updatepagestats(translatedwords, totalwords)
     percentfinished = (translatedwords*100/max(totalwords, 1))
-    wordstats = self.nlocalize("%d file, %d/%d words (%d%%) translated", "%d files, %d/%d words (%d%%) translated") % (numfiles, translatedwords, totalwords, percentfinished)
+    filestats = self.nlocalize("%d file", "%d files", numfiles) % numfiles
+    wordstats = self.localize("%d/%d words (%d%%) translated") % (translatedwords, totalwords, percentfinished)
     stringstats = widgets.Span(self.localize("[%d/%d strings]") % (len(translated), len(total)), cls="string-statistics")
-    stats = pagelayout.ItemStatistics([wordstats, stringstats])
+    stats = pagelayout.ItemStatistics([filestats, ", ", wordstats, " ", stringstats])
     return pagelayout.Item([body, stats])
 
 class ProjectIndex(pagelayout.PootleNavPage):
