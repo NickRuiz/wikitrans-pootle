@@ -863,13 +863,14 @@ class TranslationProject:
 
   def getassignstats(self, pofilename, action=None):
     """calculates translation statistics for the given po file (can filter by action if given)"""
+    polen = len(self.getpostats(pofilename)["total"])
     assigns = self.pofiles[pofilename].getassigns()
     assignstats = {}
     for username, userassigns in assigns.iteritems():
       allitems = []
       for assignaction, items in userassigns.iteritems():
         if action is None or assignaction == action:
-          allitems += [item for item in items if not item in allitems]
+          allitems += [item for item in items if 0 <= item < polen and item not in allitems]
       if allitems:
         assignstats[username] = allitems
     return assignstats
