@@ -369,6 +369,11 @@ class ProjectIndex(pagelayout.PootleNavPage):
         pass
       elif assignwhich == "untranslated":
         search.matchnames = ["fuzzy", "blank"]
+      elif assignwhich == "unassigned":
+        search.assignedto = [None]
+      elif assignwhich == "unassigneduntranslated":
+        search.matchnames = ["fuzzy", "blank"]
+        search.assignedto = [None]
       else:
         raise ValueError("unexpected assignwhich")
       for goalname in goalnames:
@@ -684,7 +689,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
             allowmulti = widgets.HiddenFieldList({"allowmultikey": "editfileuser"})
             multilink = widgets.Link("#", self.localize("Select Multiple"), {"onclick": multiscript})
             userselect = [userselect, multilink, allowmulti]
-          assignwhichoptions = [('all', self.localize("All Strings")), ('untranslated', self.localize("Untranslated"))]
+          assignwhichoptions = [('all', self.localize("All Strings")), ('untranslated', self.localize("Untranslated")), ('unassigned', self.localize('Unassigned')), ('unassigneduntranslated', self.localize("Unassigned and Untranslated"))]
           assignwhich = widgets.Select({"name": "edituserwhich", "value": "all"}, assignwhichoptions)
           editfileuser = widgets.Input({"type": "submit", "name": "doedituser", "value": self.localize("Assign To")})
           changeuser = [userselect, assignwhich, editfileuser]
