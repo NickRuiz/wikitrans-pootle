@@ -5,7 +5,6 @@ current tasks:
   - what has been returned, what hasn't
   - ability to send work to people
   - let maintainer add people manually
-  - create / review goals
   localize pootle
   - create po files
   - set language on login (and detect languages from browser)
@@ -16,8 +15,8 @@ current tasks:
   add ability to email bug report
 
 requirements for translatathon:
-  assigning stuff to people (with permissions)
-    - both translation and review
+  relate assignments to rights (people can only translate what they're assigned)
+   - both translation and review
   attribution (based on login)
     ? where to put it
     - last translator
@@ -59,28 +58,18 @@ other:
 
 bugs:
   currently project codes cannot have a dash "-" in them eg kde-i18n.  Either
-    we should allow or warn when starting pootle.
+    we should allow or warn when starting pootle. (check, should be fixed)
   header entries get jumbled when we update them.  Technically not an issue but
     creates quite a lot of CVS noise
+  "no group" entry shows 0 stats
+  items inside the current group should have "group=" in link so clicking "remove" on assignment doesn't jump out of group
 
 assignment:
-  assign to a group
-  lock at the user level - only one person per file
-  translatathon:
-    30 people
-    time-consuming:
-      choosing who does what
-      wordcounts would help
-    at the end, not sure what to assign...
+  create user groups, assign to a group
 
 feedback from Durban translatathon:
   regenerate Pootle PO files on web
   autocreate POT files when packaging
-  upload SA translations
-  word counts, not just string counts
-  some timeouts
   automatic tips for things like accelerators
   tutorial PO file
-  search failing on assigns, message is cryptic
-  stats on translation
 
