@@ -353,6 +353,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
       goalnames = self.argdict.pop("editgoal", None)
       goalusers = self.argdict.pop("editfileuser", "")
       goalfile = self.argdict.pop("editgoalfile", None)
+      assignwhich = self.argdict.pop("edituserwhich", "all")
       if not goalfile:
         raise ValueError("cannot add user to file for goal, no filename given")
       if self.dirname:
@@ -364,6 +365,12 @@ class ProjectIndex(pagelayout.PootleNavPage):
         goalnames = [goalnames]
       goalnames = [goalname.strip() for goalname in goalnames if goalname.strip()]
       search = pootlefile.Search(dirfilter=goalfile)
+      if assignwhich == "all":
+        pass
+      elif assignwhich == "untranslated":
+        search.matchnames = ["fuzzy", "blank"]
+      else:
+        raise ValueError("unexpected assignwhich")
       for goalname in goalnames:
         action = "goal-" + goalname
         self.project.reassignpoitems(self.session, search, goalusers, action)
@@ -677,8 +684,10 @@ class ProjectIndex(pagelayout.PootleNavPage):
             allowmulti = widgets.HiddenFieldList({"allowmultikey": "editfileuser"})
             multilink = widgets.Link("#", self.localize("Select Multiple"), {"onclick": multiscript})
             userselect = [userselect, multilink, allowmulti]
+          assignwhichoptions = [('all', self.localize("All Strings")), ('untranslated', self.localize("Untranslated"))]
+          assignwhich = widgets.Select({"name": "edituserwhich", "value": "all"}, assignwhichoptions)
           editfileuser = widgets.Input({"type": "submit", "name": "doedituser", "value": self.localize("Assign To")})
-          changeuser = [userselect, editfileuser]
+          changeuser = [userselect, assignwhich, editfileuser]
         else:
           changeuser = []
         goalform = widgets.Form([editgoalfile, goalselect, editfilegoal, changeuser], {"action": "", "name":goalformname})
