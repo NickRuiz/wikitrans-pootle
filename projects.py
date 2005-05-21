@@ -676,17 +676,21 @@ class TranslationProject:
     """returns whether any items in the pofilename match the search (based on collected stats etc)"""
     if search.dirfilter is not None and not pofilename.startswith(search.dirfilter):
       return False
+    # search.assignedto == [None] means assigned to nobody
     if search.assignedto or search.assignedaction:
-      assigns = self.pofiles[pofilename].getassigns()
-      if search.assignedto is not None:
-        if search.assignedto not in assigns:
-          return False
-        assigns = assigns[search.assignedto]
+      if search.assignedto == [None]:
+        assigns = self.pofiles[pofilename].getunassigned(search.assignedaction)
       else:
-        assigns = reduce(lambda x, y: x+y, [userassigns.keys() for userassigns in assigns.values()], [])
-      if search.assignedaction is not None:
-        if search.assignedaction not in assigns:
-          return False
+        assigns = self.pofiles[pofilename].getassigns()
+        if search.assignedto is not None:
+          if search.assignedto not in assigns:
+            return False
+          assigns = assigns[search.assignedto]
+        else:
+          assigns = reduce(lambda x, y: x+y, [userassigns.keys() for userassigns in assigns.values()], [])
+        if search.assignedaction is not None:
+          if search.assignedaction not in assigns:
+            return False
     if search.matchnames:
       postats = self.getpostats(pofilename)
       matches = False

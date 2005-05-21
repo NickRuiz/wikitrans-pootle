@@ -489,6 +489,33 @@ class pootlefile(po.pofile):
     self.savependingfile()
     self.reclassifyelement(item)
 
+  def getitemslen(self):
+    """gets the number of items in the file"""
+    # TODO: simplify this, and use wherever its needed
+    if hasattr(self, "transelements"):
+      return len(self.transelements)
+    elif hasattr(self, "stats") and "total" in self.stats:
+      return len(self.stats["total"])
+    elif hasattr(self, "classify") and "total" in self.classify:
+      return len(self.classify["total"])
+    else:
+      # we hadn't read stats...
+      return len(self.getstats()["total"])
+
+  def getunassigned(self, action=None):
+    """gets all strings that are unassigned (for the given action if given)"""
+    unassigneditems = range(0, self.getitemslen())
+    assigns = self.getassigns()
+    for username in self.assigns:
+      if action is not None:
+        assigneditems = self.assigns[username].get(action, [])
+      else:
+        assigneditems = []
+        for action, actionitems in self.assigns[username].iteritems():
+          assigneditems += actionitems
+      unassigneditems = [item for item in unassigneditems if item not in assigneditems]
+    return unassigneditems
+
   def iteritems(self, search, lastitem=None):
     """iterates through the items in this pofile starting after the given lastitem, using the given search"""
     # update stats if required
@@ -500,20 +527,24 @@ class pootlefile(po.pofile):
     maxitem = len(self.transelements)
     validitems = range(minitem, maxitem)
     if search.assignedto or search.assignedaction: 
-      # filter based on assign criteria
-      self.getassigns()
-      if search.assignedto:
-        usernames = [search.assignedto]
+      # search.assignedto == [None] means assigned to nobody
+      if search.assignedto == [None]:
+        assignitems = self.getunassigned(search.assignedaction)
       else:
-        usernames = self.assigns.iterkeys()
-      assignitems = []
-      for username in usernames:
-        if search.assignedaction:
-          actionitems = self.assigns[username].get(search.assignedaction, [])
-          assignitems.extend(actionitems)
+        # filter based on assign criteria
+        self.getassigns()
+        if search.assignedto:
+          usernames = [search.assignedto]
         else:
-          for actionitems in self.assigns[username].itervalues():
+          usernames = self.assigns.iterkeys()
+        assignitems = []
+        for username in usernames:
+          if search.assignedaction:
+            actionitems = self.assigns[username].get(search.assignedaction, [])
             assignitems.extend(actionitems)
+          else:
+            for actionitems in self.assigns[username].itervalues():
+              assignitems.extend(actionitems)
       validitems = [item for item in validitems if item in assignitems]
     # loop through, filtering on matchnames if required
     for item in validitems:
