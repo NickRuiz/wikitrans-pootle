@@ -205,8 +205,11 @@ class UsersAdminPage(pagelayout.PootlePage):
     users.setcell(0, 4, table.TableCell(pagelayout.Title(self.localize("Activated"))))
     # users.setcell(0, 3, table.TableCell(pagelayout.Title(self.localize("Projects"))))
     # users.setcell(0, 4, table.TableCell(pagelayout.Title(self.localize("Languages"))))
-    for username, usernode in self.users.iteritems():
-      if username == "__dummy__":
+    usernames = [username for username, userprefs in self.users.iteritems() if username != "__dummy__"]
+    usernames.sort()
+    for username in usernames:
+      usernode = getattr(self.users, username, None)
+      if not usernode:
         continue
       fullnametextbox = widgets.Input({"name": "userfullname-%s" % username, "value": getattr(usernode, "name", "")})
       emailtextbox = widgets.Input({"name": "useremail-%s" % username, "value": getattr(usernode, "email", "")})
