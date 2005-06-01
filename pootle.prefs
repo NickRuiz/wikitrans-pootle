@@ -79,10 +79,26 @@ Pootle:
   # Special characters used by the language that you wish users to be able to
   # see then they are editing translations. Usefull for people who do not have
   # a properly configured keyboard for the language.
+  # 
+  #   nplurals = 2
+  # This defines the number of plural forms for the language.  You need this in
+  # order to edit plural form messages.  Don't know about plural forms? Read
+  # about them in the Gettext manual.  This value will also be used to set the
+  # value in the PO header if it is not already set.  Also note that the header
+  # value should take precident no matter what is set here.
+  #
+  #   pluralequation = "(n != 1)"
+  # As above in nplural this relates to plural forms.  This defines the
+  # equation that the application will use to determine which one of the N
+  # plurals it should use.  If you are unsure of what value to use have a look
+  # in other PO files for your language.
+  # 
   languages:
     af:
       fullname = "Afrikaans"
       specialchars = "ÄËÏÖÜäëïöü ÂÊÎÔÛâêîôû"
+      nplurals = 2
+      pluralequation = "(n != 1)"
     en.fullname = 'English'
     vi.fullname = 'Vietnamese'
 
