@@ -203,6 +203,16 @@ class POTree:
     languagecodes.sort()
     return languagecodes
 
+  def getlanguages(self, projectcode=None, sortbyname=True):
+    """gets a list of (languagecode, languagename) tuples"""
+    languagecodes = self.getlanguagecodes(projectcode)
+    if sortbyname:
+      languages = [(self.getlanguagename(languagecode), languagecode) for languagecode in languagecodes]
+      languages.sort()
+      return [(languagecode, languagename) for languagename, languagecode in languages]
+    else:
+      return [(languagecode, self.getlanguagename(languagecode)) for languagecode in languagecodes]
+
   def getprojectcodes(self, languagecode=None):
     """returns a list of project codes that are valid for the given languagecode or all projects"""
     projectcodes = [projectcode for projectcode, projectprefs in self.projects.iteritems()]

@@ -51,8 +51,7 @@ class PootleIndex(pagelayout.PootlePage):
     """gets the links to the languages"""
     languagestitle = pagelayout.Title(widgets.Link("languages/", self.localize('Languages')))
     languagelinks = []
-    for languagecode in self.potree.getlanguagecodes():
-      languagename = self.potree.getlanguagename(languagecode)
+    for languagecode, languagename in self.potree.getlanguages():
       languagelink = widgets.Link(languagecode+"/", languagename)
       languagelinks.append(languagelink)
     listwidget = widgets.SeparatedList(languagelinks, ", ")
@@ -135,7 +134,7 @@ class LanguagesIndex(PootleIndex):
     """gets the links to the languages"""
     languagestitle = pagelayout.Title(self.localize("Languages"))
     languagelinks = []
-    for languagecode in self.potree.getlanguagecodes():
+    for languagecode, languagename in self.potree.getlanguages():
       languagename = self.potree.getlanguagename(languagecode)
       languagelink = widgets.Link("../%s/" % languagecode, languagename)
       languagelinks.append(languagelink)
@@ -207,14 +206,13 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
 
   def getlanguagelinks(self):
     """gets the links to the languages"""
-    languagecodes = self.potree.getlanguagecodes(self.projectcode)
-    self.languagecount = len(languagecodes)
-    languageitems = [self.getlanguageitem(languagecode) for languagecode in languagecodes]
+    languages = self.potree.getlanguages(self.projectcode)
+    self.languagecount = len(languages)
+    languageitems = [self.getlanguageitem(languagecode, languagename) for languagecode, languagename in languages]
     self.polarizeitems(languageitems)
     return languageitems
 
-  def getlanguageitem(self, languagecode):
-    languagename = self.potree.getlanguagename(languagecode)
+  def getlanguageitem(self, languagecode, languagename):
     languagetitle = pagelayout.Title(widgets.Link("../../%s/%s/" % (languagecode, self.projectcode), languagename))
     languageicon = self.geticon("language")
     body = pagelayout.ContentsItem([languageicon, languagetitle])

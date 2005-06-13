@@ -82,8 +82,7 @@ class LanguagesAdminPage(pagelayout.PootlePage):
     languages.setcell(0, 3, table.TableCell(pagelayout.Title(self.localize("Number of Plurals"))))
     languages.setcell(0, 4, table.TableCell(pagelayout.Title(self.localize("Plural Equation"))))
     languages.setcell(0, 5, table.TableCell(pagelayout.Title(self.localize("Remove language"))))
-    for languagecode in self.potree.getlanguagecodes():
-      languagename = self.potree.getlanguagename(languagecode)
+    for languagecode, languagename in self.potree.getlanguages():
       languagespecialchars = self.potree.getlanguagespecialchars(languagecode)
       languagenplurals = self.potree.getlanguagenplurals(languagecode)
       languagepluralequation = self.potree.getlanguagepluralequation(languagecode)
@@ -275,12 +274,11 @@ class ProjectAdminPage(pagelayout.PootlePage):
 
   def getlanguagelinks(self):
     """gets the links to the languages"""
-    languagecodes = self.potree.getlanguagecodes(self.projectcode)
-    languageitems = [self.getlanguageitem(languagecode) for languagecode in languagecodes]
+    languages = self.potree.getlanguages(self.projectcode)
+    languageitems = [self.getlanguageitem(languagecode, languagename) for languagecode, languagename in languages]
     return pagelayout.Item(languageitems)
 
-  def getlanguageitem(self, languagecode):
-    languagename = self.potree.getlanguagename(languagecode)
+  def getlanguageitem(self, languagecode, languagename):
     adminlink = widgets.Link("../../%s/%s/admin.html" % (languagecode, self.projectcode), languagename)
     updatelink = widgets.Link("?doupdatelanguage=1&updatelanguage=%s" % languagecode, self.localize("Update from templates"))
     return pagelayout.ItemDescription([adminlink, updatelink])
