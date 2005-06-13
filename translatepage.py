@@ -34,6 +34,8 @@ class TranslatePage(pagelayout.PootleNavPage):
     self.instance = session.instance
     self.lastitem = None
     self.pofilename = self.argdict.pop("pofilename", None)
+    if self.pofilename is None and self.dirfilter is not None and self.dirfilter.endswith(".po"):
+      self.pofilename = self.dirfilter
     self.receivetranslations()
     # TODO: clean up modes to be one variable
     self.viewmode = self.argdict.get("view", 0) and "view" in self.rights
