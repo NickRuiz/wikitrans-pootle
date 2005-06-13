@@ -85,3 +85,7 @@ new:
     let people "take" a file (self-assign) if not being managed
   let setting up project be totally automatic...
 
+suggestions from list:
+  search and replace across a whole file
+  translator comments / tagging of strings
+
