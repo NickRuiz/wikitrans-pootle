@@ -88,4 +88,6 @@ new:
 suggestions from list:
   search and replace across a whole file
   translator comments / tagging of strings
+  translation of language names (do the whole iso codes list)
+  drop-down list for languages (improve selection)
 
