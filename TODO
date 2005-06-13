@@ -73,3 +73,15 @@ feedback from Durban translatathon:
   automatic tips for things like accelerators
   tutorial PO file
 
+new:
+  add equivalent management of pot files
+    - rights
+    - uploading, updating from CVS etc
+    ? able to have multiple pot repositories
+  new rights model:
+    maintainer of a whole project (all languages)
+    global goals for all languages
+    admins for a whole language - accept translators etc
+    let people "take" a file (self-assign) if not being managed
+  let setting up project be totally automatic...
+
