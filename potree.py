@@ -312,7 +312,7 @@ class POTree:
     projectprefs = getattr(self.projects, projectcode)
     setattr(projectprefs, "createmofiles", projectcreatemofiles)
 
-  def hasgnufiles(self, podir, languagecode=None):
+  def hasgnufiles(self, podir, languagecode=None, depth=0, maxdepth=3):
     """returns whether this directory contains gnu-style PO filenames for the given language"""
     fnames = os.listdir(podir)
     poext = os.extsep + "po"
@@ -326,9 +326,10 @@ class POTree:
       elif fn.endswith(poext):
         if self.languagematch(languagecode, fn[:-len(poext)]):
           return True
-    for subdir in subdirs:
-      if self.hasgnufiles(subdir, languagecode):
-        return True
+    if depth < maxdepth:
+      for subdir in subdirs:
+        if self.hasgnufiles(subdir, languagecode, depth+1, maxdepth):
+          return True
     return False
 
   def getpodir(self, languagecode, projectcode):
