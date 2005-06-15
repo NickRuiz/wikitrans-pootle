@@ -254,6 +254,14 @@ class pootlefile(po.pofile):
     except IOError:
       # TODO: log a warning somewhere. we don't want an error as this is an optimization
       pass
+    self.updatequickstats()
+
+  def updatequickstats(self):
+    """updates the project's quick stats on this file"""
+    translated = self.stats.get("translated")
+    translatedwords = sum([sum(self.msgidwordcounts[item]) for item in translated if 0 <= item < len(self.msgidwordcounts)])
+    totalwords = sum([sum(partcounts) for partcounts in self.msgidwordcounts])
+    self.project.updatequickstats(self.pofilename, translatedwords, len(translated), totalwords, len(self.msgidwordcounts))
 
   def calcstats(self):
     """calculates translation statistics for the given po file"""

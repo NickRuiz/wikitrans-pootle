@@ -81,6 +81,7 @@ class TranslationProject:
     else:
       self.filestyle = "std"
     self.readprefs()
+    self.readquickstats()
     self.scanpofiles()
     self.initindex()
 
@@ -806,6 +807,53 @@ class TranslationProject:
           pofile.unassign(item, assignedto, action)
           assigncount += 1
     return assigncount
+
+  def updatequickstats(self, pofilename, translatedwords, translated, totalwords, total):
+    """updates the quick stats on the given file"""
+    self.quickstats[pofilename] = (translatedwords, translated, totalwords, total)
+    self.savequickstats()
+
+  def savequickstats(self):
+    """saves the quickstats"""
+    self.quickstatsfilename = os.path.join(self.podir, "pootle-%s-%s.stats" % (self.projectcode, self.languagecode))
+    quickstatsfile = open(self.quickstatsfilename, "w")
+    for pofilename, (translatedwords, translated, totalwords, total) in self.quickstats.iteritems():
+      quickstatsfile.write("%s, %d, %d, %d, %d\n" % (pofilename, translatedwords, translated, totalwords, total))
+    quickstatsfile.close()
+
+  def readquickstats(self):
+    """reads the quickstats from disk"""
+    self.quickstats = {}
+    self.quickstatsfilename = os.path.join(self.podir, "pootle-%s-%s.stats" % (self.projectcode, self.languagecode))
+    if os.path.exists(self.quickstatsfilename):
+      quickstatsfile = open(self.quickstatsfilename, "r")
+      for line in quickstatsfile:
+        pofilename, translatedwords, translated, totalwords, total = line.split(",")
+        self.quickstats[pofilename] = tuple([int(a.strip()) for a in translatedwords, translated, totalwords, total])
+
+  def getquickstats(self, pofilenames=None):
+    """gets translated and total stats without doing calculations returning (transwords, transstrings, totalwords, totalstrings)"""
+    if pofilenames is None:
+      pofilenames = self.pofilenames
+    alltranslatedwords, alltranslated, alltotalwords, alltotal = 0, 0, 0, 0
+    slowfiles = []
+    for pofilename in pofilenames:
+      if pofilename not in self.quickstats:
+        slowfiles.append(pofilename)
+        continue
+      translatedwords, translated, totalwords, total = self.quickstats[pofilename]
+      alltranslatedwords += translatedwords
+      alltranslated += translated
+      alltotalwords += totalwords
+      alltotal += total
+    for pofilename in slowfiles:
+      self.pofiles[pofilename].updatequickstats()
+      translatedwords, translated, totalwords, total = self.quickstats[pofilename]
+      alltranslatedwords += translatedwords
+      alltranslated += translated
+      alltotalwords += totalwords
+      alltotal += total
+    return alltranslatedwords, alltranslated, alltotalwords, alltotal
 
   def combinestats(self, pofilenames=None):
     """combines translation statistics for the given po files (or all if None given)"""
