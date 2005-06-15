@@ -295,8 +295,18 @@ class PootleNavPage(PootlePage):
     """returns a sentence summarizing item statistics"""
     translated = projectstats.get("translated", [])
     total = projectstats.get("total", [])
-    translatedwords = project.countwords(translated)
-    totalwords = project.countwords(total)
+    if "translatedwords" in projectstats:
+      translatedwords = projectstats["translatedwords"]
+    else:
+      translatedwords = project.countwords(translated)
+    if "totalwords" in projectstats:
+      totalwords = projectstats["totalwords"]
+    else:
+      totalwords = project.countwords(total)
+    if isinstance(translated, list):
+      translated = len(translated)
+    if isinstance(total, list):
+      total = len(total)
     percentfinished = (translatedwords*100/max(totalwords, 1))
     if numfiles is None:
       filestats = ""
@@ -305,7 +315,7 @@ class PootleNavPage(PootlePage):
     else:
       filestats = self.nlocalize("%d file", "%d files", numfiles) % numfiles + ", "
     wordstats = self.localize("%d/%d words (%d%%) translated") % (translatedwords, totalwords, percentfinished)
-    stringstats = widgets.Span(self.localize("[%d/%d strings]") % (len(translated), len(total)), cls="string-statistics")
+    stringstats = widgets.Span(self.localize("[%d/%d strings]") % (translated, total), cls="string-statistics")
     return [filestats, wordstats, " ", stringstats]
 
 
