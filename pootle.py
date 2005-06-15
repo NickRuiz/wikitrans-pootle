@@ -109,6 +109,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
             class dummyproject:
               checker = stdchecker
               podir = dirname
+              def updatequickstats(*args): pass
             for fname in fnames:
               fpath = os.path.join(dirname, fname)
               if fname.endswith(".po") and not os.path.isdir(fpath):
@@ -119,6 +120,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
           class dummyproject:
             checker = stdchecker
             podir = "."
+            def updatequickstats(*args): pass
           print "refreshing stats for", arg
           projects.pootlefile.pootlefile(dummyproject, arg)
     else:
