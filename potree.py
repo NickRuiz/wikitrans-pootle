@@ -332,6 +332,28 @@ class POTree:
           return True
     return False
 
+  def getcodesfordir(self, dirname):
+    """returns projectcode and languagecode if dirname is a project directory"""
+    canonicalpath = lambda path: os.path.normcase(os.path.normpath(os.path.realpath(os.path.abspath(path))))
+    dirname = canonicalpath(dirname)
+    podirectory = canonicalpath(self.podirectory)
+    if dirname == podirectory:
+      return "*", None
+    for projectcode, projectprefs in self.projects.iteritems():
+      projectdir = canonicalpath(os.path.join(self.podirectory, projectcode))
+      print dirname, projectdir
+      if projectdir == dirname:
+        return projectcode, None
+      for languagecode, languageprefs in self.languages.iteritems():
+        languagedir = canonicalpath(os.path.join(projectdir, languagecode))
+        if not os.path.exists(languagedir):
+          languagedirs = [canonicalpath(languagedir) for languagedir in os.listdir(projectdir) if self.languagematch(languagecode, languagedir)]
+          if dirname in languagedirs:
+            return projectcode, languagecode
+        elif languagedir == dirname:
+          return projectcode, languagecode
+    return None, None
+
   def getpodir(self, languagecode, projectcode):
     """returns the base directory containing po files for the project"""
     projectdir = os.path.join(self.podirectory, projectcode)
