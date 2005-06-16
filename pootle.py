@@ -23,6 +23,27 @@ import sys
 import os
 import random
 
+class DummyStatsProject(projects.TranslationProject):
+  """a project that is just being used for refresh of statistics"""
+  def __init__(self, podir, checker, projectcode=None, languagecode=None):
+    """initializes the project with the given podir"""
+    self.podir = podir
+    self.checker = checker
+    self.projectcode = projectcode
+    self.languagecode = languagecode
+    self.readquickstats()
+
+  def readquickstats(self):
+    """reads statistics from whatever files are available"""
+    self.quickstats = {}
+    if self.projectcode is not None and self.languagecode is not None:
+      projects.TranslationProject.readquickstats(self)
+
+  def savequickstats(self):
+    """saves quickstats if possible"""
+    if self.projectcode is not None and self.languagecode is not None:
+      projects.TranslationProject.savequickstats(self)
+
 class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheServer):
   """the Server that serves the Pootle Pages"""
   def __init__(self, instance, webserver, sessioncache=None, errorhandler=None, loginpageclass=users.LoginPage):
@@ -105,22 +126,22 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
         if not os.path.exists(arg):
           print "file not found:", arg
         if os.path.isdir(arg):
+          if not arg.endswith(os.sep):
+            arg += os.sep
+          projectcode, languagecode = self.potree.getcodesfordir(arg)
+          dummyproject = DummyStatsProject(arg, stdchecker, projectcode, languagecode)
           def refreshdir(dummy, dirname, fnames):
-            class dummyproject:
-              checker = stdchecker
-              podir = dirname
-              def updatequickstats(*args): pass
+            reldirname = dirname.replace(dummyproject.podir, "")
             for fname in fnames:
-              fpath = os.path.join(dirname, fname)
-              if fname.endswith(".po") and not os.path.isdir(fpath):
+              fpath = os.path.join(reldirname, fname)
+              if fname.endswith(".po") and not os.path.isdir(os.path.join(dummyproject.podir, fpath)):
                 print "refreshing stats for", fpath
-                projects.pootlefile.pootlefile(dummyproject, fname)
+                projects.pootlefile.pootlefile(dummyproject, fpath).updatequickstats()
           os.path.walk(arg, refreshdir, None)
+          if projectcode and languagecode:
+            dummyproject.savequickstats()
         elif os.path.isfile(arg):
-          class dummyproject:
-            checker = stdchecker
-            podir = "."
-            def updatequickstats(*args): pass
+          dummyproject = DummyStatsProject(".", stdchecker)
           print "refreshing stats for", arg
           projects.pootlefile.pootlefile(dummyproject, arg)
     else:
