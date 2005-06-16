@@ -832,7 +832,7 @@ class TranslationProject:
         self.quickstats[pofilename] = tuple([int(a.strip()) for a in translatedwords, translated, totalwords, total])
 
   def getquickstats(self, pofilenames=None):
-    """gets translated and total stats without doing calculations returning (transwords, transstrings, totalwords, totalstrings)"""
+    """gets translated and total stats and wordcouts without doing calculations returning dictionary"""
     if pofilenames is None:
       pofilenames = self.pofilenames
     alltranslatedwords, alltranslated, alltotalwords, alltotal = 0, 0, 0, 0
@@ -853,7 +853,7 @@ class TranslationProject:
       alltranslated += translated
       alltotalwords += totalwords
       alltotal += total
-    return alltranslatedwords, alltranslated, alltotalwords, alltotal
+    return {"translatedwords": alltranslatedwords, "translated": alltranslated, "totalwords": alltotalwords, "total": alltotal}
 
   def combinestats(self, pofilenames=None):
     """combines translation statistics for the given po files (or all if None given)"""

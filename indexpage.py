@@ -177,9 +177,8 @@ class LanguageIndex(pagelayout.PootleNavPage):
     body = pagelayout.ContentsItem([projecticon, projecttitle])
     project = self.potree.getproject(self.languagecode, projectcode)
     numfiles = len(project.pofilenames)
-    translatedwords, totalwords, translated, total = project.getquickstats()
-    projectstats = {"translated": translated, "translatedwords": translatedwords, "total": total, "totalwords": totalwords}
-    self.updatepagestats(translatedwords, totalwords)
+    projectstats = project.getquickstats()
+    self.updatepagestats(projectstats["translatedwords"], projectstats["totalwords"])
     stats = pagelayout.ItemStatistics(self.describestats(project, projectstats, numfiles))
     return pagelayout.Item([body, stats])
 
