@@ -90,4 +90,5 @@ suggestions from list:
   translator comments / tagging of strings
   translation of language names (do the whole iso codes list)
   drop-down list for languages (improve selection)
-
+  simple way to see the plural definition for a language
+  validate plurals against KBabel/msginit entries
