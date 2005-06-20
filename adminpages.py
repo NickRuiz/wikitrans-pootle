@@ -295,8 +295,9 @@ class ProjectAdminPage(pagelayout.PootlePage):
     existingcodes = self.potree.getlanguagecodes(self.projectcode)
     allcodes = self.potree.getlanguagecodes()
     newcodes = [code for code in allcodes if not code in existingcodes]
-    newcodes.sort()
-    newoptions = [(code, self.potree.getlanguagename(code)) for code in newcodes]
+    newoptions = [(self.potree.getlanguagename(code), code) for code in newcodes]
+    newoptions.sort()
+    newoptions = [(code, languagename) for (languagename, code) in newoptions]
     languageselect = widgets.Select({'name':'newlanguage'}, options=newoptions)
     submitbutton = widgets.Input({"type": "submit", "name": "doaddlanguage", "value": self.localize("Add Language")})
     newlangform = widgets.Form([languageselect, submitbutton], {"action": "", "name":"newlangform"})

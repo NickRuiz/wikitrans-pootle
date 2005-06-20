@@ -94,9 +94,7 @@ class UserOptions(pagelayout.PootlePage):
     languagestitle = pagelayout.Title(self.localize("My Languages"))
     languageoptions = []
     userlanguages = self.session.getlanguages()
-    for languagecode in self.potree.getlanguagecodes():
-      languagename = self.potree.getlanguagename(languagecode)
-      languageoptions.append((languagecode, languagename))
+    languageoptions = self.potree.getlanguages()
     languageselect = widgets.MultiSelect({"value": userlanguages, "name": "languages"}, languageoptions)
     bodydescription = pagelayout.ItemDescription(languageselect)
     return pagelayout.Contents([languagestitle, bodydescription])
