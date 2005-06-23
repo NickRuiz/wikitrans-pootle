@@ -638,3 +638,7 @@ class Search:
     self.assignedaction = assignedaction
     self.searchtext = searchtext
 
+  def copy(self):
+    """returns a copy of this search"""
+    return Search(self.dirfilter, self.matchnames, self.assignedto, self.assignedaction, self.searchtext)
+
