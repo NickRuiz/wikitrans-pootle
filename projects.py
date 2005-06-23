@@ -604,54 +604,49 @@ class TranslationProject:
     self.indexdir = os.path.join(self.podir, ".poindex-%s-%s" % (self.projectcode, self.languagecode))
     class indexconfig:
       indexdir = self.indexdir
-    self.indexer = indexer.Indexer(indexconfig)
-    self.searcher = indexer.Searcher(self.indexdir)
-    self.indexer.startIndex()
-    try:
-      addlist, deletelist = [], []
-      for pofilename in self.pofiles:
-        self.updateindex(pofilename, addlist, deletelist)
-      if deletelist:
-        for docid in deletelist:
-          self.indexer.deleteDoc(docid)
-      if addlist:
-        self.indexer.indexFields(addlist)
-    finally:
-      self.indexer.commitIndex()
+    self.analyzer = indexer.PerFieldAnalyzer([("pofilename", indexer.ExactAnalyzer())])
+    self.indexer = indexer.Indexer(indexconfig, analyzer=self.analyzer)
+    self.searcher = indexer.Searcher(self.indexdir, analyzer=self.analyzer)
+    for pofilename in self.pofiles:
+      self.updateindex(pofilename)
 
-  def updateindex(self, pofilename, addlist, deletelist):
+  def updateindex(self, pofilename):
     """updates the index with the contents of pofilename"""
     if not indexer.HAVE_PYLUCENE:
       return
     needsupdate = True
     pofile = self.pofiles[pofilename]
     # check if the pomtime in the index == the latest pomtime
-    hits = self.searcher.searchField("pofilename", pofilename, ["pomtime", "pofilename", "itemno"])
     pomtime = pootlefile.getmodtime(pofile.filename)
-    print pomtime, hits, pofilename
-    for doc in hits:
-      print doc["pomtime"], str(pomtime)
-      if doc.get("pomtime") == str(pomtime):
-        needsupdate = False
-    print "needsupdate", needsupdate
-    if needsupdate:
-      for doc in hits:
-        docid = (doc["pofilename"], doc["itemno"])
-        deletelist.append(docid)
-      pofile.pofreshen()
-      for itemno, thepo in enumerate(pofile.transelements):
-        doc = {"pofilename": pofilename, "pomtime": str(pomtime), "itemno": str(itemno)}
-        if thepo.hasplural():
-          orig = self.unquotefrompo(thepo.msgid) + "\n" + self.unquotefrompo(thepo.msgid_plural)
-          trans = self.unquotefrompo(thepo.msgstr)
-          if isinstance(trans, dict):
-            trans = "\n".join(trans.itervalues())
-        else:
-          orig = self.unquotefrompo(thepo.msgid)
-          trans = self.unquotefrompo(thepo.msgstr)
-        doc["msgid"] = orig
-        doc["msgstr"] = trans
-        addlist.append(doc)
+    pofilenamequery = self.searcher.makeQuery([("pofilename", pofilename)], True)
+    pomtimequery = self.searcher.makeQuery([("pomtime", str(pomtime))], True)
+    gooditemsquery = self.searcher.makeQuery([pofilenamequery, pomtimequery], True)
+    gooditems = self.searcher.search(gooditemsquery, "itemno")
+    allitems = self.searcher.search(pofilenamequery, "itemno")
+    if len(gooditems) == len(allitems) == pofile.getitemslen():
+      return
+    self.searcher.deleteDoc({"pofilename": pofilename})
+    pofile.pofreshen()
+    addlist = []
+    for itemno, thepo in enumerate(pofile.transelements):
+      doc = {"pofilename": pofilename, "pomtime": str(pomtime), "itemno": str(itemno)}
+      if thepo.hasplural():
+        orig = self.unquotefrompo(thepo.msgid) + "\n" + self.unquotefrompo(thepo.msgid_plural)
+        trans = self.unquotefrompo(thepo.msgstr)
+        if isinstance(trans, dict):
+          trans = "\n".join(trans.itervalues())
+      else:
+        orig = self.unquotefrompo(thepo.msgid)
+        trans = self.unquotefrompo(thepo.msgstr)
+      doc["msgid"] = orig
+      doc["msgstr"] = trans
+      addlist.append(doc)
+    if addlist:
+      self.indexer.startIndex()
+      try:
+        self.indexer.indexFields(addlist)
+      finally:
+        self.indexer.commitIndex()
 
   def matchessearch(self, pofilename, search):
     """returns whether any items in the pofilename match the search (based on collected stats etc)"""
@@ -682,15 +677,15 @@ class TranslationProject:
         return False
     if indexer.HAVE_PYLUCENE and search.searchtext:
       # TODO: move this up a level, use index to manage whole search
-      origquery = indexer.PyLucene.QueryParser.parse(search.searchtext, "msgid", self.indexer.analyzer)
-      transquery = indexer.PyLucene.QueryParser.parse(search.searchtext, "msgstr", self.indexer.analyzer)
-      textquery = indexer.PyLucene.BooleanQuery()
-      textquery.add(origquery, False, False)
-      textquery.add(transquery, False, False)
-      hits = self.searcher.search(textquery)
-      print "ran search %s, got %d hits" % (search.searchtext, hits.length())
-      for hit in xrange(hits.length()):
-        if hits.doc(hit).get("filename") == pofilename:
+      textquery = self.searcher.makeQuery([("msgid", search.searchtext), ("msgstr", search.searchtext)], False)
+      filequery = self.searcher.makeQuery([("pofilename", pofilename)], True)
+      limitedquery = self.searcher.makeQuery([textquery, filequery], True)
+      hits = self.searcher.search(limitedquery)
+      hits = self.searcher.extractFieldsFromSearch(hits, "pofilename")
+      # hits = self.searcher.searchFields([("msgid", search.searchtext), ("msgstr", search.searchtext)], ["pofilename"])
+      print "ran search %s, got %d hits" % (search.searchtext, len(hits))
+      for hit in hits:
+        if hit["pofilename"] == pofilename:
           return True
       return False
     return True
