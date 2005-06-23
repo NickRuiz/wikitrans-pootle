@@ -690,16 +690,6 @@ class TranslationProject:
           matches = True
       if not matches:
         return False
-    if indexer.HAVE_PYLUCENE and search.searchtext:
-      # TODO: move this up a level, use index to manage whole search, so we don't do this twice
-      filesearch = search.copy()
-      filesearch.dirfilter = pofilename
-      hits = self.indexsearch(filesearch, "pofilename")
-      print "ran search %s, got %d hits" % (search.searchtext, len(hits))
-      for hit in hits:
-        if hit["pofilename"] == pofilename:
-          return True
-      return False
     return True
 
   def indexsearch(self, search, returnfields):
@@ -723,7 +713,17 @@ class TranslationProject:
     if lastpofilename and not lastpofilename in self.pofiles:
       # accessing will autoload this file...
       self.pofiles[lastpofilename]
+    if indexer.HAVE_PYLUCENE and search.searchtext:
+      # TODO: move this up a level, use index to manage whole search, so we don't do this twice
+      hits = self.indexsearch(search, "pofilename")
+      print "ran search %s, got %d hits" % (search.searchtext, len(hits))
+      searchpofilenames = dict.fromkeys([hit["pofilename"] for hit in hits])
+    else:
+      searchpofilenames = None
     for pofilename in self.iterpofilenames(lastpofilename, includelast):
+      if searchpofilenames is not None:
+        if pofilename not in searchpofilenames:
+          continue
       if self.matchessearch(pofilename, search):
         yield pofilename
 
