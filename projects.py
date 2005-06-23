@@ -607,11 +607,14 @@ class TranslationProject:
     self.analyzer = indexer.PerFieldAnalyzer([("pofilename", indexer.ExactAnalyzer())])
     self.indexer = indexer.Indexer(indexconfig, analyzer=self.analyzer)
     self.searcher = indexer.Searcher(self.indexdir, analyzer=self.analyzer)
-    for pofilename in self.pofiles:
-      self.updateindex(pofilename)
+    pofilenames = self.pofiles.keys()
+    pofilenames.sort()
+    for pofilename in pofilenames:
+      self.updateindex(pofilename, optimize=False)
+    self.indexer.optimizeIndex()
 
-  def updateindex(self, pofilename):
-    """updates the index with the contents of pofilename"""
+  def updateindex(self, pofilename, items=None, optimize=True):
+    """updates the index with the contents of pofilename (limit to items if given)"""
     if not indexer.HAVE_PYLUCENE:
       return
     needsupdate = True
@@ -620,16 +623,27 @@ class TranslationProject:
     pomtime = pootlefile.getmodtime(pofile.filename)
     pofilenamequery = self.searcher.makeQuery([("pofilename", pofilename)], True)
     pomtimequery = self.searcher.makeQuery([("pomtime", str(pomtime))], True)
+    if items is not None:
+      itemsquery = self.searcher.makeQuery([("itemno", str(itemno)) for itemno in items], False)
     gooditemsquery = self.searcher.makeQuery([pofilenamequery, pomtimequery], True)
     gooditems = self.searcher.search(gooditemsquery, "itemno")
     allitems = self.searcher.search(pofilenamequery, "itemno")
-    if len(gooditems) == len(allitems) == pofile.getitemslen():
-      return
-    print "updating", self.languagecode, "index for", pofilename
-    self.searcher.deleteDoc({"pofilename": pofilename})
+    if items is None:
+      if len(gooditems) == len(allitems) == pofile.getitemslen():
+        return
+      print "updating", self.projectcode, self.languagecode, "index for", pofilename
+      self.searcher.deleteDoc({"pofilename": pofilename})
+    else:
+      if len(gooditems) == len(allitems) == len(items):
+        return
+      print "updating", self.languagecode, "index for", pofilename, "items", items
+      self.searcher.deleteDoc([pofilenamequery, itemsquery])
     pofile.pofreshen()
     addlist = []
-    for itemno, thepo in enumerate(pofile.transelements):
+    if items is None:
+      items = range(len(pofile.transelements))
+    for itemno in items:
+      thepo = pofile.transelements[itemno]
       doc = {"pofilename": pofilename, "pomtime": str(pomtime), "itemno": str(itemno)}
       if thepo.hasplural():
         orig = self.unquotefrompo(thepo.msgid) + "\n" + self.unquotefrompo(thepo.msgid_plural)
@@ -647,7 +661,7 @@ class TranslationProject:
       try:
         self.indexer.indexFields(addlist)
       finally:
-        self.indexer.commitIndex()
+        self.indexer.commitIndex(optimize=optimize)
 
   def matchessearch(self, pofilename, search):
     """returns whether any items in the pofilename match the search (based on collected stats etc)"""
@@ -816,7 +830,9 @@ class TranslationProject:
     """saves the quickstats"""
     self.quickstatsfilename = os.path.join(self.podir, "pootle-%s-%s.stats" % (self.projectcode, self.languagecode))
     quickstatsfile = open(self.quickstatsfilename, "w")
-    for pofilename, (translatedwords, translated, totalwords, total) in self.quickstats.iteritems():
+    sortedquickstats = self.quickstats.items()
+    sortedquickstats.sort()
+    for pofilename, (translatedwords, translated, totalwords, total) in sortedquickstats:
       quickstatsfile.write("%s, %d, %d, %d, %d\n" % (pofilename, translatedwords, translated, totalwords, total))
     quickstatsfile.close()
 
@@ -975,6 +991,7 @@ class TranslationProject:
     pofile.track(item, "edited by %s" % session.username)
     languageprefs = getattr(session.instance.languages, self.languagecode, None)
     pofile.setmsgstr(item, trans, session.prefs, languageprefs)
+    self.updateindex(pofilename, [item])
 
   def suggesttranslation(self, pofilename, item, trans, session):
     """stores a new suggestion for a translation..."""
