@@ -587,7 +587,7 @@ class TranslationProject:
 
   def iterpofilenames(self, lastpofilename=None, includelast=False):
     """iterates through the pofilenames starting after the given pofilename"""
-    if lastpofilename is None:
+    if not lastpofilename:
       index = 0
     else:
       index = self.pofilenames.index(lastpofilename)
@@ -625,6 +625,7 @@ class TranslationProject:
     allitems = self.searcher.search(pofilenamequery, "itemno")
     if len(gooditems) == len(allitems) == pofile.getitemslen():
       return
+    print "updating", self.languagecode, "index for", pofilename
     self.searcher.deleteDoc({"pofilename": pofilename})
     pofile.pofreshen()
     addlist = []
@@ -676,19 +677,32 @@ class TranslationProject:
       if not matches:
         return False
     if indexer.HAVE_PYLUCENE and search.searchtext:
-      # TODO: move this up a level, use index to manage whole search
-      textquery = self.searcher.makeQuery([("msgid", search.searchtext), ("msgstr", search.searchtext)], False)
-      filequery = self.searcher.makeQuery([("pofilename", pofilename)], True)
-      limitedquery = self.searcher.makeQuery([textquery, filequery], True)
-      hits = self.searcher.search(limitedquery)
-      hits = self.searcher.extractFieldsFromSearch(hits, "pofilename")
-      # hits = self.searcher.searchFields([("msgid", search.searchtext), ("msgstr", search.searchtext)], ["pofilename"])
+      # TODO: move this up a level, use index to manage whole search, so we don't do this twice
+      filesearch = search.copy()
+      filesearch.dirfilter = pofilename
+      hits = self.indexsearch(filesearch, "pofilename")
       print "ran search %s, got %d hits" % (search.searchtext, len(hits))
       for hit in hits:
         if hit["pofilename"] == pofilename:
           return True
       return False
     return True
+
+  def indexsearch(self, search, returnfields):
+    """returns the results from searching the index with the given search"""
+    if not indexer.HAVE_PYLUCENE:
+      return False
+    searchparts = []
+    if search.searchtext:
+      textquery = self.searcher.makeQuery([("msgid", search.searchtext), ("msgstr", search.searchtext)], False)
+      searchparts.append(textquery)
+    if search.dirfilter:
+      pofilenames = self.browsefiles(dirfilter=search.dirfilter)
+      filequery = self.searcher.makeQuery([("pofilename", pofilename) for pofilename in pofilenames], False)
+      searchparts.append(filequery)
+    # TODO: add other search items
+    limitedquery = self.searcher.makeQuery(searchparts, True)
+    return self.searcher.search(limitedquery, returnfields)
 
   def searchpofilenames(self, lastpofilename, search, includelast=False):
     """find the next pofilename that has items matching the given search"""
@@ -705,7 +719,16 @@ class TranslationProject:
       pogrepfilter = pogrep.pogrepfilter(search.searchtext, None, ignorecase=True)
     for pofilename in self.searchpofilenames(pofilename, search, includelast=True):
       pofile = self.getpofile(pofilename)
-      for item in pofile.iteritems(search, item):
+      if indexer.HAVE_PYLUCENE:
+        filesearch = search.copy()
+        filesearch.dirfilter = pofilename
+        hits = self.indexsearch(filesearch, "itemno")
+        items = [int(doc["itemno"]) for doc in hits]
+        items = [searchitem for searchitem in items if searchitem > item]
+        items.sort()
+      else:
+        items = pofile.iteritems(search, item)
+      for item in items:
         # TODO: move this to iteritems
         if search.searchtext:
           thepo = pofile.transelements[item]
