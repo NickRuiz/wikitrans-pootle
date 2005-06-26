@@ -5,6 +5,7 @@ from jToolkit.web import session
 from jToolkit import prefs
 from jToolkit import localize
 from jToolkit.widgets import widgets
+from jToolkit.web import simplewebserver
 try:
   from jToolkit.web import templateserver
 except ImportError:
@@ -360,20 +361,24 @@ def main_is_frozen():
           hasattr(sys, "importers") # old py2exe
           or imp.is_frozen("__main__")) # tools/freeze
 
+class PootleOptionParser(simplewebserver.WebOptionParser):
+  def __init__(self):
+    simplewebserver.WebOptionParser.__init__(self)
+    if main_is_frozen():
+      pootledir = os.path.dirname(sys.executable)
+    else:
+      pootledir = os.path.abspath(os.path.dirname(__file__))
+    prefsfile = os.path.join(pootledir, "pootle.prefs")
+    self.set_default('prefsfile', prefsfile)
+    self.set_default('instance', 'Pootle')
+    htmldir = os.path.join(pootledir, "html")
+    self.set_default('htmldir', htmldir)
+    self.add_option('', "--refreshstats", dest="action", action="store_const", const="refreshstats",
+        default="runwebserver", help="refresh the stats files instead of running the webserver")
+
 def main():
   # run the web server
-  from jToolkit.web import simplewebserver
-  parser = simplewebserver.WebOptionParser()
-  if main_is_frozen():
-    pootledir = os.path.dirname(sys.executable)
-  else:
-    pootledir = os.path.abspath(os.path.dirname(__file__))
-  prefsfile = os.path.join(pootledir, "pootle.prefs")
-  parser.set_default('prefsfile', prefsfile)
-  parser.set_default('instance', 'Pootle')
-  htmldir = os.path.join(pootledir, "html")
-  parser.set_default('htmldir', htmldir)
-  parser.add_option('', "--refreshstats", dest="action", action="store_const", const="refreshstats", default="runwebserver", help="refresh the stats files instead of running the webserver")
+  parser = PootleOptionParser()
   options, args = parser.parse_args()
   server = parser.getserver(options)
   if options.action == "runwebserver":
