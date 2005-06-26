@@ -153,13 +153,28 @@ class LanguageIndex(pagelayout.PootleNavPage):
     self.languagecode = languagecode
     self.localize = session.localize
     self.nlocalize = session.nlocalize
-    languagename = self.potree.getlanguagename(self.languagecode)
+    self.languagename = self.potree.getlanguagename(self.languagecode)
     self.initpagestats()
     projectlinks = self.getprojectlinks()
     average = self.getpagestats()
     languagestats = self.nlocalize("%d project, average %d%% translated", "%d projects, average %d%% translated", self.projectcount) % (self.projectcount, average)
-    navbar = self.makenavbar(icon="language", path=self.makenavbarpath(language=(self.languagecode, languagename)), stats=languagestats)
-    pagelayout.PootleNavPage.__init__(self, self.localize("Pootle: %s") % languagename, [navbar, projectlinks], session, bannerheight=81, returnurl="%s/" % self.languagecode)
+    navbar = self.makenavbar(icon="language", path=self.makenavbarpath(language=(self.languagecode, self.languagename)), stats=languagestats)
+    languageinfo = self.getlanguageinfo()
+    pagelayout.PootleNavPage.__init__(self, self.localize("Pootle: %s") % self.languagename, [navbar, languageinfo, projectlinks], session, bannerheight=81, returnurl="%s/" % self.languagecode)
+
+  def getlanguageinfo(self):
+    """returns information defined for the language"""
+    # specialchars = self.potree.getlanguagespecialchars(self.languagecode)
+    nplurals = self.potree.getlanguagenplurals(self.languagecode)
+    pluralequation = self.potree.getlanguagepluralequation(self.languagecode)
+    infoparts = [(self.localize("Language Code"), self.languagecode),
+                 (self.localize("Language Name"), self.languagename),
+                 # (self.localize("Special Characters"), specialchars),
+                 (self.localize("Number of Plurals"), str(nplurals)),
+                 (self.localize("Plural Equation"), pluralequation),
+                ]
+    infoparts = [(widgets.ContentWidget("b", title), ": ", value, "<br/>") for (title, value) in infoparts]
+    return pagelayout.IntroText(infoparts)
 
   def getprojectlinks(self):
     """gets the links to the projects"""
