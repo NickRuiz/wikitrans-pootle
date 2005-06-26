@@ -7,7 +7,7 @@ current tasks:
   - let maintainer add people manually
   localize pootle
   - create po files
-  - set language on login (and detect languages from browser)
+  - detect languages from browser
   priorities (directory/file order)
   process (administrators/translators/reviewers)
   locking
@@ -74,7 +74,7 @@ feedback from Durban translatathon:
   tutorial PO file
 
 new:
-  add equivalent management of pot files
+  add more management of pot files
     - rights
     - uploading, updating from CVS etc
     ? able to have multiple pot repositories
@@ -92,3 +92,4 @@ suggestions from list:
   drop-down list for languages (improve selection)
   simple way to see the plural definition for a language
   validate plurals against KBabel/msginit entries
+

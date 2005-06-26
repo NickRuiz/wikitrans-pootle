@@ -294,7 +294,7 @@ class ProjectAdminPage(pagelayout.PootlePage):
     """returns a box that lets the user add new languages"""
     existingcodes = self.potree.getlanguagecodes(self.projectcode)
     allcodes = self.potree.getlanguagecodes()
-    newcodes = [code for code in allcodes if not code in existingcodes]
+    newcodes = [code for code in allcodes if not (code in existingcodes or code == "templates")]
     newoptions = [(self.potree.getlanguagename(code), code) for code in newcodes]
     newoptions.sort()
     newoptions = [(code, languagename) for (languagename, code) in newoptions]
