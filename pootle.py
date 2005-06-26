@@ -91,7 +91,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
     self.localedomains = ['jToolkit', 'pootle']
     self.localedir = None
     self.languagelist = self.potree.getlanguagecodes('pootle')
-    self.languagenames = dict([(code, self.potree.getlanguagename(code)) for code in self.languagelist])
+    self.languagenames = self.potree.getlanguages()
     self.defaultlanguage = defaultlanguage
     if self.defaultlanguage is None:
       self.defaultlanguage = getattr(self.instance, "defaultlanguage", "en")
