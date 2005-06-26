@@ -22,6 +22,10 @@ def test_search():
     for languagecode, languagename in potree.getlanguages("pootle"):
        translationproject = potree.getproject(languagecode, "pootle")
        print translationproject.indexdir
-       assert list(translationproject.searchpoitems("pootle.po", -1, pass_search))
-       assert not list(translationproject.searchpoitems("pootle.po", -1, fail_search))
+       pass_search_results = translationproject.searchpoitems("pootle.po", -1, pass_search)
+       pass_search_results = [(pofilename, item) for pofilename, item in pass_search_results]
+       assert pass_search_results
+       fail_search_results = translationproject.searchpoitems("pootle.po", -1, fail_search)
+       fail_search_results = [(pofilename, item) for pofilename, item in fail_search_results]
+       assert not fail_search_results
 
