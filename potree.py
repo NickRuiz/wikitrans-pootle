@@ -14,6 +14,9 @@ class POTree:
   """Manages the tree of projects and languages"""
   def __init__(self, instance):
     self.languages = instance.languages
+    if not self.haslanguage("templates"):
+      setattr(self.languages, "templates.fullname", "Templates")
+      self.saveprefs()
     self.projects = instance.projects
     self.podirectory = instance.podirectory
     self.projectcache = {}
@@ -258,7 +261,10 @@ class POTree:
   def getproject(self, languagecode, projectcode):
     """returns the project object for the languagecode and projectcode"""
     if (languagecode, projectcode) not in self.projectcache:
-      self.projectcache[languagecode, projectcode] = projects.TranslationProject(languagecode, projectcode, self)
+      if languagecode == "templates":
+        self.projectcache[languagecode, projectcode] = projects.TemplatesProject(projectcode, self)
+      else:
+        self.projectcache[languagecode, projectcode] = projects.TranslationProject(languagecode, projectcode, self)
     return self.projectcache[languagecode, projectcode]
 
   def isgnustyle(self, projectcode):
@@ -312,7 +318,7 @@ class POTree:
     projectprefs = getattr(self.projects, projectcode)
     setattr(projectprefs, "createmofiles", projectcreatemofiles)
 
-  def hasgnufiles(self, podir, languagecode=None, depth=0, maxdepth=3):
+  def hasgnufiles(self, podir, languagecode=None, depth=0, maxdepth=3, poext="po"):
     """returns whether this directory contains gnu-style PO filenames for the given language"""
     fnames = os.listdir(podir)
     poext = os.extsep + "po"
@@ -381,21 +387,21 @@ class POTree:
     return languagecode == otherlanguagecode or \
       (otherlanguagecode.startswith(languagecode) and regionre.match(otherlanguagecode[len(languagecode):]))
 
-  def getpofiles(self, languagecode, projectcode):
+  def getpofiles(self, languagecode, projectcode, poext="po"):
     """returns a list of po files for the project and language"""
     def addfiles(podir, dirname, fnames):
       """adds the files to the set of files for this project"""
       basedirname = dirname.replace(podir, "", 1)
       while basedirname.startswith(os.sep):
         basedirname = basedirname.replace(os.sep, "", 1)
-      ponames = [fname for fname in fnames if fname.endswith(os.extsep+"po")]
+      ponames = [fname for fname in fnames if fname.endswith(os.extsep+poext)]
       pofilenames.extend([os.path.join(basedirname, poname) for poname in ponames])
     def addgnufiles(podir, dirname, fnames):
       """adds the files to the set of files for this project"""
       basedirname = dirname.replace(podir, "", 1)
       while basedirname.startswith(os.sep):
         basedirname = basedirname.replace(os.sep, "", 1)
-      poext = os.extsep + "po"
+      poext = os.extsep + poext
       ponames = [fn for fn in fnames if fn.endswith(poext) and self.languagematch(languagecode, fn[:-len(poext)])]
       pofilenames.extend([os.path.join(basedirname, poname) for poname in ponames])
     pofilenames = []

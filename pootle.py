@@ -256,7 +256,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
         if "changeprojects" in argdict:
           self.potree.changeprojects(argdict)
         return adminpages.ProjectsAdminPage(self.potree, session, self.instance)
-    elif self.potree.haslanguage(top):
+    elif top == "templates" or self.potree.haslanguage(top):
       languagecode = top
       pathwords = pathwords[1:]
       if pathwords:
@@ -289,7 +289,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
           except projects.RightsError, stoppedby:
             argdict["message"] = str(stoppedby)
             return indexpage.ProjectIndex(project, session, argdict, dirfilter)
-	elif bottom.endswith(".po"):
+	elif bottom.endswith("." + project.fileext):
 	  pofilename = os.path.join(*pathwords)
 	  if argdict.get("translate", 0):
             try:

@@ -58,8 +58,9 @@ class potimecache(timecache.timecache):
       if time.time() - currentfile.pomtime > self.expiryperiod.seconds:
         self.__setitem__(pofilename, pootlefile.pootlefile(self.project, pofilename))
 
-class TranslationProject:
+class TranslationProject(object):
   """Manages iterating through the translations in a particular project"""
+  fileext = "po"
   def __init__(self, languagecode, projectcode, potree, create=False):
     self.languagecode = languagecode
     self.projectcode = projectcode
@@ -170,7 +171,7 @@ class TranslationProject:
     expanddirs specifies whether to expand directories and return all files in them
     includepartial specifies whether to return directories that are not in the goal, but have files below maxdepth in the goal"""
     goals = getattr(self.prefs, "goals", {})
-    poext = os.path.extsep + "po"
+    poext = os.extsep + self.fileext
     pathsep = os.path.sep
     unique = lambda filelist: dict.fromkeys(filelist).keys()
     for testgoalname, goalnode in goals.iteritems():
@@ -350,7 +351,7 @@ class TranslationProject:
 
   def scanpofiles(self):
     """sets the list of pofilenames by scanning the project directory"""
-    self.pofilenames = self.potree.getpofiles(self.languagecode, self.projectcode)
+    self.pofilenames = self.potree.getpofiles(self.languagecode, self.projectcode, poext=self.fileext)
     for pofilename in self.pofilenames:
       if not pofilename in self.pofiles:
         self.pofiles[pofilename] = pootlefile.pootlefile(self, pofilename)
@@ -540,8 +541,8 @@ class TranslationProject:
     archive = zipfile.ZipFile(archivefile, 'r')
     # TODO: find a better way to return errors...
     for filename in archive.namelist():
-      if not filename.endswith(os.extsep + "po"):
-        print "error adding %s: not a .po file" % filename
+      if not filename.endswith(os.extsep + self.fileext):
+        print "error adding %s: not a %s file" % (filename, os.extsep + self.fileext)
         continue
       contents = archive.read(filename)
       subdirname, pofilename = os.path.dirname(filename), os.path.basename(filename)
@@ -558,7 +559,7 @@ class TranslationProject:
     if dirfilter is None:
       pofilenames = self.pofilenames
     else:
-      if not dirfilter.endswith(os.path.sep) and not dirfilter.endswith(os.path.extsep + "po"):
+      if not dirfilter.endswith(os.path.sep) and not dirfilter.endswith(os.extsep + self.fileext):
         dirfilter += os.path.sep
       pofilenames = [pofilename for pofilename in self.pofilenames if pofilename.startswith(dirfilter)]
     if includedirs:
@@ -1139,4 +1140,17 @@ class TranslationProject:
   def hascreatemofiles(self, projectcode):
     """returns whether the project has createmofile set"""
     return self.potree.getprojectcreatemofiles(projectcode) == 1
+
+class TemplatesProject(TranslationProject):
+  """Manages Template files (.pot files) for a project"""
+  fileext = "pot"
+  def __init__(self, projectcode, potree):
+    super(TemplatesProject, self).__init__("templates", projectcode, potree, create=False)
+
+  def getrights(self, session=None, username=None):
+    """gets the rights for the given user (name or session, or not-logged-in if username is None)"""
+    # internal admin sessions have all rights
+    rights = super(TemplatesProject, self).getrights(session=session, username=username)
+    rights = [right for right in rights if right not in ["translate", "suggest", "pocompile"]]
+    return rights
 
