@@ -600,7 +600,7 @@ class TranslationProject(object):
 
   def initindex(self):
     """initializes the search index"""
-    if not indexer.HAVE_PYLUCENE:
+    if not indexer.HAVE_INDEXER:
       return
     self.indexdir = os.path.join(self.podir, ".poindex-%s-%s" % (self.projectcode, self.languagecode))
     class indexconfig:
@@ -616,7 +616,7 @@ class TranslationProject(object):
 
   def updateindex(self, pofilename, items=None, optimize=True):
     """updates the index with the contents of pofilename (limit to items if given)"""
-    if not indexer.HAVE_PYLUCENE:
+    if not indexer.HAVE_INDEXER:
       return
     needsupdate = True
     pofile = self.pofiles[pofilename]
@@ -695,7 +695,7 @@ class TranslationProject(object):
 
   def indexsearch(self, search, returnfields):
     """returns the results from searching the index with the given search"""
-    if not indexer.HAVE_PYLUCENE:
+    if not indexer.HAVE_INDEXER:
       return False
     searchparts = []
     if search.searchtext:
@@ -714,7 +714,7 @@ class TranslationProject(object):
     if lastpofilename and not lastpofilename in self.pofiles:
       # accessing will autoload this file...
       self.pofiles[lastpofilename]
-    if indexer.HAVE_PYLUCENE and search.searchtext:
+    if indexer.HAVE_INDEXER and search.searchtext:
       # TODO: move this up a level, use index to manage whole search, so we don't do this twice
       hits = self.indexsearch(search, "pofilename")
       print "ran search %s, got %d hits" % (search.searchtext, len(hits))
@@ -734,7 +734,7 @@ class TranslationProject(object):
       pogrepfilter = pogrep.pogrepfilter(search.searchtext, None, ignorecase=True)
     for pofilename in self.searchpofilenames(pofilename, search, includelast=True):
       pofile = self.getpofile(pofilename)
-      if indexer.HAVE_PYLUCENE:
+      if indexer.HAVE_INDEXER:
         filesearch = search.copy()
         filesearch.dirfilter = pofilename
         hits = self.indexsearch(filesearch, "itemno")
