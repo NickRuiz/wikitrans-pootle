@@ -21,6 +21,13 @@ class LoginPage(server.LoginPage, pagelayout.PootlePage):
   def getcontents(self):
     return pagelayout.PootlePage.getcontents(self)
 
+  def getlanguageselect(self, session):
+    """returns the language selector..."""
+    # TODO: work out how we handle localization of language names...
+    languageoptions = [('', session.localize("Default"))] + self.languagenames
+    languageselect = widgets.Select({'name':'language','value':session.language_set}, options=languageoptions)
+    return languageselect
+
 class RegisterPage(pagelayout.PootlePage):
   """page for new registrations"""
   def __init__(self, session, argdict):
@@ -119,6 +126,15 @@ class UserOptions(pagelayout.PootlePage):
     interface = table.TableLayout()
     interface.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Option"))))
     interface.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Current value"))))
+    uilanguage = getattr(self.session.prefs, "uilanguage", "")
+    if not uilanguage:
+      userlanguages = self.session.getlanguages()
+      if userlanguages:
+        uilanguage = userlanguages[0]
+    languageoptions = [('', '')] + self.potree.getlanguages()
+    selectlanguage = widgets.Select({"value": uilanguage, "name": "option-uilanguage"}, languageoptions)
+    interface.setcell(1, 0, table.TableCell(self.localize("User Interface language")))
+    interface.setcell(1, 1, table.TableCell(selectlanguage))
     options = {"inputheight": self.localize("Input Height"), "inputwidth": self.localize("Input Width"),
           "viewrows": self.localize("Number of rows in view mode"), 
           "translaterows": self.localize("Number of rows in translate mode")}
@@ -323,6 +339,7 @@ class PootleSession(session.LoginSession):
     """gets the users prefs into self.prefs"""
     if self.isopen:
       self.prefs = getattr(self.loginchecker.users, self.username)
+      self.setlanguage(self.language_set)
     else:
       self.prefs = None
 
@@ -342,6 +359,21 @@ class PootleSession(session.LoginSession):
     """opens the session, along with the users prefs"""
     super(PootleSession, self).close(req)
     self.getprefs()
+
+  def setlanguage(self, language):
+    """sets the language for the session"""
+    self.language_set = language or ""
+    if language:
+      self.language = language
+    else:
+      if self.isopen:
+        self.language = getattr(self.prefs, "uilanguage", "") or self.server.defaultlanguage
+      else:
+        self.language = self.server.defaultlanguage
+    if self.isopen:
+      if not getattr(self.prefs, "uilanguage", "") and self.language_set:
+        self.setinterfaceoptions({"option-uilanguage": self.language_set})
+    self.translation = self.server.gettranslation(self.language)
 
   def validate(self):
     """checks if this session is valid (which means the user must be activated)"""
@@ -374,6 +406,9 @@ class PootleSession(session.LoginSession):
 
   def setinterfaceoptions(self, argdict):
     """sets the users interface details"""
+    value = argdict.get("option-uilanguage", "")
+    if value:
+      self.prefs.uilanguage = value
     def setinterfacevalue(name, errormessage):
       value = argdict.get("option-%s" % name, "")
       if value != "":
