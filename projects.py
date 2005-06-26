@@ -73,6 +73,7 @@ class TranslationProject(object):
     checkerclasses = [checks.projectcheckers.get(self.projectcheckerstyle, checks.StandardChecker), pofilter.StandardPOChecker]
     self.checker = pofilter.POTeeChecker(checkerclasses=checkerclasses, errorhandler=self.filtererrorhandler)
     if create:
+      self.quickstats = {}
       self.converttemplates(InternalAdminSession())
     self.podir = potree.getpodir(languagecode, projectcode)
     if self.potree.hasgnufiles(self.podir, self.languagecode):
