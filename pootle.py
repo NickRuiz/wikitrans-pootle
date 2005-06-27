@@ -303,6 +303,8 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
             pofile = project.getpofile(pofilename)
 	    contents = pofile.getsource()
 	    page = widgets.PlainContents(contents)
+            page.etag = str(pofile.pomtime)
+            page.allowcaching = True
             encoding = pofile.encoding or "UTF-8"
 	    page.content_type = "text/plain; charset=%s" % encoding
 	    return page
@@ -310,12 +312,16 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
 	  csvfilename = os.path.join(*pathwords)
 	  contents = project.getcsv(csvfilename)
 	  page = widgets.PlainContents(contents)
+          page.etag = str(pofile.pomtime)
+          page.allowcaching = True
 	  page.content_type = "text/plain; charset=UTF-8"
 	  return page
 	elif bottom.endswith(".xlf"):
 	  xlifffilename = os.path.join(*pathwords)
 	  contents = project.getxliff(xlifffilename)
 	  page = widgets.PlainContents(contents)
+          page.etag = str(pofile.pomtime)
+          page.allowcaching = True
 	  page.content_type = "text/xml; charset=UTF-8"
 	  return page
 	elif bottom.endswith(".mo"):
@@ -324,6 +330,8 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
 	  mofilename = os.path.join(*pathwords)
 	  contents = project.getmo(mofilename)
 	  page = widgets.PlainContents(contents)
+          page.etag = str(pofile.pomtime)
+          page.allowcaching = True
 	  page.content_type = "application/octet-stream"
 	  return page
         elif bottom.endswith(".zip"):
