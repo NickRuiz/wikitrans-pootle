@@ -382,7 +382,7 @@ class TranslationProject(object):
     pathname = self.getuploadpath(dirname, pofilename)
     if os.path.exists(pathname):
       origpofile = self.getpofile(os.path.join(dirname, pofilename))
-      newpofile = po.pofile()
+      newpofile = po.pofile(elementclass=pootlefile.pootleelement)
       infile = cStringIO.StringIO(contents)
       newpofile.parse(infile)
       if "admin" in self.getrights(session):
