@@ -304,6 +304,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
             return indexpage.ProjectIndex(project, session, argdict, dirfilter)
         elif bottom == "spellcheck.html":
           # the full review page
+          argdict["spellchecklang"] = languagecode
           return spellui.SpellingReview(session, argdict, js_url="/js/spellui.js")
         elif bottom == "spellingstandby.html":
           # a simple 'loading' page
