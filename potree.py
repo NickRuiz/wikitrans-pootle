@@ -401,8 +401,8 @@ class POTree:
       basedirname = dirname.replace(podir, "", 1)
       while basedirname.startswith(os.sep):
         basedirname = basedirname.replace(os.sep, "", 1)
-      poext = os.extsep + poext
-      ponames = [fn for fn in fnames if fn.endswith(poext) and self.languagematch(languagecode, fn[:-len(poext)])]
+      ext = os.extsep + poext
+      ponames = [fn for fn in fnames if fn.endswith(ext) and self.languagematch(languagecode, fn[:-len(ext)])]
       pofilenames.extend([os.path.join(basedirname, poname) for poname in ponames])
     pofilenames = []
     podir = self.getpodir(languagecode, projectcode)
