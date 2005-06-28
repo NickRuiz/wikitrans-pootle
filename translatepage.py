@@ -413,6 +413,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       usernode = self.getusernode()
       rows = getattr(usernode, "inputheight", 5)
       cols = getattr(usernode, "inputwidth", 40)
+      focusbox = ""
       if len(trans) > 1:
         buttons = self.gettransbuttons(item, ["skip", "suggest", "translate"])
         pluralforms = [widgets.HiddenFieldList([("pluralforms%d" % item, len(trans))])]
@@ -421,17 +422,24 @@ class TranslatePage(pagelayout.PootleNavPage):
           pluralform = self.localize("Plural Form %d") % pluralitem
           pluraltext = self.escape(pluraltext).decode("utf-8")
           textid = "trans%d.%d" % (item, pluralitem)
+          if not focusbox:
+            focusbox = textid
           text = widgets.TextArea({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext)
           pluralforms += [pagelayout.TranslationHeaders(pluralform), htmlbreak, text, htmlbreak]
         transdiv = widgets.Division([pluralforms, buttons], "trans%d" % item, cls="translate-translation")
       else:
         buttons = self.gettransbuttons(item)
         trans = self.escape(trans[0]).decode("utf8")
-        itemname = "trans%d" % item
-        text = widgets.TextArea({"name":itemname, "rows":rows, "cols":cols}, contents=trans)
-        focusscript = "document.forms.translate.%s.focus()" % itemname
-        setfocusscript = widgets.Script('text/javascript', focusscript)
-        transdiv = widgets.Division([text, "<br />", buttons, setfocusscript], itemname, cls="translate-translation")
+        textid = "trans%d" % item
+        focusbox = textid
+        text = widgets.TextArea({"name":textid, "rows":rows, "cols":cols}, contents=trans)
+        transdiv = widgets.Division([text, "<br />", buttons], textid, cls="translate-translation")
+      if "." in focusbox:
+        focusscript = "document.forms.translate['%s'].focus()" % focusbox
+      else:
+        focusscript = "document.forms.translate.%s.focus()" % focusbox
+      setfocusscript = widgets.Script('text/javascript', focusscript)
+      transdiv.addcontents(setfocusscript)
     else:
       transdiv = self.gettransview(item, trans)
       buttons = self.gettransbuttons(item, ["skip"])
