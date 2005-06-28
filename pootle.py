@@ -5,6 +5,7 @@ from jToolkit.web import session
 from jToolkit import prefs
 from jToolkit import localize
 from jToolkit.widgets import widgets
+from jToolkit.widgets import spellui
 from jToolkit.web import simplewebserver
 try:
   from jToolkit.web import templateserver
@@ -20,6 +21,7 @@ from Pootle import pagelayout
 from Pootle import projects
 from Pootle import potree
 from Pootle import users
+from Pootle import filelocations
 import sys
 import os
 import random
@@ -52,7 +54,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
       sessioncache = session.SessionCache(sessionclass=users.PootleSession)
     self.potree = potree.POTree(instance)
     super(PootleServer, self).__init__(instance, webserver, sessioncache, errorhandler, loginpageclass)
-    self.templatedir = os.path.join(os.path.dirname(__file__), "templates")
+    self.templatedir = filelocations.templatedir
     self.setdefaultoptions()
 
   def saveprefs(self):
@@ -162,7 +164,18 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
       top = pathwords[0]
     else:
       top = ""
-    if not top or top == "index.html":
+    if top == 'js':
+      pathwords = pathwords[1:]
+      jsfile = os.path.join(filelocations.htmldir, 'js', *pathwords)
+      if not os.path.exists(jsfile):
+        jsfile = os.path.join(filelocations.jtoolkitdir, 'js', *pathwords)
+        if not os.path.exists(jsfile):
+          return None
+      jspage = widgets.PlainContents(None)
+      jspage.content_type = "application/x-javascript"
+      jspage.sendfile_path = jsfile
+      return jspage
+    elif not top or top == "index.html":
       return indexpage.PootleIndex(self.potree, session)
     elif top == 'about.html':
       return indexpage.AboutPage(session)
@@ -289,6 +302,12 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
           except projects.RightsError, stoppedby:
             argdict["message"] = str(stoppedby)
             return indexpage.ProjectIndex(project, session, argdict, dirfilter)
+        elif bottom == "spellcheck.html":
+          # the full review page
+          return spellui.SpellingReview(session, argdict, js_url="/js/spellui.js")
+        elif bottom == "spellingstandby.html":
+          # a simple 'loading' page
+          return spellui.SpellingStandby()
 	elif bottom.endswith("." + project.fileext):
 	  pofilename = os.path.join(*pathwords)
 	  if argdict.get("translate", 0):
@@ -363,24 +382,12 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
 	  return indexpage.ProjectIndex(project, session, argdict, os.path.join(*pathwords))
     return None
 
-def main_is_frozen():
-  import imp
-  return (hasattr(sys, "frozen") or # new py2exe
-          hasattr(sys, "importers") # old py2exe
-          or imp.is_frozen("__main__")) # tools/freeze
-
 class PootleOptionParser(simplewebserver.WebOptionParser):
   def __init__(self):
     simplewebserver.WebOptionParser.__init__(self)
-    if main_is_frozen():
-      pootledir = os.path.dirname(sys.executable)
-    else:
-      pootledir = os.path.abspath(os.path.dirname(__file__))
-    prefsfile = os.path.join(pootledir, "pootle.prefs")
-    self.set_default('prefsfile', prefsfile)
+    self.set_default('prefsfile', filelocations.prefsfile)
     self.set_default('instance', 'Pootle')
-    htmldir = os.path.join(pootledir, "html")
-    self.set_default('htmldir', htmldir)
+    self.set_default('htmldir', filelocations.htmldir)
     self.add_option('', "--refreshstats", dest="action", action="store_const", const="refreshstats",
         default="runwebserver", help="refresh the stats files instead of running the webserver")
 
