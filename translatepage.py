@@ -3,6 +3,7 @@
 import sre
 from jToolkit.widgets import widgets
 from jToolkit.widgets import table
+from jToolkit.widgets import spellui
 from Pootle import pagelayout
 from Pootle import projects
 from Pootle import pootlefile
@@ -414,6 +415,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       rows = getattr(usernode, "inputheight", 5)
       cols = getattr(usernode, "inputwidth", 40)
       focusbox = ""
+      spellargs = {"standby_url": "spellingstandby.html", "js_url": "/js/spellui.js", "target_url": "spellcheck.html"}
       if len(trans) > 1:
         buttons = self.gettransbuttons(item, ["skip", "suggest", "translate"])
         pluralforms = [widgets.HiddenFieldList([("pluralforms%d" % item, len(trans))])]
@@ -424,7 +426,8 @@ class TranslatePage(pagelayout.PootleNavPage):
           textid = "trans%d.%d" % (item, pluralitem)
           if not focusbox:
             focusbox = textid
-          text = widgets.TextArea({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext)
+          # text = widgets.TextArea({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext)
+          text = spellui.SpellCheckable({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext, **spellargs)
           pluralforms += [pagelayout.TranslationHeaders(pluralform), htmlbreak, text, htmlbreak]
         transdiv = widgets.Division([pluralforms, buttons], "trans%d" % item, cls="translate-translation")
       else:
@@ -432,7 +435,8 @@ class TranslatePage(pagelayout.PootleNavPage):
         trans = self.escape(trans[0]).decode("utf8")
         textid = "trans%d" % item
         focusbox = textid
-        text = widgets.TextArea({"name":textid, "rows":rows, "cols":cols}, contents=trans)
+        # text = widgets.TextArea({"name":textid, "rows":rows, "cols":cols}, contents=trans)
+        text = spellui.SpellCheckable({"name":textid, "rows":rows, "cols":cols}, contents=trans, **spellargs)
         transdiv = widgets.Division([text, "<br />", buttons], textid, cls="translate-translation")
       if "." in focusbox:
         focusscript = "document.forms.translate['%s'].focus()" % focusbox
