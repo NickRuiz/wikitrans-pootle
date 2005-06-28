@@ -427,8 +427,11 @@ class TranslatePage(pagelayout.PootleNavPage):
       else:
         buttons = self.gettransbuttons(item)
         trans = self.escape(trans[0]).decode("utf8")
-        text = widgets.TextArea({"name":"trans%d" % item, "rows":rows, "cols":cols}, contents=trans)
-        transdiv = widgets.Division([text, "<br />", buttons], "trans%d" % item, cls="translate-translation")
+        itemname = "trans%d" % item
+        text = widgets.TextArea({"name":itemname, "rows":rows, "cols":cols}, contents=trans)
+        focusscript = "document.forms.translate.%s.focus()" % itemname
+        setfocusscript = widgets.Script('text/javascript', focusscript)
+        transdiv = widgets.Division([text, "<br />", buttons, setfocusscript], itemname, cls="translate-translation")
     else:
       transdiv = self.gettransview(item, trans)
       buttons = self.gettransbuttons(item, ["skip"])
