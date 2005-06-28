@@ -9,6 +9,7 @@ from translate.convert import po2csv
 from translate.convert import po2xliff
 from translate.convert import pot2po
 from translate.tools import pocompile
+from Pootle import __version__
 from jToolkit import timecache
 import time
 import os
@@ -89,6 +90,7 @@ class pootleelement(po.poelement, object):
 
 class pootlefile(po.pofile):
   """this represents a pootle-managed .po file and its associated files"""
+  x_generator = "Pootle %s" % __version__.ver
   def __init__(self, project, pofilename):
     po.pofile.__init__(self, elementclass=pootleelement)
     self.project = project
@@ -393,10 +395,12 @@ class pootlefile(po.pofile):
     thepo = self.transelements[item]
     thepo.unquotedmsgstr = newmsgstr
     thepo.markfuzzy(False)
-    self.updateheader(add=True, PO_Revision_Date = time.strftime("%F %H:%M%z"))
+    po_revision_date = time.strftime("%F %H:%M%z")
+    headerupdates = {"PO_Revision_Date": po_revision_date, "X_Generator": self.x_generator}
     if userprefs:
       if getattr(userprefs, "name", None) and getattr(userprefs, "email", None):
-        self.updateheader(add=True, Last_Translator = "%s <%s>" % (userprefs.name, userprefs.email))
+        headerupdates["Last_Translator"] = "%s <%s>" % (userprefs.name, userprefs.email)
+    self.updateheader(add=True, **headerupdates)
     if languageprefs:
       nplurals = getattr(languageprefs, "nplurals", None)
       pluralequation = getattr(languageprefs, "pluralequation", None)
