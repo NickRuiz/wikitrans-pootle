@@ -4,6 +4,7 @@ import sre
 from jToolkit.widgets import widgets
 from jToolkit.widgets import table
 from jToolkit.widgets import spellui
+from jToolkit import spellcheck
 from Pootle import pagelayout
 from Pootle import projects
 from Pootle import pootlefile
@@ -426,8 +427,10 @@ class TranslatePage(pagelayout.PootleNavPage):
           textid = "trans%d.%d" % (item, pluralitem)
           if not focusbox:
             focusbox = textid
-          # text = widgets.TextArea({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext)
-          text = spellui.SpellCheckable({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext, **spellargs)
+          if spellcheck.can_check_lang(self.project.languagecode):
+            text = spellui.SpellCheckable({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext, **spellargs)
+          else:
+            text = widgets.TextArea({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext)
           pluralforms += [pagelayout.TranslationHeaders(pluralform), htmlbreak, text, htmlbreak]
         transdiv = widgets.Division([pluralforms, buttons], "trans%d" % item, cls="translate-translation")
       else:
@@ -435,8 +438,10 @@ class TranslatePage(pagelayout.PootleNavPage):
         trans = self.escape(trans[0]).decode("utf8")
         textid = "trans%d" % item
         focusbox = textid
-        # text = widgets.TextArea({"name":textid, "rows":rows, "cols":cols}, contents=trans)
-        text = spellui.SpellCheckable({"name":textid, "rows":rows, "cols":cols}, contents=trans, **spellargs)
+        if spellcheck.can_check_lang(self.project.languagecode):
+          text = spellui.SpellCheckable({"name":textid, "rows":rows, "cols":cols}, contents=trans, **spellargs)
+        else:
+          text = widgets.TextArea({"name":textid, "rows":rows, "cols":cols}, contents=trans)
         transdiv = widgets.Division([text, "<br />", buttons], textid, cls="translate-translation")
       if "." in focusbox:
         focusscript = "document.forms.translate['%s'].focus()" % focusbox
