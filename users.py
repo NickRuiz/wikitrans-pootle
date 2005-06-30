@@ -24,7 +24,11 @@ class LoginPage(server.LoginPage, pagelayout.PootlePage):
   def getlanguageselect(self, session):
     """returns the language selector..."""
     # TODO: work out how we handle localization of language names...
-    languageoptions = [('', session.localize("Default"))] + self.languagenames
+    languageoptions = [('', session.localize("Default"))]
+    if isinstance(self.languagenames, dict):
+      languageoptions += self.languagenames.items()
+    else:
+      languageoptions += self.languagenames
     languageselect = widgets.Select({'name':'language','value':session.language_set}, options=languageoptions)
     return languageselect
 
