@@ -7,6 +7,7 @@ from translate.misc import quote
 from translate.filters import checks
 from translate.convert import po2csv
 from translate.convert import po2xliff
+from translate.convert import po2ts
 from translate.convert import pot2po
 from translate.tools import pocompile
 from Pootle import __version__
@@ -158,6 +159,13 @@ class pootlefile(po.pofile):
     convertor = po2xliff.po2xliff()
     xlifffile = convertor.convertfile(self, None)
     return xlifffile
+
+  def getts(self):
+    """returns pofile as ts"""
+    self.pofreshen()
+    convertor = po2ts.po2ts()
+    tsfile = convertor.convertfile(self, None)
+    return tsfile
 
   def getmo(self):
     """returns pofile compiled into mo"""

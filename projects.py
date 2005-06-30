@@ -1064,6 +1064,12 @@ class TranslationProject(object):
     pofile = self.getpofile(pofilename)
     return pofile.getxliff()
 
+  def getts(self, tsfilename):
+    """returns pofile as ts"""
+    pofilename = tsfilename.replace(".ts", ".po")
+    pofile = self.getpofile(pofilename)
+    return pofile.getts()
+
   def getmo(self, mofilename):
     """return pofile as compiled mo"""
     pofilename = mofilename.replace(".mo", ".po")

@@ -608,7 +608,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
   def getfileitem(self, fileentry, linksrequired=None, **newargs):
     """returns an item showing a file entry"""
     if linksrequired is None:
-      linksrequired = ["mine", "review", "quick", "all", "po", "xliff", "csv", "mo", "update"]
+      linksrequired = ["mine", "review", "quick", "all", "po", "xliff", "ts", "csv", "mo", "update"]
     basename = os.path.basename(fileentry)
     projectstats = self.project.combinestats([fileentry])
     folderimage = pagelayout.Icon("file.png")
@@ -622,6 +622,10 @@ class ProjectIndex(pagelayout.PootleNavPage):
       xliffname = basename.replace(".po", ".xlf")
       xlifflink = widgets.Link(xliffname, self.localize('XLIFF file'))
       actionlinks.append(xlifflink)
+    if "ts" in linksrequired and "translate" in self.rights:
+      tsname = basename.replace(".po", ".ts")
+      tslink = widgets.Link(tsname, self.localize('Qt .ts file'))
+      actionlinks.append(tslink)
     if "csv" in linksrequired and "translate" in self.rights:
       csvname = basename.replace(".po", ".csv")
       csvlink = widgets.Link(csvname, self.localize('CSV file'))

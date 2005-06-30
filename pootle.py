@@ -344,6 +344,12 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
           # page.allowcaching = True
 	  page.content_type = "text/xml; charset=UTF-8"
 	  return page
+	elif bottom.endswith(".ts"):
+	  tsfilename = os.path.join(*pathwords)
+	  contents = project.getts(tsfilename)
+	  page = widgets.PlainContents(contents)
+	  page.content_type = "text/xml; charset=UTF-8"
+	  return page
 	elif bottom.endswith(".mo"):
           if not "pocompile" in project.getrights(session):
             return None
