@@ -636,8 +636,6 @@ class TranslationProject(object):
       print "updating", self.projectcode, self.languagecode, "index for", pofilename
       self.searcher.deleteDoc({"pofilename": pofilename})
     else:
-      if len(gooditems) == len(allitems) == len(items):
-        return
       print "updating", self.languagecode, "index for", pofilename, "items", items
       self.searcher.deleteDoc([pofilenamequery, itemsquery])
     pofile.pofreshen()
