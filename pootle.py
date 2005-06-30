@@ -396,6 +396,8 @@ def main():
   # run the web server
   parser = PootleOptionParser()
   options, args = parser.parse_args()
+  if options.action != "runwebserver":
+    options.servertype = "dummy"
   server = parser.getserver(options)
   if options.action == "runwebserver":
     simplewebserver.run(server, options)
