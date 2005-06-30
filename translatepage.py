@@ -381,27 +381,27 @@ class TranslatePage(pagelayout.PootleNavPage):
     """gets buttons for actions on translation"""
     buttons = []
     if "skip" in desiredbuttons:
-      skipbutton = widgets.Input({"type":"submit", "name":"skip%d" % item, "value":self.localize("skip")})
+      skipbutton = widgets.Input({"type":"submit", "name":"skip%d" % item, "accesskey": "k", "value":self.localize("skip")})
       buttons.append(skipbutton)
     if "copy" in desiredbuttons:
       pureid = "orig-pure%d.0" % item
       copyscript = "document.forms.translate.trans%d.value = document.getElementById('%s').value" % (item, pureid)
-      copybutton = widgets.Button({"onclick": copyscript}, self.localize("copy"))
+      copybutton = widgets.Button({"onclick": copyscript, "accesskey": "c"}, self.localize("copy"))
       buttons.append(copybutton)
     if "suggest" in desiredbuttons and "suggest" in self.rights:
-      suggestbutton = widgets.Input({"type":"submit", "name":"submitsuggest%d" % item, "value":self.localize("suggest")})
+      suggestbutton = widgets.Input({"type":"submit", "name":"submitsuggest%d" % item, "accesskey": "e", "value":self.localize("suggest")})
       buttons.append(suggestbutton)
     if "translate" in desiredbuttons and "translate" in self.rights:
-      submitbutton = widgets.Input({"type":"submit", "name":"submit%d" % item, "value":self.localize("submit")})
+      submitbutton = widgets.Input({"type":"submit", "name":"submit%d" % item, "accesskey": "s", "value":self.localize("submit")})
       buttons.append(submitbutton)
     if "translate" in desiredbuttons or "suggest" in desiredbuttons:
       specialchars = getattr(getattr(self.session.instance.languages, self.project.languagecode, None), "specialchars", "")
       buttons.append(specialchars)
     if "resize" in desiredbuttons:
-      growlink = widgets.Link('#', self.localize("Grow"), newattribs={"onclick": 'return expandtextarea(this)'})
-      shrinklink = widgets.Link('#', self.localize("Shrink"), newattribs={"onclick": 'return contracttextarea(this)'})
-      broadenlink = widgets.Link('#', self.localize("Broaden"), newattribs={"onclick": 'return broadentextarea(this)'})
-      narrowlink = widgets.Link('#', self.localize("Narrow"), newattribs={"onclick": 'return narrowtextarea(this)'})
+      growlink = widgets.Link('#', self.localize("Grow"), newattribs={"onclick": 'return expandtextarea(this)', "accesskey": "="})
+      shrinklink = widgets.Link('#', self.localize("Shrink"), newattribs={"onclick": 'return contracttextarea(this)', "accesskey": "-"})
+      broadenlink = widgets.Link('#', self.localize("Broaden"), newattribs={"onclick": 'return broadentextarea(this)', "accesskey": "+"})
+      narrowlink = widgets.Link('#', self.localize("Narrow"), newattribs={"onclick": 'return narrowtextarea(this)', "accesskey": "_"})
       usernode = self.getusernode()
       rows = getattr(usernode, "inputheight", 5)
       cols = getattr(usernode, "inputwidth", 40)
