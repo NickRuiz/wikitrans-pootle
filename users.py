@@ -37,7 +37,7 @@ class RegisterPage(pagelayout.PootlePage):
   """page for new registrations"""
   def __init__(self, session, argdict):
     self.localize = session.localize
-    introtext = [pagelayout.IntroText(self.localize("Please enter your registration details")), u'm\xd0\x9c\xd0\x91']
+    introtext = [pagelayout.IntroText(self.localize("Please enter your registration details"))]
     if session.status:
       statustext = pagelayout.IntroText(session.status)
       introtext.append(statustext)
