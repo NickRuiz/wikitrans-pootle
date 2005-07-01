@@ -741,9 +741,16 @@ class TranslationProject(object):
         items = [int(doc["itemno"]) for doc in hits]
         items = [searchitem for searchitem in items if searchitem > item]
         items.sort()
+        notextsearch = search.copy()
+        notextsearch.searchtext = None
+        matchitems = list(pofile.iteritems(notextsearch, item))
       else:
         items = pofile.iteritems(search, item)
+        matchitems = items
       for item in items:
+        if items != matchitems:
+          if item not in matchitems:
+            continue
         # TODO: move this to iteritems
         if search.searchtext:
           thepo = pofile.transelements[item]
