@@ -6,6 +6,7 @@ from jToolkit.widgets import widgets
 from jToolkit.widgets import form
 from jToolkit.widgets import table
 from jToolkit import mailer
+from jToolkit import prefs
 from Pootle import pagelayout
 
 class RegistrationError(ValueError):
@@ -36,7 +37,7 @@ class RegisterPage(pagelayout.PootlePage):
   """page for new registrations"""
   def __init__(self, session, argdict):
     self.localize = session.localize
-    introtext = [pagelayout.IntroText(self.localize("Please enter your registration details"))]
+    introtext = [pagelayout.IntroText(self.localize("Please enter your registration details")), u'm\xd0\x9c\xd0\x91']
     if session.status:
       statustext = pagelayout.IntroText(session.status)
       introtext.append(statustext)
@@ -164,22 +165,37 @@ class OptionalLoginAppServer(server.LoginAppServer):
       session.remote_ip = self.getremoteip(req)
     return self.getpage(pathwords, session, argdict)
 
+  def hasuser(self, users, username):
+    """returns whether the user exists in users"""
+    return users.__hasattr__(username)
+
+  def getusernode(self, users, username):
+    """gets the node for the given user"""
+    if not self.hasuser(users, username):
+      usernode = prefs.PrefNode(users, username)
+      users.__setattr__(username, usernode)
+    else:
+      usernode = users.__getattr__(username)
+    return usernode
+
   def adduser(self, users, username, fullname, email, password):
     """adds the user with the given details"""
-    setattr(users, username + ".name", fullname)
-    setattr(users, username + ".email", email)
-    setattr(users, username + ".passwdhash", session.md5hexdigest(password))
+    usernode = self.getusernode(users, username)
+    usernode.name = fullname
+    usernode.email = email
+    usernode.passwdhash = session.md5hexdigest(password)
 
   def makeactivationcode(self, users, username):
     """makes a new activation code for the user and returns it"""
-    setattr(users, username + ".activated", 0)
+    usernode = self.getusernode(users, username)
+    usernode.activated = 0
     activationcode = self.generateactivationcode()
-    setattr(users, username + ".activationcode", activationcode)
+    usernode.activationcode = activationcode
     return activationcode
 
   def activate(self, users, username):
     """sets the user as activated"""
-    setattr(users, username + ".activated", 1)
+    self.getusernode(users, username).activated = 1
 
   def changeusers(self, session, argdict):
     """handles multiple changes from the site admin"""
@@ -189,25 +205,25 @@ class OptionalLoginAppServer(server.LoginAppServer):
     for key, value in argdict.iteritems():
       if key.startswith("userremove-"):
         usercode = key.replace("userremove-", "", 1)
-        if hasattr(users, usercode):
+        if self.hasuser(users, usercode):
           raise NotImplementedError("Can't remove users")
       elif key.startswith("username-"):
         username = key.replace("username-", "", 1)
-        if hasattr(users, username):
-          useremail = getattr(users, username + ".email", None)
+        if self.hasuser(users, username):
+          usernode = self.getusernode(users, username)
+          useremail = getattr(usernode, "email", None)
           if useremail != value:
-            setattr(users, username + ".email", value)
+            usernode.email = value
       elif key.startswith("useractivated-"):
         username = key.replace("useractivated-", "", 1)
-        if hasattr(users, username):
-          setattr(users, username + ".activated", 1)
+        self.activate(users, username)
       elif key == "newusername":
         username = value.lower()
         if not username:
           continue
         if not (username[:1].isalpha() and username.replace("_","").isalnum()):
           raise ValueError("Login must be alphanumeric and start with an alphabetic character (got %r)" % username)
-        if hasattr(users, username):
+        if self.hasuser(users, username):
           raise ValueError("Already have user with the login: %s" % username)
         userpassword = argdict.get("newuserpassword", None)
         if userpassword is None or userpassword == self.localize("(add password here)"):
@@ -241,7 +257,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
     userexists = session.loginchecker.userexists(username)
     users = session.loginchecker.users
     if userexists:
-      usernode = getattr(users, username)
+      usernode = self.getusernode(users, username)
       # use the email address on file
       email = getattr(usernode, "email", email)
       password = ""
@@ -289,6 +305,8 @@ class OptionalLoginAppServer(server.LoginAppServer):
     if supportaddress:
       messagedict["reply-to"] = supportaddress
     fullmessage = mailer.makemessage(messagedict)
+    if isinstance(fullmessage, unicode):
+      fullmessage = fullmessage.encode("utf-8")
     errmsg = mailer.dosendmessage(fromemail=self.instance.registration.fromaddress, recipientemails=[email], message=fullmessage, smtpserver=smtpserver)
     if errmsg:
       raise RegistrationError("Error sending mail: %s" % errmsg)
@@ -315,8 +333,8 @@ class OptionalLoginAppServer(server.LoginAppServer):
     if "username" in argdict and "activationcode" in argdict:
       username = argdict["username"]
       activationcode = argdict["activationcode"]
-      usernode = getattr(session.loginchecker.users, username, None)
-      if usernode is not None:
+      if self.hasuser(session.loginchecker.users, username):
+        usernode = self.getusernode(session.loginchecker.users, username)
         correctcode = getattr(usernode, "activationcode", "")
         if correctcode and correctcode.strip().lower() == activationcode.strip().lower():
           setattr(usernode, "activated", 1)
@@ -342,7 +360,7 @@ class PootleSession(session.LoginSession):
   def getprefs(self):
     """gets the users prefs into self.prefs"""
     if self.isopen:
-      self.prefs = getattr(self.loginchecker.users, self.username)
+      self.prefs = self.loginchecker.users.__getattr__(self.username)
       self.setlanguage(self.language_set)
     else:
       self.prefs = None
@@ -383,9 +401,12 @@ class PootleSession(session.LoginSession):
     """checks if this session is valid (which means the user must be activated)"""
     if not super(PootleSession, self).validate():
       return False
-    if not getattr(getattr(self.loginchecker.users, self.username, None), "activated", 0):
-      self.isvalid = False
-      self.status = "username has not yet been activated"
+    if self.loginchecker.users.__hasattr__(self.username):
+      usernode = self.loginchecker.users.__getattr__(self.username)
+      if getattr(usernode, "activated", 0):
+        return self.isvalid
+    self.isvalid = False
+    self.status = "username has not yet been activated"
     return self.isvalid
 
   def setoptions(self, argdict):
