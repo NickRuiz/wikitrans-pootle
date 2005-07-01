@@ -491,10 +491,6 @@ class TranslatePage(pagelayout.PootleNavPage):
 
   def getdiffcodes(self, cmp1, cmp2):
     """compares the two strings and returns opcodes"""
-    if isinstance(cmp1, str):
-      cmp1 = cmp1.decode("utf-8")
-    if isinstance(cmp2, str):
-      cmp2 = cmp2.decode("utf-8")
     return difflib.SequenceMatcher(None, cmp1, cmp2).get_opcodes()
 
   def gettransreview(self, item, trans, suggestions):
@@ -505,6 +501,13 @@ class TranslatePage(pagelayout.PootleNavPage):
     currenttext = [editlink]
     diffcodes = {}
     htmlbreak = "<br/>"
+    for pluralitem, pluraltrans in enumerate(trans):
+      if isinstance(pluraltrans, str):
+        trans[pluralitem] = pluraltrans.decode("utf-8")
+    for suggestion in suggestions:
+      for pluralitem, pluralsugg in enumerate(suggestion):
+        if isinstance(pluralsugg, str):
+          suggestion[pluralitem] = pluralsugg.decode("utf-8")
     for pluralitem, pluraltrans in enumerate(trans):
       pluraldiffcodes = [self.getdiffcodes(pluraltrans, suggestion[pluralitem]) for suggestion in suggestions]
       diffcodes[pluralitem] = pluraldiffcodes
