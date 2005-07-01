@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from jToolkit.widgets import widgets
 from jToolkit.widgets import table

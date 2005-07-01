@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from Pootle import pootle
 from Pootle import pootlefile
 

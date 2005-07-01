@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """manages the whole set of projects and languages for a pootle installation"""
 

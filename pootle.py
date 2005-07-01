@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from jToolkit.web import server
 from jToolkit.web import session

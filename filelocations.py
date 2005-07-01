@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """module to handle consistent file locations for Pootle"""
 
 import os.path
