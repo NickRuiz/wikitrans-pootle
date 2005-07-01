@@ -385,7 +385,8 @@ class TranslatePage(pagelayout.PootleNavPage):
       buttons.append(skipbutton)
     if "copy" in desiredbuttons:
       pureid = "orig-pure%d.0" % item
-      copyscript = "document.forms.translate.trans%d.value = document.getElementById('%s').value" % (item, pureid)
+      fullitemid = "document.forms.translate.trans%d" % (item)
+      copyscript = "%s.value = document.getElementById('%s').value ; %s.focus()" % (fullitemid, pureid, fullitemid)
       copybutton = widgets.Button({"onclick": copyscript, "accesskey": "c"}, self.localize("copy"))
       buttons.append(copybutton)
     if "suggest" in desiredbuttons and "suggest" in self.rights:
