@@ -318,7 +318,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
           etag, filepath_or_contents = project.convert(pofilename, extension)
           if etag:
             page = widgets.SendFile(filepath_or_contents)
-            page.etag = etag
+            page.etag = str(etag)
           else:
             page = widgets.PlainContents(filepath_or_contents)
           page.allowcaching = True

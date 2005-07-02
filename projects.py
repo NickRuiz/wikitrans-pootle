@@ -1070,7 +1070,7 @@ class TranslationProject(object):
     pomtime = pootlefile.getmodtime(pofile.filename)
     if pomtime and destmtime == pomtime:
       try:
-        return True, destfilename
+        return pomtime, destfilename
       except Exception, e:
         print "error reading cached converted file %s: %s" % (destfilename, e)
     pofile.pofreshen()
