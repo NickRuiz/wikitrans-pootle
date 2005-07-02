@@ -7,7 +7,10 @@ from translate.storage import po
 from translate.filters import checks
 from translate.filters import pofilter
 from translate.convert import po2csv
+from translate.convert import po2xliff
+from translate.convert import po2ts
 from translate.convert import pot2po
+from translate.tools import pocompile
 from translate.tools import pogrep
 from Pootle import pootlefile
 from Pootle import versioncontrol
@@ -1074,11 +1077,13 @@ class TranslationProject(object):
       except Exception, e:
         print "error reading cached converted file %s: %s" % (destfilename, e)
     pofile.pofreshen()
-    convertername = {"xlf": "getxliff"}.get(destformat, "get" + destformat)
-    converter = getattr(pofile, convertername, None)
-    if converter is None:
+    converters = {"csv": po2csv.po2csv, "xlf": po2xliff.po2xliff, "ts": po2ts.po2ts, "mo": pocompile.POCompile}
+    converterclass = converters.get(destformat, None)
+    if converterclass is None:
       raise ValueError("No converter available for %s" % destfilename)
-    contents = converter()
+    contents = converterclass().convertfile(pofile)
+    if hasattr(contents, "tolines"):
+      contents = "".join(contents.tolines())
     try:
       destfile = open(destfilename, "w")
       destfile.write(contents)

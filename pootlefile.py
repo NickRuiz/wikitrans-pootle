@@ -6,11 +6,6 @@
 from translate.storage import po
 from translate.misc import quote
 from translate.filters import checks
-from translate.convert import po2csv
-from translate.convert import po2xliff
-from translate.convert import po2ts
-from translate.convert import pot2po
-from translate.tools import pocompile
 from Pootle import __version__
 from jToolkit import timecache
 import time
@@ -145,35 +140,6 @@ class pootlefile(po.pofile):
     self.pofreshen()
     lines = self.tolines()
     return "".join(lines)
-
-  def getcsv(self):
-    """returns pofile as csv"""
-    self.pofreshen()
-    convertor = po2csv.po2csv()
-    csvfile = convertor.convertfile(self)
-    lines = csvfile.tolines()
-    return "".join(lines)
-
-  def getxliff(self):
-    """returns pofile as xliff"""
-    self.pofreshen()
-    convertor = po2xliff.po2xliff()
-    xlifffile = convertor.convertfile(self, None)
-    return xlifffile
-
-  def getts(self):
-    """returns pofile as ts"""
-    self.pofreshen()
-    convertor = po2ts.po2ts()
-    tsfile = convertor.convertfile(self, None)
-    return tsfile
-
-  def getmo(self):
-    """returns pofile compiled into mo"""
-    self.pofreshen()
-    convertor = pocompile.pocompile()
-    mofile = convertor.convertfile(self)
-    return mofile
 
   def readpendingfile(self):
     """reads and parses the pending file corresponding to this po file"""
