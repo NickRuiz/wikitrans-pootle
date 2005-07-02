@@ -1154,6 +1154,44 @@ class TranslationProject(object):
     """returns whether the project has createmofile set"""
     return self.potree.getprojectcreatemofiles(projectcode) == 1
 
+class DummyProject(TranslationProject):
+  """a project that is just being used for handling pootlefiles"""
+  def __init__(self, podir, checker=None, projectcode=None, languagecode=None):
+    """initializes the project with the given podir"""
+    self.podir = podir
+    if checker is None:
+      self.checker = pofilter.POTeeChecker()
+    else:
+      self.checker = checker
+    self.projectcode = projectcode
+    self.languagecode = languagecode
+    self.readquickstats()
+
+  def readquickstats(self):
+    """dummy statistics are empty"""
+    self.quickstats = {}
+
+  def savequickstats(self):
+    """saves quickstats if possible"""
+    pass
+
+class DummyStatsProject(DummyProject):
+  """a project that is just being used for refresh of statistics"""
+  def __init__(self, podir, checker, projectcode=None, languagecode=None):
+    """initializes the project with the given podir"""
+    DummyProject.__init__(self, podir, checker, projectcode, languagecode)
+
+  def readquickstats(self):
+    """reads statistics from whatever files are available"""
+    self.quickstats = {}
+    if self.projectcode is not None and self.languagecode is not None:
+      TranslationProject.readquickstats(self)
+
+  def savequickstats(self):
+    """saves quickstats if possible"""
+    if self.projectcode is not None and self.languagecode is not None:
+      TranslationProject.savequickstats(self)
+
 class TemplatesProject(TranslationProject):
   """Manages Template files (.pot files) for a project"""
   fileext = "pot"
