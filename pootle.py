@@ -254,10 +254,10 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
       pathwords = pathwords[1:]
       if pathwords:
         top = pathwords[0]
-	bottom = pathwords[-1]
+        bottom = pathwords[-1]
       else:
         top = ""
-	bottom = ""
+        bottom = ""
       if not top or top == "index.html":
         return indexpage.LanguageIndex(self.potree, languagecode, session)
       if self.potree.hasproject(languagecode, top):
@@ -269,14 +269,14 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
         else:
           top = ""
         if not top or top == "index.html":
-	  return indexpage.ProjectIndex(project, session, argdict)
+          return indexpage.ProjectIndex(project, session, argdict)
         elif top == "admin.html":
           return adminpages.TranslationProjectAdminPage(self.potree, project, session, argdict)
-	elif bottom == "translate.html":
-	  if len(pathwords) > 1:
+        elif bottom == "translate.html":
+          if len(pathwords) > 1:
             dirfilter = os.path.join(*pathwords[:-1])
-	  else:
-	    dirfilter = ""
+          else:
+            dirfilter = ""
           try:
             return translatepage.TranslatePage(project, session, argdict, dirfilter)
           except projects.RightsError, stoppedby:
@@ -289,64 +289,63 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
         elif bottom == "spellingstandby.html":
           # a simple 'loading' page
           return spellui.SpellingStandby()
-	elif bottom.endswith("." + project.fileext):
-	  pofilename = os.path.join(*pathwords)
-	  if argdict.get("translate", 0):
+        elif bottom.endswith("." + project.fileext):
+          pofilename = os.path.join(*pathwords)
+          if argdict.get("translate", 0):
             try:
               return translatepage.TranslatePage(project, session, argdict, dirfilter=pofilename)
             except projects.RightsError, stoppedby:
               argdict["message"] = str(stoppedby)
               return indexpage.ProjectIndex(project, session, argdict, dirfilter=pofilename)
-	  elif argdict.get("index", 0):
+          elif argdict.get("index", 0):
             return indexpage.ProjectIndex(project, session, argdict, dirfilter=pofilename)
-	  else:
-            pofile = project.getpofile(pofilename)
-	    contents = pofile.getsource()
-	    page = widgets.PlainContents(contents)
+          else:
+            pofile = project.getpofile(pofilename, freshen=False)
+            page = widgets.SendFile(pofile.filename)
             page.etag = str(pofile.pomtime)
             page.allowcaching = True
             encoding = pofile.encoding or "UTF-8"
-	    page.content_type = "text/plain; charset=%s" % encoding
-	    return page
-	elif bottom.endswith(".csv"):
-	  csvfilename = os.path.join(*pathwords)
-	  contents = project.getcsv(csvfilename)
-	  page = widgets.PlainContents(contents)
+            page.content_type = "text/plain; charset=%s" % encoding
+            return page
+        elif bottom.endswith(".csv"):
+          csvfilename = os.path.join(*pathwords)
+          contents = project.getcsv(csvfilename)
+          page = widgets.PlainContents(contents)
           # page.etag = str(pofile.pomtime)
           # page.allowcaching = True
-	  page.content_type = "text/plain; charset=UTF-8"
-	  return page
-	elif bottom.endswith(".xlf"):
-	  xlifffilename = os.path.join(*pathwords)
-	  contents = project.getxliff(xlifffilename)
-	  page = widgets.PlainContents(contents)
+          page.content_type = "text/plain; charset=UTF-8"
+          return page
+        elif bottom.endswith(".xlf"):
+          xlifffilename = os.path.join(*pathwords)
+          contents = project.getxliff(xlifffilename)
+          page = widgets.PlainContents(contents)
           # page.etag = str(pofile.pomtime)
           # page.allowcaching = True
-	  page.content_type = "text/xml; charset=UTF-8"
-	  return page
-	elif bottom.endswith(".ts"):
-	  tsfilename = os.path.join(*pathwords)
-	  contents = project.getts(tsfilename)
-	  page = widgets.PlainContents(contents)
-	  page.content_type = "text/xml; charset=UTF-8"
-	  return page
-	elif bottom.endswith(".mo"):
+          page.content_type = "text/xml; charset=UTF-8"
+          return page
+        elif bottom.endswith(".ts"):
+          tsfilename = os.path.join(*pathwords)
+          contents = project.getts(tsfilename)
+          page = widgets.PlainContents(contents)
+          page.content_type = "text/xml; charset=UTF-8"
+          return page
+        elif bottom.endswith(".mo"):
           if not "pocompile" in project.getrights(session):
             return None
-	  mofilename = os.path.join(*pathwords)
-	  contents = project.getmo(mofilename)
-	  page = widgets.PlainContents(contents)
+          mofilename = os.path.join(*pathwords)
+          contents = project.getmo(mofilename)
+          page = widgets.PlainContents(contents)
           # page.etag = str(pofile.pomtime)
           # page.allowcaching = True
-	  page.content_type = "application/octet-stream"
-	  return page
+          page.content_type = "application/octet-stream"
+          return page
         elif bottom.endswith(".zip"):
           if not "archive" in project.getrights(session):
             return None
-	  if len(pathwords) > 1:
+          if len(pathwords) > 1:
             dirfilter = os.path.join(*pathwords[:-1])
-	  else:
-	    dirfilter = None
+          else:
+            dirfilter = None
           goal = argdict.get("goal", None)
           if goal:
             goalfiles = project.getgoalfiles(goal)
@@ -359,14 +358,14 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
           page = widgets.PlainContents(archivecontents)
           page.content_type = "application/zip"
           return page
-	elif bottom == "index.html":
+        elif bottom == "index.html":
           if len(pathwords) > 1:
             dirfilter = os.path.join(*pathwords[:-1])
           else:
             dirfilter = None
-	  return indexpage.ProjectIndex(project, session, argdict, dirfilter)
-	else:
-	  return indexpage.ProjectIndex(project, session, argdict, os.path.join(*pathwords))
+          return indexpage.ProjectIndex(project, session, argdict, dirfilter)
+        else:
+          return indexpage.ProjectIndex(project, session, argdict, os.path.join(*pathwords))
     return None
 
 class PootleOptionParser(simplewebserver.WebOptionParser):

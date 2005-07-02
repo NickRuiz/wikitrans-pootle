@@ -950,10 +950,11 @@ class TranslationProject(object):
         assignstats[username] = allitems
     return assignstats
 
-  def getpofile(self, pofilename):
+  def getpofile(self, pofilename, freshen=True):
     """parses the file into a pofile object and stores in self.pofiles"""
     pofile = self.pofiles[pofilename]
-    pofile.pofreshen()
+    if freshen:
+      pofile.pofreshen()
     return pofile
 
   def getpofilelen(self, pofilename):
