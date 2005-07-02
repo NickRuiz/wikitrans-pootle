@@ -307,37 +307,27 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
             encoding = pofile.encoding or "UTF-8"
             page.content_type = "text/plain; charset=%s" % encoding
             return page
-        elif bottom.endswith(".csv"):
-          csvfilename = os.path.join(*pathwords)
-          contents = project.getcsv(csvfilename)
-          page = widgets.PlainContents(contents)
-          # page.etag = str(pofile.pomtime)
-          # page.allowcaching = True
-          page.content_type = "text/plain; charset=UTF-8"
-          return page
-        elif bottom.endswith(".xlf"):
-          xlifffilename = os.path.join(*pathwords)
-          contents = project.getxliff(xlifffilename)
-          page = widgets.PlainContents(contents)
-          # page.etag = str(pofile.pomtime)
-          # page.allowcaching = True
-          page.content_type = "text/xml; charset=UTF-8"
-          return page
-        elif bottom.endswith(".ts"):
-          tsfilename = os.path.join(*pathwords)
-          contents = project.getts(tsfilename)
-          page = widgets.PlainContents(contents)
-          page.content_type = "text/xml; charset=UTF-8"
-          return page
-        elif bottom.endswith(".mo"):
-          if not "pocompile" in project.getrights(session):
-            return None
-          mofilename = os.path.join(*pathwords)
-          contents = project.getmo(mofilename)
-          page = widgets.PlainContents(contents)
-          # page.etag = str(pofile.pomtime)
-          # page.allowcaching = True
-          page.content_type = "application/octet-stream"
+        elif bottom.endswith(".csv") or bottom.endswith(".xlf") or bottom.endswith(".ts"):
+          destfilename = os.path.join(*pathwords)
+          basename, extension = os.path.splitext(destfilename)
+          pofilename = basename + os.extsep + project.fileext
+          extension = extension[1:]
+          if extension == "mo":
+            if not "pocompile" in project.getrights(session):
+              return None
+          etag, filepath_or_contents = project.convert(pofilename, extension)
+          if etag:
+            page = widgets.SendFile(filepath_or_contents)
+            page.etag = etag
+          else:
+            page = widgets.PlainContents(filepath_or_contents)
+          page.allowcaching = True
+          if extension == "csv":
+            page.content_type = "text/plain; charset=UTF-8"
+          elif extension == "xlf" or extension == "ts":
+            page.content_type = "text/xml; charset=UTF-8"
+          elif extension == "mo":
+            page.content_type = "application/octet-stream"
           return page
         elif bottom.endswith(".zip"):
           if not "archive" in project.getrights(session):

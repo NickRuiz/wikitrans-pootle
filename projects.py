@@ -1062,7 +1062,7 @@ class TranslationProject(object):
     return pofile.getsource()
 
   def convert(self, pofilename, destformat):
-    """converts the pofile to the given format"""
+    """converts the pofile to the given format, returning (etag_if_filepath, filepath_or_contents)"""
     destfilename = pofilename[:-len(self.fileext)] + destformat
     pofile = self.getpofile(pofilename, freshen=False)
     destfilename = pofile.filename[:-len(self.fileext)] + destformat
@@ -1070,42 +1070,25 @@ class TranslationProject(object):
     pomtime = pootlefile.getmodtime(pofile.filename)
     if pomtime and destmtime == pomtime:
       try:
-        return open(destfilename).read()
+        return True, destfilename
       except Exception, e:
         print "error reading cached converted file %s: %s" % (destfilename, e)
     pofile.pofreshen()
-    converter = getattr(pofile, "get" + destformat, None)
+    convertername = {"xlf": "getxliff"}.get(destformat, "get" + destformat)
+    converter = getattr(pofile, convertername, None)
     if converter is None:
-      return None
+      raise ValueError("No converter available for %s" % destfilename)
     contents = converter()
     try:
       destfile = open(destfilename, "w")
       destfile.write(contents)
       destfile.close()
-      os.utime(destfilename, (time.time(), pofile.pomtime))
+      currenttime, modtime = time.time(), pofile.pomtime
+      os.utime(destfilename, (currenttime, modtime))
+      return modtime, destfilename
     except Exception, e:
       print "error caching converted file %s: %s" % (destfilename, e)
-    return contents
-
-  def getcsv(self, csvfilename):
-    """returns pofile as csv"""
-    pofilename = csvfilename.replace(".csv", ".po")
-    return self.convert(pofilename, "csv")
-
-  def getxliff(self, xlifffilename):
-    """returns pofile as xliff"""
-    pofilename = xlifffilename.replace(".xlf", ".po")
-    return self.convert(pofilename, "xlf")
-
-  def getts(self, tsfilename):
-    """returns pofile as ts"""
-    pofilename = tsfilename.replace(".ts", ".po")
-    return self.convert(pofilename, "ts")
-
-  def getmo(self, mofilename):
-    """return pofile as compiled mo"""
-    pofilename = mofilename.replace(".mo", ".po")
-    return self.convert(pofilename, "mo")
+    return False, contents
 
   def gettext(self, message):
     """uses the project as a live translator for the given message"""
