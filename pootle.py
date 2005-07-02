@@ -307,7 +307,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheSer
             encoding = pofile.encoding or "UTF-8"
             page.content_type = "text/plain; charset=%s" % encoding
             return page
-        elif bottom.endswith(".csv") or bottom.endswith(".xlf") or bottom.endswith(".ts"):
+        elif bottom.endswith(".csv") or bottom.endswith(".xlf") or bottom.endswith(".ts") or bottom.endswith("mo"):
           destfilename = os.path.join(*pathwords)
           basename, extension = os.path.splitext(destfilename)
           pofilename = basename + os.extsep + project.fileext
