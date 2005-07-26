@@ -80,8 +80,8 @@ div.translate-form
 table.translate-table
 {
 	width:100%;
-	padding:10;
-	border-spacing:1;
+	padding:10px;
+	border-spacing:1px;
 	border:0;
 }
 td.translate-table-title
