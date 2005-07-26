@@ -495,12 +495,12 @@ class TranslatePage(pagelayout.PootleNavPage):
 
   def gettransreview(self, item, trans, suggestions):
     """returns a widget for reviewing the given item's suggestions"""
-    currenttitle = widgets.Division(self.localize("<b>Current Translation:</b>"))
+    htmlbreak = "<br/>"
+    currenttitle = [self.localize("<b>Current Translation:</b>"), htmlbreak]
     hasplurals = len(trans) > 1
     editlink = self.geteditlink(item)
     currenttext = [editlink]
     diffcodes = {}
-    htmlbreak = "<br/>"
     for pluralitem, pluraltrans in enumerate(trans):
       if isinstance(pluraltrans, str):
         trans[pluralitem] = pluraltrans.decode("utf-8")

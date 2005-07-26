@@ -592,11 +592,11 @@ class ProjectIndex(pagelayout.PootleNavPage):
     else:
       projectstats = self.project.combinestats(pofilenames)
     basename = os.path.basename(direntry)
+    folderimage = pagelayout.Icon("folder.png")
+    browseurl = self.getbrowseurl("%s/" % basename, **newargs)
+    bodytitle = widgets.Link(browseurl, browseurl)
     bodytitle = pagelayout.Title(basename)
     basename += "/"
-    folderimage = pagelayout.Icon("folder.png")
-    browseurl = self.getbrowseurl(basename, **newargs)
-    bodytitle = widgets.Link(browseurl, bodytitle)
     actionlinks = self.getactionlinks(basename, projectstats, linksrequired=linksrequired)
     bodydescription = pagelayout.ActionLinks(actionlinks)
     body = pagelayout.ContentsItem([folderimage, bodytitle, bodydescription])

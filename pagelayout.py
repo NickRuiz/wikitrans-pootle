@@ -134,7 +134,7 @@ class PootleBanner(widgets.Division):
     logoimage = widgets.Image(baseurl+"images/top.png", {"width":width, "height":height})
     logocell = table.TableCell(logoimage, {"align":"center", "valign":"middle"})
     bordercell = table.TableCell([], {"class":"border_top", "align":"right", "valign":"middle"})
-    toptable = table.TableLayout({"class":"header", "width":"100%", "height":maxheight, "cellpadding":0, "cellspacing":0, "border":0})
+    toptable = table.TableLayout({"class":"header", "width":"100%", "style": "height: %s" % maxheight, "cellpadding":0, "cellspacing":0, "border":0})
     toptable.setcell(0, 0, logocell)
     toptable.setcell(1, 0, bordercell)
     topcell = table.TableCell(toptable, {"width":"100%"})
@@ -152,7 +152,7 @@ class PootlePage(widgets.Page):
     stylesheets = [session.instance.baseurl + "pootle.css"]
     if hasattr(session.instance, "stylesheet"):
       stylesheets.append(session.instance.baseurl + session.instance.stylesheet)
-    favicon = widgets.PlainContents('<link rel="shortcut icon" href="' + session.instance.baseurl + 'favicon.ico" />')
+    favicon = widgets.PlainContents('<link rel="shortcut icon" href="' + session.instance.baseurl + 'favicon.ico">')
       
     self.banner = PootleBanner(session.instance, bannerheight)
     self.links = PootleSidebar(session, returnurl)
