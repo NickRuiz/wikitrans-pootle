@@ -27,10 +27,11 @@ class AdminPage(pagelayout.PootlePage):
     else:
       contents = pagelayout.IntroText(self.localize("You do not have the rights to administer pootle."))
     pagelayout.PootlePage.__init__(self, self.localize("Pootle Admin Page"), contents, session)
-    if taldom is not None:
+    if taldom is not None and not getattr(self.instance, "disabletemplates", False):
         self.templatename = "adminindex"
         sessionvars = {"status": taldom.escapedunicode(self.session.status), "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
-        self.templatevars = {"options": self.getoptions(), "session": sessionvars}
+        instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
+        self.templatevars = {"options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
 
   def getoptions(self):
     optiontitles = {"title": self.localize("Title"), "description": self.localize("Description"), "baseurl": self.localize("Base URL"), "homepage": self.localize("Home Page")}
@@ -72,44 +73,73 @@ class LanguagesAdminPage(pagelayout.PootlePage):
     else:
       contents = pagelayout.IntroText(self.localize("You do not have the rights to administer pootle."))
     pagelayout.PootlePage.__init__(self, self.localize("Pootle Languages Admin Page"), contents, session)
+    if taldom is not None and not getattr(self.instance, "disabletemplates", False):
+        self.templatename = "adminlanguages"
+        sessionvars = {"status": taldom.escapedunicode(self.session.status), "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
+        instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
+        self.templatevars = {"languages": self.getlanguagesoptions(), "options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
+
+  def getoptions(self):
+    options = [{"name": "code", "title": self.localize("ISO Code"), "size": 6, "newvalue": ""},
+               {"name": "name", "title": self.localize("Full Name"), "newvalue": self.localize("(add language here)")},
+               {"name": "specialchars", "title": self.localize("Special Chars"), "newvalue": self.localize("(special characters)")},
+               {"name": "nplurals", "title": self.localize("Number of Plurals"), "newvalue": self.localize("(number of plurals)")},
+               {"name": "pluralequation", "title": self.localize("Plural Equation"), "newvalue": self.localize("(plural equation)")},
+               {"name": "remove", "title": self.localize("Remove Language")}]
+    for option in options:
+      if "newvalue" in option:
+        option["newname"] = "newlanguage" + option["name"]
+    return options
+
+  def getlanguagesoptions(self):
+    languages = []
+    for languagecode, languagename in self.potree.getlanguages():
+      languagespecialchars = self.potree.getlanguagespecialchars(languagecode)
+      languagenplurals = self.potree.getlanguagenplurals(languagecode)
+      languagepluralequation = self.potree.getlanguagepluralequation(languagecode)
+      languageremove = None
+      # TODO: make label work like this
+      removelabel = self.localize("Remove %s") % languagecode
+      languageoptions = [{"name": "languagename-%s" % languagecode, "value": languagename, "type": "text"},
+                         {"name": "languagespecialchars-%s" % languagecode, "value": languagespecialchars, "type": "text"},
+                         {"name": "languagenplurals-%s" % languagecode, "value": languagenplurals, "type": "text"},
+                         {"name": "languagepluralequation-%s" % languagecode, "value": languagepluralequation, "type": "text"},
+                         {"name": "languageremove-%s" % languagecode, "value": languageremove, "type": "checkbox", "label": removelabel}]
+      languages.append({"code": languagecode, "options": languageoptions})
+    return languages
 
   def getlanguages(self):
     """gets the links to the languages"""
     languagestitle = pagelayout.Title(self.localize('Languages'))
     languages = table.TableLayout()
-    languages.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("ISO Code"))))
-    languages.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Full Name"))))
-    languages.setcell(0, 2, table.TableCell(pagelayout.Title(self.localize("Special Chars"))))
-    languages.setcell(0, 3, table.TableCell(pagelayout.Title(self.localize("Number of Plurals"))))
-    languages.setcell(0, 4, table.TableCell(pagelayout.Title(self.localize("Plural Equation"))))
-    languages.setcell(0, 5, table.TableCell(pagelayout.Title(self.localize("Remove language"))))
-    for languagecode, languagename in self.potree.getlanguages():
-      languagespecialchars = self.potree.getlanguagespecialchars(languagecode)
-      languagenplurals = self.potree.getlanguagenplurals(languagecode)
-      languagepluralequation = self.potree.getlanguagepluralequation(languagecode)
-      nametextbox = widgets.Input({"name": "languagename-%s" % languagecode, "value": languagename})
-      specialcharstextbox = widgets.Input({"name": "languagespecialchars-%s" % languagecode, "value": languagespecialchars})
-      npluralstextbox = widgets.Input({"name": "languagenplurals-%s" % languagecode, "value": languagenplurals})
-      pluralequationtextbox = widgets.Input({"name": "languagepluralequation-%s" % languagecode, "value": languagepluralequation})
-      removecheckbox = widgets.Input({"name": "languageremove-%s" % languagecode, "type": "checkbox"})
+    colnum = 0
+    for option in self.getoptions():
+      languages.setcell(0, colnum, table.TableCell(pagelayout.Title(option["title"])))
+      colnum += 1
+    for language in self.getlanguagesoptions():
       rownum = languages.maxrownum()+1
+      languagecode = language["code"]
       languages.setcell(rownum, 0, table.TableCell(languagecode))
-      languages.setcell(rownum, 1, table.TableCell(nametextbox))
-      languages.setcell(rownum, 2, table.TableCell(specialcharstextbox))
-      languages.setcell(rownum, 3, table.TableCell(npluralstextbox))
-      languages.setcell(rownum, 4, table.TableCell(pluralequationtextbox))
-      languages.setcell(rownum, 5, table.TableCell([removecheckbox, self.localize("Remove %s") % languagecode]))
+      colnum = 1
+      for optiondict in language["options"]:
+        optionwidget = widgets.Input(optiondict)
+        if "label" in optiondict:
+          optionwidget = [optionwidget, optiondict["label"]]
+        languages.setcell(rownum, colnum, table.TableCell(optionwidget))
+        colnum += 1
     rownum = languages.maxrownum()+1
-    codetextbox = widgets.Input({"name": "newlanguagecode", "value": "", "size": 6})
-    nametextbox = widgets.Input({"name": "newlanguagename", "value": self.localize("(add language here)")})
-    specialcharstextbox = widgets.Input({"name": "newlanguagespecialchars", "value": self.localize("(special characters)")})
-    npluralstextbox = widgets.Input({"name": "newlanguagenplurals", "value": self.localize("(number of plurals)")})
-    pluralequationtextbox = widgets.Input({"name": "newlanguagepluralequation", "value": self.localize("(plural equation)")})
-    languages.setcell(rownum, 0, table.TableCell(codetextbox))
-    languages.setcell(rownum, 1, table.TableCell(nametextbox))
-    languages.setcell(rownum, 2, table.TableCell(specialcharstextbox))
-    languages.setcell(rownum, 3, table.TableCell(npluralstextbox))
-    languages.setcell(rownum, 4, table.TableCell(pluralequationtextbox))
+    colnum = 0
+    for option in self.getoptions():
+      if "newname" in option:
+        inputoptions = {"name": option["newname"], "value": option["newvalue"]}
+        if "size" in option:
+          inputoptions["size"] = option["size"]
+        if "selectoptions" in optiondict:
+          optionwidget = widgets.Select(optiondict, options=optiondict["selectoptions"])
+        else:
+          optionwidget = widgets.Input(optiondict)
+      projects.setcell(rownum, colnum, table.TableCell(optionwidget))
+      colnum += 1
     submitbutton = widgets.Input({"type":"submit", "name":"changelanguages", "value":self.localize("Save changes")})
     languageform = widgets.Form([languages, submitbutton], {"name": "languages", "action":""})
     return pagelayout.Contents([languagestitle, languageform])
@@ -124,23 +154,32 @@ class ProjectsAdminPage(pagelayout.PootlePage):
     if self.session.issiteadmin():
       homelink = pagelayout.IntroText(widgets.Link("../home/", self.localize("Home page")))
       indexlink = pagelayout.IntroText(widgets.Link("index.html", self.localize("Main Admin page")))
+      self.allchecks = [{"value": check, "description": check} for check in checks.projectcheckers.keys()]
+      self.allchecks.append({"value": "", "description": self.localize("Standard")})
       contents = [homelink, indexlink, self.getprojects()]
     else:
       contents = pagelayout.IntroText(self.localize("You do not have the rights to administer pootle."))
     pagelayout.PootlePage.__init__(self, self.localize("Pootle Projects Admin Page"), contents, session)
+    if taldom is not None and not getattr(self.instance, "disabletemplates", False):
+        self.templatename = "adminprojects"
+        sessionvars = {"status": taldom.escapedunicode(self.session.status), "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
+        instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
+        self.templatevars = {"projects": self.getprojectsoptions(), "options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
 
-  def getprojects(self):
-    """gets the links to the projects"""
-    projectstitle = pagelayout.Title(self.localize("Projects"))
-    projects = table.TableLayout()
-    projects.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Project Code"))))
-    projects.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Full Name"))))
-    projects.setcell(0, 2, table.TableCell(pagelayout.Title(self.localize("Project Description"))))
-    projects.setcell(0, 3, table.TableCell(pagelayout.Title(self.localize("Checker Style"))))
-    projects.setcell(0, 4, table.TableCell(pagelayout.Title(self.localize("Create MO Files"))))
-    projects.setcell(0, 5, table.TableCell(pagelayout.Title(self.localize("Remove project"))))
-    allchecks = [(check, check) for check in checks.projectcheckers.keys()]
-    allchecks.append(("", self.localize("Standard")))
+  def getoptions(self):
+    options = [{"name": "code", "title": self.localize("Project Code"), "size": 6, "newvalue": ""},
+               {"name": "name", "title": self.localize("Full Name"), "newvalue": self.localize("(add project here)")},
+               {"name": "description", "title": self.localize("Project Description"), "newvalue": self.localize("(project description)")},
+               {"name": "checkerstyle", "title": self.localize("Checker Style"), "selectoptions": self.allchecks, "newvalue": ""},
+               {"name": "createmofiles", "title": self.localize("Create MO Files"), "type": "checkbox", "newvalue": ""},
+               {"name": "remove", "title": self.localize("Remove Project")}]
+    for option in options:
+      if "newvalue" in option:
+        option["newname"] = "newproject" + option["name"]
+    return options
+
+  def getprojectsoptions(self):
+    projects = []
     for projectcode in self.potree.getprojectcodes():
       projectadminlink = "../projects/%s/admin.html" % projectcode
       projectname = self.potree.getprojectname(projectcode)
@@ -151,23 +190,58 @@ class ProjectsAdminPage(pagelayout.PootlePage):
         projectcreatemofiles = "checked"
       else:
         projectcreatemofiles = ""
-      nametextbox = widgets.Input({"name": "projectname-%s" % projectcode, "value": projectname})
-      descriptiontextbox = widgets.Input({"name": "projectdescription-%s" % projectcode, "value": projectdescription})
-      checkerstyleselect = widgets.Select({"name": "projectcheckerstyle-%s" % projectcode, "value": projectcheckerstyle}, options=allchecks)
-      createmofilescheckbox = widgets.Input({"name": "projectcreatemofiles-%s" % projectcode, "value": projectcreatemofiles, "type": "checkbox", projectcreatemofiles:''})
-      removecheckbox = widgets.Input({"name": "projectremove-%s" % projectcode, "type": "checkbox"})
-      rownum = projects.maxrownum()+1
+      projectremove = None
+      removelabel = self.localize("Remove %s") % projectcode
+      projectoptions = [{"name": "projectname-%s" % projectcode, "value": projectname, "type": "text"},
+                        {"name": "projectdescription-%s" % projectcode, "value": projectdescription, "type": "text"},
+                        {"name": "projectcheckerstyle-%s" % projectcode, "value": projectcheckerstyle, "selectoptions": self.allchecks},
+                        {"name": "projectcreatemofiles-%s" % projectcode, "value": projectcreatemofiles, "type": "checkbox", projectcreatemofiles: ""},
+                        {"name": "projectremove-%s" % projectcode, "value": projectremove, "type": "checkbox", "label": removelabel}]
+      projects.append({"code": projectcode, "adminlink": projectadminlink, "options": projectoptions})
+    return projects
+
+  def getprojects(self):
+    """gets the links to the projects"""
+    projectstitle = pagelayout.Title(self.localize("Projects"))
+    projects = table.TableLayout()
+    colnum = 0
+    for option in self.getoptions():
+      projects.setcell(0, colnum, table.TableCell(pagelayout.Title(option["title"])))
+      colnum += 1
+    rownum = 1
+    for project in self.getprojectsoptions():
+      projectcode = project["code"]
+      projectadminlink = project["adminlink"]
+      colnum = 0
       projects.setcell(rownum, 0, table.TableCell(widgets.Link(projectadminlink, projectcode)))
-      projects.setcell(rownum, 1, table.TableCell(nametextbox))
-      projects.setcell(rownum, 2, table.TableCell(descriptiontextbox))
-      projects.setcell(rownum, 3, table.TableCell(checkerstyleselect))
-      projects.setcell(rownum, 4, table.TableCell(createmofilescheckbox))
-      projects.setcell(rownum, 5, table.TableCell([removecheckbox, self.localize("Remove %s") % projectcode]))
+      for optiondict in project["options"]:
+        colnum += 1
+        if "selectoptions" in optiondict:
+          optionwidget = widgets.Select(optiondict, options=[(o["value"], o["description"]) for o in optiondict["selectoptions"]])
+        else:
+          optionwidget = widgets.Input(optiondict)
+        if "label" in optiondict:
+          optionwidget = [optionwidget, optiondict["label"]]
+        projects.setcell(rownum, colnum, table.TableCell(optionwidget))
+      rownum = projects.maxrownum()+1
+    rownum = projects.maxrownum()+1
+    colnum = 0
+    for option in self.getoptions():
+      projects.setcell(rownum, colnum, table.TableCell(pagelayout.Title(option["title"])))
+      if "newname" in option:
+        inputoptions = {"name": option["newname"], "value": option["newvalue"]}
+        if "size" in option:
+          inputoptions["size"] = option["size"]
+        if "type" in option:
+          inputoptions["type"] = option["type"]
+        optiontextbox = widgets.Input(inputoptions)
+      projects.setcell(rownum, colnum, table.TableCell(optiontextbox))
+      colnum += 1
     rownum = projects.maxrownum()+1
     codetextbox = widgets.Input({"name": "newprojectcode", "value": "", "size": 6})
     nametextbox = widgets.Input({"name": "newprojectname", "value": self.localize("(add project here)")})
     descriptiontextbox = widgets.Input({"name": "newprojectdescription", "value": self.localize("(project description)")})
-    checkerstyleselect = widgets.Select({"name": "newprojectcheckerstyle"}, options=allchecks)
+    checkerstyleselect = widgets.Select({"name": "newprojectcheckerstyle"}, options=[(o["value"], o["description"]) for o in self.allchecks])
     createmofilescheckbox = widgets.Input({"name": "newprojectcreatemofiles", "type": "checkbox"})
     projects.setcell(rownum, 0, table.TableCell(codetextbox))
     projects.setcell(rownum, 1, table.TableCell(nametextbox))
@@ -193,39 +267,81 @@ class UsersAdminPage(pagelayout.PootlePage):
     else:
       contents = pagelayout.IntroText(self.localize("You do not have the rights to administer Pootle."))
     pagelayout.PootlePage.__init__(self, self.localize("Pootle User Admin Page"), contents, session)
+    if taldom is not None and not getattr(self.instance, "disabletemplates", False):
+        self.templatename = "adminusers"
+        sessionvars = {"status": taldom.escapedunicode(self.session.status), "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
+        instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
+        self.templatevars = {"users": self.getusersoptions(), "options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
+
+  def getoptions(self):
+    options = [{"name": "name", "title": self.localize("Login"), "newvalue": "", "size": 6},
+               {"name": "fullname", "title": self.localize("Full Name"), "newvalue": self.localize("(add full name here)")},
+               {"name": "email", "title": self.localize("Email Address"), "newvalue": self.localize("(add email here)")},
+               {"name": "password", "title": self.localize("Password"), "newvalue": self.localize("(add password here)")},
+               {"name": "activated", "title": self.localize("Activated"), "type": "checkbox", "checked": "true", "newvalue": "", "label": self.localize("Activate New User")},
+               {"name": "remove", "title": self.localize("Remove User"), "type": "checkbox"}]
+    for option in options:
+      if "newvalue" in option:
+        # TODO: rationalize this in the form processing
+        if option["name"] == "activated":
+          option["newname"] = "newuseractivate"
+        else:
+          option["newname"] = "newuser" + option["name"]
+    return options
+
+  def getusersoptions(self):
+    users = []
+    for usercode, usernode in self.users.iteritems(sorted=True):
+      fullname = getattr(usernode, "name", "")
+      email = getattr(usernode, "email", "")
+      activated = getattr(usernode, "activated", 0) == 1
+      if activated:
+        activatedattr = "checked"
+      else:
+        activatedattr = ""
+      userremove = None
+      removelabel = self.localize("Remove %s") % usercode
+      useroptions = [{"name": "username-%s" % usercode, "value": fullname, "type": "text"},
+                     {"name": "useremail-%s" % usercode, "value": email, "type": "text"},
+                     {"name": "userpassword-%s" % usercode, "value": None, "type": "text"},
+                     {"name": "useractivated-%s" % usercode, "value": activated, "type": "checkbox", activatedattr: ""},
+                     {"name": "userremove-%s" % usercode, "value": None, "type": "checkbox", "label": removelabel}]
+      users.append({"code": usercode, "options": useroptions})
+    return users
 
   def getusers(self):
     """user list and adding"""
     userstitle = pagelayout.Title(self.localize("Users"))
     users = table.TableLayout()
-    users.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Login"))))
-    users.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Full Name"))))
-    users.setcell(0, 2, table.TableCell(pagelayout.Title(self.localize("Email Address"))))
-    users.setcell(0, 3, table.TableCell(pagelayout.Title(self.localize("Password"))))
-    users.setcell(0, 4, table.TableCell(pagelayout.Title(self.localize("Activated"))))
-    # users.setcell(0, 3, table.TableCell(pagelayout.Title(self.localize("Projects"))))
-    # users.setcell(0, 4, table.TableCell(pagelayout.Title(self.localize("Languages"))))
-    usernames = [username for username, userprefs in self.users.iteritems() if username != "__dummy__"]
-    usernames.sort()
-    for username in usernames:
-      usernode = getattr(self.users, username, None)
-      if not usernode:
-        continue
-      fullnametextbox = widgets.Input({"name": "userfullname-%s" % username, "value": getattr(usernode, "name", "")})
-      emailtextbox = widgets.Input({"name": "useremail-%s" % username, "value": getattr(usernode, "email", "")})
-      activatedvalues = {"name": "useractivated-%s" % username, "type": "checkbox"}
-      if getattr(usernode, "activated", 0) == 1:
-        activatedvalues["checked"] = "true"
-      activatedcheckbox = widgets.Input(activatedvalues)
-      removecheckbox = widgets.Input({"name": "userremove-%s" % username, "type": "checkbox"})
-      rownum = users.maxrownum()+1
+    colnum = 0
+    for option in self.getoptions():
+      users.setcell(0, colnum, table.TableCell(pagelayout.Title(option["title"])))
+      colnum += 1
+    rownum = 1
+    for user in self.getusersoptions():
+      username = user["code"]
+      colnum = 0
       users.setcell(rownum, 0, table.TableCell(username))
-      users.setcell(rownum, 1, table.TableCell(fullnametextbox))
-      users.setcell(rownum, 2, table.TableCell(emailtextbox))
-      users.setcell(rownum, 4, table.TableCell(activatedcheckbox))
-      # users.setcell(rownum, 2, table.TableCell(descriptiontextbox))
-      # users.setcell(rownum, 3, table.TableCell(checkerstyletextbox))
-      users.setcell(rownum, 5, table.TableCell([removecheckbox, self.localize("Remove %s") % username]))
+      for optiondict in user["options"]:
+        colnum += 1
+        optionwidget = widgets.Input(optiondict)
+        if "label" in optiondict:
+          optionwidget = [optionwidget, optiondict["label"]]
+        users.setcell(rownum, colnum, table.TableCell(optionwidget))
+      rownum = users.maxrownum()+1
+    rownum = users.maxrownum()+1
+    colnum = 0
+    for option in self.getoptions():
+      users.setcell(rownum, colnum, table.TableCell(pagelayout.Title(option["title"])))
+      if "newname" in option:
+        inputoptions = {"name": option["newname"], "value": option["newvalue"]}
+        if "size" in option:
+          inputoptions["size"] = option["size"]
+        if "type" in option:
+          inputoptions["type"] = option["type"]
+        optiontextbox = widgets.Input(inputoptions)
+      users.setcell(rownum, colnum, table.TableCell(optiontextbox))
+      colnum += 1
     rownum = users.maxrownum()+1
     codetextbox = widgets.Input({"name": "newusername", "value": "", "size": 6})
     newfullnametextbox = widgets.Input({"name": "newfullname", "value": self.localize("(add full name here)")})

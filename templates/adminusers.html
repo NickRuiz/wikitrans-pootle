@@ -4,7 +4,7 @@
 <head>
   <meta name="generator" content="HTML Tidy for Linux/x86 (vers 1st January 2004), see www.w3.org" />
 
-  <title>Pootle Admin Page</title>
+  <title>Pootle User Admin Page</title>
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
   <link rel="stylesheet" type="text/css" href="/pootle.css" />
   <link rel="shortcut icon" href="/favicon.ico" />
@@ -45,39 +45,37 @@
     </div>
 
     <div class="intro">
-      <a href="users.html">Users</a>
-    </div>
-
-    <div class="intro">
-      <a href="languages.html">Languages</a>
-    </div>
-
-    <div class="intro">
-      <a href="projects.html">Projects</a>
+      <a href="index.html">Admin page</a>
     </div>
 
     <div class="contents">
-      <h3 class="title">General Options</h3>
+      <h3 class="title">Users</h3>
 
-      <form action="" method="post" name="general" id="general">
+      <form action="" method="post" name="users" id="users">
         <table cellpadding="1" cellspacing="1">
           <tr>
-            <td colspan="1" rowspan="1" type="td">
-              <h3 class="title">Option</h3>
-            </td>
-
-            <td colspan="1" rowspan="1" type="td">
-              <h3 class="title">Current value</h3>
+            <td colspan="1" rowspan="1" type="td" tal:repeat="option options">
+              <h3 class="title" tal:content="option/title">Login</h3>
             </td>
           </tr>
 
-          <tr tal:repeat="option options">
-            <td colspan="1" rowspan="1" type="td" tal:content="option/title">Description</td>
+          <tr tal:repeat="user users">
+            <td colspan="1" rowspan="1" type="td" tal:content="user/code">davidfraser</td>
 
-            <td colspan="1" rowspan="1" type="td"><input type="text" tal:attributes="name option/name; value option/value"/></td>
+            <td colspan="1" rowspan="1" type="td" tal:repeat="option user/options">
+               <input type="text" tal:attributes="name option/name; type option/type; value option/value"/>
+               <span tal:condition="option/label" tal:content="option/label"/>
+            </td>
+
           </tr>
 
-        </table><input type="submit" name="changegeneral" value="Save changes" />
+          <tr>
+            <td colspan="1" rowspan="1" type="td" tal:repeat="option options">
+              <input type="text" tal:condition="option/newname" tal:attributes="name option/newname; value option/newvalue; size option/size; type option/type; checked option/checked"/>
+               <span tal:condition="option/label" tal:content="option/label"/>
+            </td>
+          </tr>
+        </table><input type="submit" name="changeusers" value="Save changes" />
       </form>
     </div>
   </div>
