@@ -1121,7 +1121,7 @@ class TranslationProject(object):
         elif not hasattr(pofile, "msgidindex"):
           pofile.makeindex()
         thepo = pofile.msgidindex.get(message, None)
-        if not thepo or thepo.isblankmsgstr():
+        if not thepo or thepo.isblankmsgstr() or thepo.isfuzzy():
           continue
         tmsg = po.unquotefrompo(thepo.msgstr)
         if tmsg is not None:
@@ -1146,7 +1146,7 @@ class TranslationProject(object):
         if pluralequation:
           pluralfn = gettext.c2py(pluralequation)
           thepo = pofile.msgidindex.get(singular, None)
-          if not thepo or thepo.isblankmsgstr():
+          if not thepo or thepo.isblankmsgstr() or thepo.isfuzzy():
             continue
           tmsg = po.unquotefrompo(thepo.msgstr[pluralfn(n)])
           if tmsg is not None:
