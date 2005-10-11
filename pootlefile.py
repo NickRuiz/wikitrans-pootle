@@ -79,10 +79,9 @@ class pootleelement(po.poelement, object):
     unquotedstr = self.unquotedmsgstr[0]
     if isinstance(unquotedid, str) and isinstance(unquotedstr, unicode):
       unquotedid = unquotedid.decode("utf-8")
-    failures = checker.run_filters(self, unquotedid, unquotedstr)
-    for failure in failures:
-      functionname = failure.split(":",2)[0]
-      classes.append("check-" + functionname)
+    filterresult = checker.run_filters(self, unquotedid, unquotedstr)
+    for filtername, filtermessage in filterresult:
+      classes.append("check-" + filtername)
     return classes
 
 class pootlefile(po.pofile):
