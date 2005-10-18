@@ -138,7 +138,7 @@ class LanguagesAdminPage(pagelayout.PootlePage):
           optionwidget = widgets.Select(optiondict, options=optiondict["selectoptions"])
         else:
           optionwidget = widgets.Input(optiondict)
-      projects.setcell(rownum, colnum, table.TableCell(optionwidget))
+      languages.setcell(rownum, colnum, table.TableCell(optionwidget))
       colnum += 1
     submitbutton = widgets.Input({"type":"submit", "name":"changelanguages", "value":self.localize("Save changes")})
     languageform = widgets.Form([languages, submitbutton], {"name": "languages", "action":""})
