@@ -137,7 +137,7 @@ class LanguagesAdminPage(pagelayout.PootlePage):
         if "selectoptions" in optiondict:
           optionwidget = widgets.Select(optiondict, options=optiondict["selectoptions"])
         else:
-          optionwidget = widgets.Input(optiondict)
+          optionwidget = widgets.Input(inputoptions)
       languages.setcell(rownum, colnum, table.TableCell(optionwidget))
       colnum += 1
     submitbutton = widgets.Input({"type":"submit", "name":"changelanguages", "value":self.localize("Save changes")})
