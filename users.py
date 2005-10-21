@@ -212,9 +212,22 @@ class OptionalLoginAppServer(server.LoginAppServer):
         username = key.replace("username-", "", 1)
         if self.hasuser(users, username):
           usernode = self.getusernode(users, username)
+          fullname = getattr(usernode, "name", None)
+          if fullname != value:
+            usernode.name = value
+      elif key.startswith("useremail-")
+        username = key.replace("useremail-", "", 1)
+        if self.hasuser(users, username):
+          usernode = self.getusernode(users, username)
           useremail = getattr(usernode, "email", None)
           if useremail != value:
             usernode.email = value
+      elif key.startswith("userpassword-")
+        username = key.replace("userpassword-", "", 1)
+        if self.hasuser(users, username):
+          usernode = self.getusernode(users, username)
+          if value and value.strip():
+            usernode.passwdhash = session.md5hexdigest(value.strip())
       elif key.startswith("useractivated-"):
         username = key.replace("useractivated-", "", 1)
         self.activate(users, username)
