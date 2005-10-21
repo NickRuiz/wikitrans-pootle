@@ -8,13 +8,6 @@ from jToolkit import localize
 from jToolkit.widgets import widgets
 from jToolkit.widgets import spellui
 from jToolkit.web import simplewebserver
-try:
-  from jToolkit.web import templateserver
-except ImportError:
-  # give people a chance to upgrade jToolkit without this falling over
-  class templateserver:
-    class TemplateCacheServer(object):
-      pass
 from Pootle import indexpage
 from Pootle import adminpages
 from Pootle import translatepage
@@ -27,14 +20,13 @@ import sys
 import os
 import random
 
-class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateCacheServer):
+class PootleServer(users.OptionalLoginAppServer):
   """the Server that serves the Pootle Pages"""
   def __init__(self, instance, webserver, sessioncache=None, errorhandler=None, loginpageclass=users.LoginPage):
     if sessioncache is None:
       sessioncache = session.SessionCache(sessionclass=users.PootleSession)
     self.potree = potree.POTree(instance)
     super(PootleServer, self).__init__(instance, webserver, sessioncache, errorhandler, loginpageclass)
-    self.templatedir = filelocations.templatedir
     self.setdefaultoptions()
 
   def saveprefs(self):
