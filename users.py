@@ -215,14 +215,14 @@ class OptionalLoginAppServer(server.LoginAppServer):
           fullname = getattr(usernode, "name", None)
           if fullname != value:
             usernode.name = value
-      elif key.startswith("useremail-")
+      elif key.startswith("useremail-"):
         username = key.replace("useremail-", "", 1)
         if self.hasuser(users, username):
           usernode = self.getusernode(users, username)
           useremail = getattr(usernode, "email", None)
           if useremail != value:
             usernode.email = value
-      elif key.startswith("userpassword-")
+      elif key.startswith("userpassword-"):
         username = key.replace("userpassword-", "", 1)
         if self.hasuser(users, username):
           usernode = self.getusernode(users, username)
