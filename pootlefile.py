@@ -121,8 +121,8 @@ class pootlefile(po.pofile):
 
   def savepofile(self):
     """saves changes to the main file to disk..."""
-    lines = self.tolines()
-    open(self.filename, "w").writelines(lines)
+    source = str(self)
+    open(self.filename, "w").write(source)
     # don't need to reread what we saved
     self.pomtime = getmodtime(self.filename)
 
@@ -137,8 +137,7 @@ class pootlefile(po.pofile):
   def getsource(self):
     """returns pofile source"""
     self.pofreshen()
-    lines = self.tolines()
-    return "".join(lines)
+    return str(self)
 
   def readpendingfile(self):
     """reads and parses the pending file corresponding to this po file"""
@@ -156,8 +155,8 @@ class pootlefile(po.pofile):
 
   def savependingfile(self):
     """saves changes to disk..."""
-    lines = self.pendingfile.tolines()
-    open(self.pendingfilename, "w").writelines(lines)
+    source = str(self.pendingfile)
+    open(self.pendingfilename, "w").write(source)
     self.pendingmtime = getmodtime(self.pendingfilename)
 
   def getstats(self):

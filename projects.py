@@ -1082,8 +1082,8 @@ class TranslationProject(object):
     if converterclass is None:
       raise ValueError("No converter available for %s" % destfilename)
     contents = converterclass().convertfile(pofile)
-    if hasattr(contents, "tolines"):
-      contents = "".join(contents.tolines())
+    if not isinstance(contents, basestring):
+      contents = str(contents)
     try:
       destfile = open(destfilename, "w")
       destfile.write(contents)
