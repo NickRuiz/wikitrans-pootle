@@ -78,7 +78,7 @@ class pootleelement(po.pounit, object):
     unquotedid = self.unquotedmsgid[0]
     unquotedstr = self.unquotedmsgstr[0]
     if isinstance(unquotedid, str) and isinstance(unquotedstr, unicode):
-      unquotedid = unquotedid.decode("utf-8")
+      unquotedid = unquotedid.decode(getattr(self, "encoding", "utf-8"))
     filterresult = checker.run_filters(self, unquotedid, unquotedstr)
     for filtername, filtermessage in filterresult:
       classes.append("check-" + filtername)
@@ -615,7 +615,7 @@ class pootlefile(po.pofile):
     self.readpofile()
 
 class Search:
-  """an object containint all the searching information"""
+  """an object containing all the searching information"""
   def __init__(self, dirfilter=None, matchnames=[], assignedto=None, assignedaction=None, searchtext=None):
     self.dirfilter = dirfilter
     self.matchnames = matchnames
