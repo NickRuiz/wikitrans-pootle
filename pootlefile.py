@@ -570,7 +570,7 @@ class pootlefile(po.pofile):
               mergedsources.append(source)
               continue
       if not foundsource:
-        msgid = po.getunquotedstr(newpo.msgid)
+        msgid = po.unquotefrompo(newpo.msgid)
         if msgid in self.msgidindex:
           oldpo = self.msgidindex[msgid]
           matches.append((oldpo, newpo))

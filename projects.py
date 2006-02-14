@@ -1040,7 +1040,7 @@ class TranslationProject(object):
     suggestionpo = pofile.getsuggestions(item)[suggitem]
     for msgidcomment in suggestionpo.msgidcomments:
       if msgidcomment.find("suggested by ") != -1:
-        suggestedby = po.getunquotedstr([msgidcomment]).replace("_:", "", 1).replace("suggested by ", "", 1).strip()
+        suggestedby = po.unquotefrompo([msgidcomment]).replace("_:", "", 1).replace("suggested by ", "", 1).strip()
         return suggestedby
     return None
 
