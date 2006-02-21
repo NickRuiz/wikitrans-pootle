@@ -137,7 +137,7 @@ class pootlefile(po.pofile):
   def getsource(self):
     """returns pofile source"""
     self.pofreshen()
-    return str(self)
+    return super(pootlefile, self).getsource()
 
   def readpendingfile(self):
     """reads and parses the pending file corresponding to this po file"""
