@@ -33,7 +33,7 @@ class pootleelement(po.pounit, object):
 
   unquotedmsgid = property(getunquotedmsgid)
 
-  def getunquotedmsgstr(self, joinwithlinebreak=True):
+  def getunquotedmsgstr(self, joinwithlinebreak=False):
     """returns the msgstr as a list of unquoted strings (one per plural form present)"""
     if self.hasplural():
       msgstr = []
@@ -111,11 +111,11 @@ class pootlefile(po.pofile):
     """reads and parses the main po file"""
     # make sure encoding is reset so it is read from the file
     self.encoding = None
-    self.pounits = []
+    self.units = []
     pomtime = getmodtime(self.filename)
     self.parse(open(self.filename, 'r'))
     # we ignore all the headers by using this filtered set
-    self.transelements = [poel for poel in self.pounits if not (poel.isheader() or poel.isblank())]
+    self.transelements = [poel for poel in self.units if not (poel.isheader() or poel.isblank())]
     self.classifyelements()
     self.pomtime = pomtime
 
@@ -433,7 +433,7 @@ class pootlefile(po.pofile):
     """shortcut to only update classification of has-suggestion for all items"""
     suggitems = []
     suggsources = {}
-    for thesugg in self.pendingfile.pounits:
+    for thesugg in self.pendingfile.units:
       sources = tuple(thesugg.getsources())
       suggsources[sources] = thesugg
     suggitems = [item for item in self.transelements if tuple(item.getsources()) in suggsources]
@@ -454,7 +454,7 @@ class pootlefile(po.pofile):
     thepo = self.transelements[item]
     sources = thepo.getsources()
     # TODO: review the matching method
-    suggestpos = [suggestpo for suggestpo in self.pendingfile.pounits if suggestpo.getsources() == sources]
+    suggestpos = [suggestpo for suggestpo in self.pendingfile.units if suggestpo.getsources() == sources]
     return suggestpos
 
   def addsuggestion(self, item, suggmsgstr, username):
@@ -466,7 +466,7 @@ class pootlefile(po.pofile):
       newpo.msgidcomments.append('"_: suggested by %s"' % username)
     newpo.unquotedmsgstr = suggmsgstr
     newpo.markfuzzy(False)
-    self.pendingfile.pounits.append(newpo)
+    self.pendingfile.units.append(newpo)
     self.savependingfile()
     self.reclassifyelement(item)
 
@@ -476,9 +476,9 @@ class pootlefile(po.pofile):
     thepo = self.transelements[item]
     sources = thepo.getsources()
     # TODO: remove the suggestion in a less brutal manner
-    pendingitems = [pendingitem for pendingitem, suggestpo in enumerate(self.pendingfile.pounits) if suggestpo.getsources() == sources]
+    pendingitems = [pendingitem for pendingitem, suggestpo in enumerate(self.pendingfile.units) if suggestpo.getsources() == sources]
     pendingitem = pendingitems[suggitem]
-    del self.pendingfile.pounits[pendingitem]
+    del self.pendingfile.units[pendingitem]
     self.savependingfile()
     self.reclassifyelement(item)
 
@@ -554,7 +554,7 @@ class pootlefile(po.pofile):
     if not hasattr(newpofile, "msgidindex"):
       newpofile.makeindex()
     matches = []
-    for newpo in newpofile.pounits:
+    for newpo in newpofile.units:
       foundsource = False
       if usesources:
         newsources = newpo.getsources()
@@ -578,7 +578,7 @@ class pootlefile(po.pofile):
           matches.append((None, newpo))
     # find items that have been removed
     matcheditems = [oldpo for oldpo, newpo in matches if oldpo]
-    for oldpo in self.pounits:
+    for oldpo in self.units:
       if not oldpo in matcheditems:
         matches.append((oldpo, None))
     return matches
@@ -602,7 +602,7 @@ class pootlefile(po.pofile):
     for oldpo, newpo in matches:
       if oldpo is None:
         if allownewstrings:
-          self.pounits.append(newpo)
+          self.units.append(newpo)
       elif newpo is None:
         # TODO: mark the old one as obsolete
         pass
