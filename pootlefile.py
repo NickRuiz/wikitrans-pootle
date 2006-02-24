@@ -24,7 +24,7 @@ def wordcount(unquotedstr):
 
 class pootleelement(po.pounit, object):
   """a pounit with helpful methods for pootle"""
-  def getunquotedmsgid(self, joinwithlinebreak=True):
+  def getunquotedmsgid(self, joinwithlinebreak=False):
     """returns the msgid as a list of unquoted strings (one per plural form present)"""
     msgid = [po.unquotefrompo(self.msgid, joinwithlinebreak)]
     if self.hasplural():
@@ -87,7 +87,7 @@ class pootleelement(po.pounit, object):
 class pootlefile(po.pofile):
   """this represents a pootle-managed .po file and its associated files"""
   x_generator = "Pootle %s" % __version__.ver
-  def __init__(self, project, pofilename):
+  def __init__(self, project, pofilename, stats=True):
     po.pofile.__init__(self, elementclass=pootleelement)
     self.project = project
     self.checker = self.project.checker
@@ -99,7 +99,8 @@ class pootlefile(po.pofile):
     self.pendingfile = None
     # we delay parsing until it is required
     self.pomtime = None
-    self.getstats()
+    if stats:
+      self.getstats()
     self.getassigns()
     self.tracker = timecache.timecache(20*60)
 
@@ -611,7 +612,7 @@ class pootlefile(po.pofile):
         # we invariably want to get the sources from the newpo
         oldpo.sourcecomments = newpo.sourcecomments
     self.savepofile()
-    # the easiest way to recalculate everythign
+    # the easiest way to recalculate everything
     self.readpofile()
 
 class Search:
