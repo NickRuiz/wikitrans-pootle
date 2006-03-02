@@ -37,16 +37,17 @@ class ServerTester:
 
 	def login(self):
 		"""calls the login method with username and password"""
-		return self.fetch_page("?islogin=1&username=admin&password=")
+		return self.fetch_page("?islogin=1&username=testuser&password=")
 
 	def test_login(self):
 		"""checks that login works and sets cookies"""
 		contents = self.login()
 		# check login leads us to a normal page
-		assert "Login" not in contents
+		assert "Log In" not in contents
 		# check login is retained on next fetch
 		contents = self.fetch_page("")
-		assert "Login" not in contents
+		print contents
+		assert "Log In" not in contents
 
 	def setup_prefs(self, method):
 		"""sets up any extra preferences required..."""

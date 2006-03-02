@@ -109,7 +109,7 @@ class TestCreate(object):
         prefs.setvalue("Pootle.projects.pootle.description", "Web translation software")
         prefs.setvalue("Pootle.users.testuser.activated", 1)
         testuserprefs = instance.users.testuser
-        testuserprefs.passwdhash = 'dd82c1882969461de74b46427961ea2c'
+        testuserprefs.passwdhash = users.session.md5hexdigest("")
         instance.podirectory = cls.podir
         return prefs
     make_prefs = classmethod(make_prefs)
