@@ -87,18 +87,27 @@ class pootleelement(po.pounit, object):
 class pootlefile(po.pofile):
   """this represents a pootle-managed .po file and its associated files"""
   x_generator = "Pootle %s" % __version__.ver
-  def __init__(self, project, pofilename, stats=True):
+  def __init__(self, project=None, pofilename=None, stats=True):
     po.pofile.__init__(self, elementclass=pootleelement)
-    self.project = project
-    self.checker = self.project.checker
     self.pofilename = pofilename
-    self.filename = os.path.join(self.project.podir, self.pofilename)
+    if project is None:
+      from Pootle import projects
+      self.project = projects.DummyProject(None)
+      self.checker = None
+      self.filename = self.pofilename
+    else:
+      self.project = project
+      self.checker = self.project.checker
+      self.filename = os.path.join(self.project.podir, self.pofilename)
     self.statsfilename = self.filename + os.extsep + "stats"
     self.pendingfilename = self.filename + os.extsep + "pending"
     self.assignsfilename = self.filename + os.extsep + "assigns"
     self.pendingfile = None
     # we delay parsing until it is required
     self.pomtime = None
+    self.classify = {}
+    self.msgidwordcounts = []
+    self.msgstrwordcounts = []
     if stats:
       self.getstats()
     self.getassigns()
@@ -173,7 +182,9 @@ class pootlefile(po.pofile):
     pendingmtime = getmodtime(self.pendingfilename, None)
     if hasattr(self, "pendingmtime"):
       self.readpendingfile()
-    if pomtime != getattr(self, "statspomtime", None) or pendingmtime != getattr(self, "statspendingmtime", None):
+    lastpomtime = getattr(self, "statspomtime", None)
+    lastpendingmtime = getattr(self, "statspendingmtime", None)
+    if pomtime is None or pomtime != lastpomtime or pendingmtime != lastpendingmtime:
       self.calcstats()
       self.savestats()
     return self.stats
@@ -223,6 +234,10 @@ class pootlefile(po.pofile):
 
   def savestats(self):
     """saves the current statistics to file"""
+    if not os.path.exists(self.filename):
+      if os.path.exists(self.statsfilename):
+        os.remove(self.statsfilename)
+      return
     # assumes self.stats is up to date
     try:
       postatsstring = "\n".join(["%s:%s" % (name, ",".join(map(str,items))) for name, items in self.stats.iteritems()])

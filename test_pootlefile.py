@@ -54,11 +54,21 @@ msgstr[1] "Bome"'''
         classes = unit.classify(dummy_checker)
         assert 'fuzzy' in classes
 
-class TestPO(test_po.TestPO):
-    StoreClass = pootlefile.pootlefile
+class TestPootleFile(test_po.TestPO):
+    class pootletestfile(pootlefile.pootlefile):
+        def __init__(self):
+            """wrapper constructor for pootlefile that uses temporary filename"""
+            project = projects.DummyProject(self.testdir)
+            return pootlefile.pootlefile.__init__(self, project, self.pofilename)
+
+    StoreClass = pootletestfile
+
     def setup_method(self, method):
         """creates a clean test directory for the given method"""
         self.testdir = "%s_%s" % (self.__class__.__name__, method.__name__)
+        self.filename = "%s_%s.po" % (self.__class__.__name__, method.__name__)
+        self.pootletestfile.testdir = self.testdir
+        self.pootletestfile.pofilename = self.filename
         self.cleardir()
         os.mkdir(self.testdir)
         self.rundir = os.path.abspath(os.getcwd())

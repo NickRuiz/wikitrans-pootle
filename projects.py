@@ -1178,6 +1178,10 @@ class DummyProject(TranslationProject):
     self.languagecode = languagecode
     self.readquickstats()
 
+  def scanpofiles(self):
+    """A null operation if potree is not present"""
+    pass
+
   def readquickstats(self):
     """dummy statistics are empty"""
     self.quickstats = {}
