@@ -35,7 +35,7 @@ class pootleelement(po.pounit, object):
 
   def getunquotedmsgstr(self, joinwithlinebreak=False):
     """returns the msgstr as a list of unquoted strings (one per plural form present)"""
-    if self.hasplural():
+    if self.hasplural() and isinstance(self.msgstr, dict):
       msgstr = []
       for i in range(len(self.msgstr)):
         msgstr.append(po.unquotefrompo(self.msgstr[i], joinwithlinebreak))
