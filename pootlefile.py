@@ -5,6 +5,7 @@
 
 from translate.storage import po
 from translate.misc import quote
+from translate.misc.multistring import multistring
 from translate.filters import checks
 from Pootle import __version__
 from jToolkit import timecache
@@ -26,22 +27,18 @@ class pootleelement(po.pounit, object):
   """a pounit with helpful methods for pootle"""
   def getunquotedmsgid(self, joinwithlinebreak=False):
     """returns the msgid as a list of unquoted strings (one per plural form present)"""
-    msgid = [po.unquotefrompo(self.msgid, joinwithlinebreak)]
     if self.hasplural():
-      msgid += [po.unquotefrompo(self.msgid_plural, joinwithlinebreak)]
-    return msgid
-
+      return self.source.strings
+    else:
+      return [self.source]
   unquotedmsgid = property(getunquotedmsgid)
 
   def getunquotedmsgstr(self, joinwithlinebreak=False):
     """returns the msgstr as a list of unquoted strings (one per plural form present)"""
-    if self.hasplural() and isinstance(self.msgstr, dict):
-      msgstr = []
-      for i in range(len(self.msgstr)):
-        msgstr.append(po.unquotefrompo(self.msgstr[i], joinwithlinebreak))
+    if self.hasplural() and isinstance(self.target, multistring):
+      return self.target.strings
     else:
-      msgstr = [po.unquotefrompo(self.msgstr, joinwithlinebreak)]
-    return msgstr
+      return [self.target]
 
   def setunquotedmsgstr(self, text):
     """quotes text in po-style"""
@@ -586,7 +583,7 @@ class pootlefile(po.pofile):
               mergedsources.append(source)
               continue
       if not foundsource:
-        msgid = po.unquotefrompo(newpo.msgid)
+        msgid = newpo.source
         if msgid in self.msgidindex:
           oldpo = self.msgidindex[msgid]
           matches.append((oldpo, newpo))
@@ -601,7 +598,7 @@ class pootlefile(po.pofile):
 
   def mergeitem(self, oldpo, newpo, username):
     """merges any changes from newpo into oldpo"""
-    unchanged = po.unquotefrompo(oldpo.msgstr, False) == po.unquotefrompo(newpo.msgstr, False)
+    unchanged = oldpo.target == newpo.target
     if oldpo.isblankmsgstr() or newpo.isblankmsgstr() or oldpo.isheader() or newpo.isheader() or unchanged:
       oldpo.merge(newpo)
     else:

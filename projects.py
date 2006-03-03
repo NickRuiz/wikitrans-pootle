@@ -436,8 +436,8 @@ class TranslationProject(object):
           # if it wasn't in the original, then use the addition for searching
           origpo = localpo
         else:
-          origmsgstr = po.unquotefrompo(origpo.msgstr, False)
-          localmsgstr = po.unquotefrompo(localpo.msgstr, False)
+          origmsgstr = origpo.target
+          origmsgstr = localpo.target
           if origmsgstr == localmsgstr:
             continue
         foundsource = False
@@ -571,13 +571,13 @@ class TranslationProject(object):
       podirs = {}
       for pofilename in pofilenames:
         dirname = os.path.dirname(pofilename)
-	if not dirname:
-	  continue
+        if not dirname:
+          continue
         podirs[dirname] = True
-	while dirname:
-	  dirname = os.path.dirname(dirname)
-	  if dirname:
-	    podirs[dirname] = True
+        while dirname:
+          dirname = os.path.dirname(dirname)
+          if dirname:
+            podirs[dirname] = True
       podirs = podirs.keys()
     else:
       podirs = []
@@ -650,13 +650,11 @@ class TranslationProject(object):
       thepo = pofile.transelements[itemno]
       doc = {"pofilename": pofilename, "pomtime": str(pomtime), "itemno": str(itemno)}
       if thepo.hasplural():
-        orig = self.unquotefrompo(thepo.msgid) + "\n" + self.unquotefrompo(thepo.msgid_plural)
-        trans = self.unquotefrompo(thepo.msgstr)
-        if isinstance(trans, dict):
-          trans = "\n".join(trans.itervalues())
+        orig = "\n".join(thepo.source.strings)
+        trans = "\n".join(thepo.target.strings)
       else:
-        orig = self.unquotefrompo(thepo.msgid)
-        trans = self.unquotefrompo(thepo.msgstr)
+        orig = thepo.source
+        trans = thepo.target
       doc["msgid"] = orig
       doc["msgstr"] = trans
       addlist.append(doc)
@@ -970,7 +968,7 @@ class TranslationProject(object):
     """returns a particular item from a particular po file's orig, trans strings as a tuple"""
     pofile = self.getpofile(pofilename)
     thepo = pofile.transelements[item]
-    orig, trans = self.unquotefrompo(thepo.msgid), self.unquotefrompo(thepo.msgstr)
+    orig, trans = self.source, self.target
     return orig, trans
 
   def getitemclasses(self, pofilename, item):
@@ -1106,7 +1104,7 @@ class TranslationProject(object):
       thepo = pofile.msgidindex.get(message, None)
       if not thepo or thepo.isblankmsgstr():
         continue
-      tmsg = po.unquotefrompo(thepo.msgstr)
+      tmsg = thepo.target
       if tmsg is not None:
         return tmsg
     return message
@@ -1123,7 +1121,7 @@ class TranslationProject(object):
         thepo = pofile.msgidindex.get(message, None)
         if not thepo or thepo.isblankmsgstr() or thepo.isfuzzy():
           continue
-        tmsg = po.unquotefrompo(thepo.msgstr)
+        tmsg = thepo.target
         if tmsg is not None:
           if isinstance(tmsg, unicode):
             return tmsg
