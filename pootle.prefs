@@ -101,4 +101,5 @@ Pootle:
       pluralequation = "(n != 1)"
     en.fullname = 'English'
     vi.fullname = 'Vietnamese'
+    templates.fullname = 'Templates'
 
