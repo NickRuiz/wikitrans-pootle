@@ -25,13 +25,8 @@ class TestCreate(object):
         """create the testing environment"""
         print "setup_class called on", cls.__name__
         cls.save_attribs = cls.__dict__.keys()
-        cls.testdir = "%s_testdir" % (cls.__name__)
-        cls.cleardir(cls.testdir)
-        os.mkdir(cls.testdir)
-        cls.podir = os.path.join(cls.testdir, "po")
-        os.mkdir(cls.podir)
-        cls.prefsfile = os.path.join(cls.testdir, "%s.prefs" % (cls.__name__))
-         # some testing methods find recreating the webserver per test easier
+        cls.setup_testdir()
+        # some testing methods find recreating the webserver per test easier
         if isclassmethod(cls, cls.setup_webserver):
             cls.webserver = cls.setup_webserver()
         else:
@@ -43,11 +38,26 @@ class TestCreate(object):
         if isclassmethod(cls, cls.setup_pootleserver):
             cls.setup_pootleserver()
 
+    def setup_testdir(cls):
+        """sets up a test directory"""
+        cls.testdir = "%s_testdir" % (cls.__name__)
+        cls.cleardir(cls.testdir)
+        os.mkdir(cls.testdir)
+        cls.podir = os.path.join(cls.testdir, "po")
+        os.mkdir(cls.podir)
+        cls.prefsfile = os.path.join(cls.testdir, "%s.prefs" % (cls.__name__))
+    setup_testdir = classmethod(setup_testdir)
+
+    def teardown_testdir(cls):
+        """makes sure the test directory is clear"""
+        cls.cleardir(cls.testdir)
+    teardown_testdir = classmethod(teardown_testdir)
+
     def teardown_class(cls):
         """removes the attributes set up by setup_class"""
         if os.path.exists(cls.prefsfile):
             os.remove(cls.prefsfile)
-        cls.cleardir(cls.testdir)
+        cls.teardown_testdir()
         cls.teardown_attribs()
 
     def cleardir(cls, dirname):
@@ -143,6 +153,7 @@ class NoReuse(TestCreate):
     def setup_method(self, method):
         """sets up a webserver and jlogbookserver for this method"""
         self.webserver = self.setup_webserver()
+        self.setup_testdir()
         self.setup_pootleserver()
 
     def teardown_method(self, method):
@@ -152,4 +163,5 @@ class NoReuse(TestCreate):
         self.logtable = None
         self.session = None
         self.webserver = None
+        self.teardown_testdir()
 
