@@ -379,7 +379,7 @@ class TranslationProject(object):
       dircheck = os.path.join(dircheck, part)
       if dircheck and not os.path.isdir(dircheck):
         os.mkdir(dircheck)
-    return os.path.join(self.podir, dirname, pofilename)  
+    return os.path.join(self.podir, dirname, pofilename)
 
   def uploadpofile(self, session, dirname, pofilename, contents):
     """uploads an individual PO files"""
@@ -476,6 +476,8 @@ class TranslationProject(object):
   def converttemplates(self, session):
     """creates PO files from the templates"""
     projectdir = os.path.join(self.potree.podirectory, self.projectcode)
+    if not os.path.exists(projectdir):
+      os.mkdir(projectdir)
     templatesdir = os.path.join(projectdir, "templates")
     if not os.path.exists(templatesdir):
       templatesdir = os.path.join(projectdir, "pot")

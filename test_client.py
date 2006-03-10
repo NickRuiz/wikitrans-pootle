@@ -104,6 +104,11 @@ class ServerTester:
                 add_args = "&".join(["%s=%s" % (key, urllib.quote_plus(value)) for key, value in add_dict.items()])
 		add_language = self.fetch_page("projects/testproject/admin.html?" + add_args)
 		assert "Test Language" in add_language
+		language_page = self.fetch_page("zxx/testproject/")
+		print language_page.replace("\r", "\n")
+		assert "Test Language" in language_page
+		assert "Pootle Unit Tests" in language_page
+		assert "0 files, 0/0 words (0%) translated" in language_page
 	test_add_project_language.userprefs = {"rights.siteadmin": True}
 
 def MakeServerTester(baseclass):

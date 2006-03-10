@@ -321,6 +321,8 @@ class POTree:
 
   def hasgnufiles(self, podir, languagecode=None, depth=0, maxdepth=3, poext="po"):
     """returns whether this directory contains gnu-style PO filenames for the given language"""
+    if not os.path.isdir(podir):
+      return False
     fnames = os.listdir(podir)
     poext = os.extsep + "po"
     subdirs = []
