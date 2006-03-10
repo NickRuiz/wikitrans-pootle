@@ -30,8 +30,9 @@ class ServerTester:
 
 	def setup_prefs(self, method):
 		"""sets up any extra preferences required..."""
-		if method in (self.test_add_project, self.test_admin_rights):
-			self.prefs.setvalue("Pootle.users.testuser.rights.siteadmin", True)
+		if hasattr(method, "userprefs"):
+			for key, value in method.userprefs.iteritems():
+				self.prefs.setvalue("Pootle.users.testuser." + key, value)
 
 	def fetch_page(self, relative_url):
 		"""Fetches a page from the webserver installed in the service"""
@@ -72,6 +73,7 @@ class ServerTester:
 		contents = self.fetch_page("admin/")
 		admintitle = "<title>Pootle Admin Page</title>" in contents
 		assert admintitle
+	test_admin_rights.userprefs = {"rights.siteadmin": True}
 
 	def test_add_project(self):
 		"""checks that we can add a project successfully"""
@@ -81,13 +83,28 @@ class ServerTester:
 		assert testproject_present
 		testproject2_present = '<A href="../projects/testproject2/admin.html">testproject2</A>' in projects_list
 		assert not testproject2_present
-		add_dict = {"newprojectcode": "testproject2", "newprojectname": "Test Project 2", 
+		add_dict = {"newprojectcode": "testproject2", "newprojectname": "Test Project 2",
 			"newprojectdescription": "Test Project Addition", "changeprojects": "Save changes"}
                 add_args = "&".join(["%s=%s" % (key, urllib.quote_plus(value)) for key, value in add_dict.items()])
 		add_url = "admin/projects.html?" + add_args
 		add_result = self.fetch_page(add_url)
 		testproject2_present = '<A href="../projects/testproject2/admin.html">testproject2</A>' in add_result
 		assert testproject2_present
+	test_add_project.userprefs = {"rights.siteadmin": True}
+
+	def test_add_project_language(self):
+		"""tests that we can add a language to a project, then access its page when there are no files"""
+		self.login()
+		language_list = self.fetch_page("projects/testproject/")
+		assert "Test Language" not in language_list
+		assert "Pootle Unit Tests" in language_list
+		project_admin = self.fetch_page("projects/testproject/admin.html")
+		assert '<OPTION value="zxx">Test Language</OPTION>' in project_admin
+		add_dict = {"newlanguage": "zxx", "doaddlanguage": "Add Language"}
+                add_args = "&".join(["%s=%s" % (key, urllib.quote_plus(value)) for key, value in add_dict.items()])
+		add_language = self.fetch_page("projects/testproject/admin.html?" + add_args)
+		assert "Test Language" in add_language
+	test_add_project_language.userprefs = {"rights.siteadmin": True}
 
 def MakeServerTester(baseclass):
 	"""Makes a new Server Tester class using the base class to setup webserver etc"""
