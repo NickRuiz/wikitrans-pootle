@@ -6,8 +6,10 @@ ServerTester is mixed in with the different server tests below to generate the r
 
 from Pootle import test_create
 from Pootle import test_cmdlineserver
+from jToolkit.web import postMultipart
 import urllib
 import urllib2
+import os
 try:
 	import cookielib
 except ImportError:
@@ -109,6 +111,33 @@ class ServerTester:
 		assert "Test Language" in language_page
 		assert "Pootle Unit Tests" in language_page
 		assert "0 files, 0/0 words (0%) translated" in language_page
+	test_add_project_language.userprefs = {"rights.siteadmin": True}
+
+	def test_upload_new_file(self):
+		"""tests that we can upload a new file into a project"""
+		self.login()
+		projectdir = os.path.join(self.podir, "testproject")
+		os.mkdir(projectdir)
+		podir = os.path.join(projectdir, "zxx")
+		os.mkdir(podir)
+		language_page = self.fetch_page("zxx/testproject/")
+		assert "Test Language" in language_page
+		assert "Pootle Unit Tests" in language_page
+		assert "0 files, 0/0 words (0%) translated" in language_page
+		fields = [("doupload", "Upload File")]
+		pocontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n'
+		files = [("uploadfile", "test_upload.po", pocontents)]
+		content_type, upload_contents = postMultipart.encode_multipart_formdata(fields, files)
+		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
+		post_request = urllib2.Request(self.baseaddress + "zxx/testproject/", upload_contents, headers)
+		stream = self.urlopen(post_request)
+		response = stream.read()
+		assert '<A href="test_upload.po">PO file</A>' in response
+		pofile_storename = os.path.join(podir, "test_upload.po")
+		assert os.path.isfile(pofile_storename)
+		assert open(pofile_storename).read() == pocontents
+		pocontents_download = self.fetch_page("zxx/testproject/test_upload.po")
+		assert pocontents_download == pocontents
 	test_add_project_language.userprefs = {"rights.siteadmin": True}
 
 def MakeServerTester(baseclass):
