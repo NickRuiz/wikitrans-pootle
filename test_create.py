@@ -104,9 +104,9 @@ class TestCreate(object):
         instance.sessionkey = 'change'
         instance.errorfile = os.path.join(cls.testdir, "pootle_unittest-%s-errors.log" % cls.__name__)
         instance.tracefile = os.path.join(cls.testdir, "pootle_unittest-%s-trace.log" % cls.__name__)
-        prefs.setvalue("Pootle.languages.en.fullname", "English")
-        prefs.setvalue("Pootle.projects.pootle.fullname", "Pootle")
-        prefs.setvalue("Pootle.projects.pootle.description", "Web translation software")
+        prefs.setvalue("Pootle.languages.zxx.fullname", "Test Language")
+        prefs.setvalue("Pootle.projects.testproject.fullname", "Pootle Unit Tests")
+        prefs.setvalue("Pootle.projects.testproject.description", "Test Project for verifying functionality")
         prefs.setvalue("Pootle.users.testuser.activated", 1)
         testuserprefs = instance.users.testuser
         testuserprefs.passwdhash = users.session.md5hexdigest("")
