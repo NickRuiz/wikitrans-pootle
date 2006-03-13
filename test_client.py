@@ -7,6 +7,8 @@ ServerTester is mixed in with the different server tests below to generate the r
 from Pootle import test_create
 from Pootle import test_cmdlineserver
 from jToolkit.web import postMultipart
+import zipfile
+from translate.misc import wStringIO
 import urllib
 import urllib2
 import os
@@ -150,7 +152,30 @@ class ServerTester:
 		assert open(pofile_storename).read() == pocontents
 		pocontents_download = self.fetch_page("zxx/testproject/test_upload.po")
 		assert pocontents_download == pocontents
-	test_add_project_language.userprefs = {"rights.siteadmin": True}
+
+	def test_upload_new_archive(self):
+		"""tests that we can upload a new archive of files into a project"""
+		self.login()
+		podir = self.setup_testproject_dir()
+		fields = [("doupload", "Upload File")]
+		po1contents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n'
+		po2contents = '#: frog.c\nmsgid "tadpole"\nmsgstr "fish"\n'
+		archivefile = wStringIO.StringIO()
+		archive = zipfile.ZipFile(archivefile, "w", zipfile.ZIP_DEFLATED)
+		archive.writestr("test.po", po1contents)
+		archive.writestr("frog.po", po2contents)
+		archive.close()
+		files = [("uploadfile", "upload.zip", archivefile.getvalue())]
+		content_type, upload_contents = postMultipart.encode_multipart_formdata(fields, files)
+		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
+		response = self.post_request("zxx/testproject/", upload_contents, headers)
+		for filename, contents in [("test.po", po1contents), ("frog.po", po2contents)]:
+			assert ('<A href="%s">PO file</A>' % filename) in response
+			pofile_storename = os.path.join(podir, filename)
+			assert os.path.isfile(pofile_storename)
+			assert open(pofile_storename).read() == contents
+			pocontents_download = self.fetch_page("zxx/testproject/%s" % filename)
+			assert pocontents_download == contents
 
 def MakeServerTester(baseclass):
 	"""Makes a new Server Tester class using the base class to setup webserver etc"""
