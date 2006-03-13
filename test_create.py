@@ -32,7 +32,7 @@ class TestCreate(object):
         else:
             cls.webserver = None
         setupprefs = cls.make_prefs()
-        open(cls.prefsfile, "w").write(setupprefs.getsource())
+        open(cls.prefsfile, "w").write(setupprefs.getoutput())
         cls.prefs = prefs.PrefsParser(cls.prefsfile)
         cls.prefs.resolveimportmodules()
         if isclassmethod(cls, cls.setup_pootleserver):

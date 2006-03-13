@@ -141,10 +141,10 @@ class pootlefile(po.pofile):
     if self.pomtime != getmodtime(self.filename):
       self.readpofile()
 
-  def getsource(self):
+  def getoutput(self):
     """returns pofile source"""
     self.pofreshen()
-    return super(pootlefile, self).getsource()
+    return super(pootlefile, self).getoutput()
 
   def readpendingfile(self):
     """reads and parses the pending file corresponding to this po file"""

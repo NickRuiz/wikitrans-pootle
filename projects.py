@@ -1059,10 +1059,10 @@ class TranslationProject(object):
     pofile = self.getpofile(pofilename)
     pofile.savepofile()
 
-  def getsource(self, pofilename):
+  def getoutput(self, pofilename):
     """returns pofile source"""
     pofile = self.getpofile(pofilename)
-    return pofile.getsource()
+    return pofile.getoutput()
 
   def convert(self, pofilename, destformat):
     """converts the pofile to the given format, returning (etag_if_filepath, filepath_or_contents)"""
