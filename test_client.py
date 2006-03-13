@@ -44,6 +44,15 @@ class ServerTester:
 		contents = stream.read()
 		return contents
 
+	def post_request(self, relative_url, contents, headers):
+		"""Posts a request to the webserver installed in the service"""
+		url = "%s/%s" % (self.baseaddress, relative_url)
+		print "posting to", url
+		post_request = urllib2.Request(url, contents, headers)
+		stream = self.urlopen(post_request)
+		response = stream.read()
+		return contents
+
 	def login(self):
 		"""calls the login method with username and password"""
 		return self.fetch_page("?islogin=1&username=testuser&password=")
@@ -113,9 +122,8 @@ class ServerTester:
 		assert "0 files, 0/0 words (0%) translated" in language_page
 	test_add_project_language.userprefs = {"rights.siteadmin": True}
 
-	def test_upload_new_file(self):
-		"""tests that we can upload a new file into a project"""
-		self.login()
+	def setup_testproject(self):
+		"""Sets up a blank test project directory"""
 		projectdir = os.path.join(self.podir, "testproject")
 		os.mkdir(projectdir)
 		podir = os.path.join(projectdir, "zxx")
@@ -124,14 +132,17 @@ class ServerTester:
 		assert "Test Language" in language_page
 		assert "Pootle Unit Tests" in language_page
 		assert "0 files, 0/0 words (0%) translated" in language_page
+
+	def test_upload_new_file(self):
+		"""tests that we can upload a new file into a project"""
+		self.login()
+		self.setup_testproject()
 		fields = [("doupload", "Upload File")]
 		pocontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n'
 		files = [("uploadfile", "test_upload.po", pocontents)]
 		content_type, upload_contents = postMultipart.encode_multipart_formdata(fields, files)
 		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
-		post_request = urllib2.Request(self.baseaddress + "zxx/testproject/", upload_contents, headers)
-		stream = self.urlopen(post_request)
-		response = stream.read()
+		response = self.post_request("zxx/testproject/", upload_contents, headers)
 		assert '<A href="test_upload.po">PO file</A>' in response
 		pofile_storename = os.path.join(podir, "test_upload.po")
 		assert os.path.isfile(pofile_storename)
