@@ -445,11 +445,11 @@ class pootlefile(po.pofile):
   def reclassifysuggestions(self):
     """shortcut to only update classification of has-suggestion for all items"""
     suggitems = []
-    suggsources = {}
+    suggids = {}
     for thesugg in self.pendingfile.units:
-      sources = tuple(thesugg.getsources())
-      suggsources[sources] = thesugg
-    suggitems = [item for item in self.transelements if tuple(item.getsources()) in suggsources]
+      ids = tuple(thesugg.getids())
+      suggids[ids] = thesugg
+    suggitems = [item for item in self.transelements if tuple(item.getids()) in suggids]
     havesuggestions = self.classify["has-suggestion"]
     for item, poel in enumerate(self.transelements):
       if (poel in suggitems) != (item in havesuggestions):
@@ -465,9 +465,9 @@ class pootlefile(po.pofile):
     """find all the suggestion items submitted for the given (pofile or pofilename) and item"""
     self.readpendingfile()
     thepo = self.transelements[item]
-    sources = thepo.getsources()
+    ids = thepo.getids()
     # TODO: review the matching method
-    suggestpos = [suggestpo for suggestpo in self.pendingfile.units if suggestpo.getsources() == sources]
+    suggestpos = [suggestpo for suggestpo in self.pendingfile.units if suggestpo.getids() == ids]
     return suggestpos
 
   def addsuggestion(self, item, suggmsgstr, username):
@@ -487,9 +487,9 @@ class pootlefile(po.pofile):
     """removes the suggestion from the pending file"""
     self.readpendingfile()
     thepo = self.transelements[item]
-    sources = thepo.getsources()
+    ids = thepo.getids()
     # TODO: remove the suggestion in a less brutal manner
-    pendingitems = [pendingitem for pendingitem, suggestpo in enumerate(self.pendingfile.units) if suggestpo.getsources() == sources]
+    pendingitems = [pendingitem for pendingitem, suggestpo in enumerate(self.pendingfile.units) if suggestpo.getids() == ids]
     pendingitem = pendingitems[suggitem]
     del self.pendingfile.units[pendingitem]
     self.savependingfile()
@@ -560,7 +560,7 @@ class pootlefile(po.pofile):
         if item in self.classify[name]:
           yield item
 
-  def matchitems(self, newpofile, usesources=False):
+  def matchitems(self, newpofile, useids=False):
     """matches up corresponding items in this pofile with the given newpofile, and returns tuples of matching poitems (None if no match found)"""
     if not hasattr(self, "msgidindex"):
       self.makeindex()
@@ -568,21 +568,21 @@ class pootlefile(po.pofile):
       newpofile.makeindex()
     matches = []
     for newpo in newpofile.units:
-      foundsource = False
-      if usesources:
-        newsources = newpo.getsources()
-        mergedsources = []
-        for source in newsources:
-          if source in mergedsources:
+      foundid = False
+      if useids:
+        newids = newpo.getids()
+        mergedids = []
+        for id in newids:
+          if id in mergedids:
             continue
-          if source in self.sourceindex:
-            oldpo = self.sourceindex[source]
+          if id in self.idindex:
+            oldpo = self.idindex[id]
             if oldpo is not None:
-              foundsource = True
+              foundid = True
               matches.append((oldpo, newpo))
-              mergedsources.append(source)
+              mergedids.append(id)
               continue
-      if not foundsource:
+      if not foundid:
         msgid = newpo.source
         if msgid in self.msgidindex:
           oldpo = self.msgidindex[msgid]
@@ -621,7 +621,7 @@ class pootlefile(po.pofile):
         pass
       else:
         self.mergeitem(oldpo, newpo, username)
-        # we invariably want to get the sources from the newpo
+        # we invariably want to get the ids (source locations) from the newpo
         oldpo.sourcecomments = newpo.sourcecomments
     self.savepofile()
     # the easiest way to recalculate everything

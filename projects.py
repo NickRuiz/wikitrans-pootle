@@ -442,7 +442,7 @@ class TranslationProject(object):
             continue
         foundsource = False
         if usesources:
-          for source in origpo.getsources():
+          for source in origpo.getids():
             if source in newpofile.sourceindex:
               newpo = newpofile.sourceindex[source]
               if newpo is not None:
