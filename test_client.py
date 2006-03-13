@@ -51,7 +51,7 @@ class ServerTester:
 		post_request = urllib2.Request(url, contents, headers)
 		stream = self.urlopen(post_request)
 		response = stream.read()
-		return contents
+		return response
 
 	def login(self):
 		"""calls the login method with username and password"""
@@ -122,7 +122,7 @@ class ServerTester:
 		assert "0 files, 0/0 words (0%) translated" in language_page
 	test_add_project_language.userprefs = {"rights.siteadmin": True}
 
-	def setup_testproject(self):
+	def setup_testproject_dir(self):
 		"""Sets up a blank test project directory"""
 		projectdir = os.path.join(self.podir, "testproject")
 		os.mkdir(projectdir)
@@ -132,11 +132,12 @@ class ServerTester:
 		assert "Test Language" in language_page
 		assert "Pootle Unit Tests" in language_page
 		assert "0 files, 0/0 words (0%) translated" in language_page
+		return podir
 
 	def test_upload_new_file(self):
 		"""tests that we can upload a new file into a project"""
 		self.login()
-		self.setup_testproject()
+		podir = self.setup_testproject_dir()
 		fields = [("doupload", "Upload File")]
 		pocontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n'
 		files = [("uploadfile", "test_upload.po", pocontents)]
