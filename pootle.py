@@ -340,6 +340,13 @@ class PootleServer(users.OptionalLoginAppServer):
           page = widgets.PlainContents(archivecontents)
           page.content_type = "application/zip"
           return page
+        elif bottom.endswith(".sdf") or bottom.endswith(".sgi"):
+          if not "pocompile" in project.getrights(session):
+            return None
+          oocontents = project.getoo()
+          page = widgets.PlainContents(oocontents)
+          page.content_type = "text/tab-seperated-values"
+          return page
         elif bottom == "index.html":
           if len(pathwords) > 1:
             dirfilter = os.path.join(*pathwords[:-1])

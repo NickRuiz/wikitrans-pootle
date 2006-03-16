@@ -277,7 +277,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     else:
       pofilenames = self.project.browsefiles(dirfilter)
       projectstats = self.project.combinestats(pofilenames)
-      actionlinks = self.getactionlinks("", projectstats, ["mine", "review", "check", "assign", "goal", "quick", "all", "zip"], dirfilter)
+      actionlinks = self.getactionlinks("", projectstats, ["mine", "review", "check", "assign", "goal", "quick", "all", "zip", "sdf"], dirfilter)
       mainstats = self.getitemstats("", projectstats, len(pofilenames))
       mainicon = "folder"
     navbar = self.makenavbar(icon=mainicon, path=self.makenavbarpath(project=self.project, session=self.session, currentfolder=dirfilter, goal=self.currentgoal), actions=actionlinks, stats=mainstats)
@@ -776,6 +776,13 @@ class ProjectIndex(pagelayout.PootleNavPage):
         linktext = self.localize('ZIP of folder')
       ziplink = widgets.Link(archivename, linktext, {'title': archivename})
       actionlinks.append(ziplink)
+
+    if "sdf" in linksrequired and "pocompile" in self.rights and \
+        self.project.ootemplate() and not (basename or filepath):
+      archivename = self.project.languagecode + ".sdf"
+      linktext = self.localize('Generate SDF')
+      oolink = widgets.Link(archivename, linktext, {'title': archivename})
+      actionlinks.append(oolink)
     return actionlinks
 
   def getitemstats(self, basename, projectstats, numfiles):

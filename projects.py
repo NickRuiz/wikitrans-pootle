@@ -10,6 +10,7 @@ from translate.convert import po2csv
 from translate.convert import po2xliff
 from translate.convert import po2ts
 from translate.convert import pot2po
+from translate.convert import po2oo
 from translate.tools import pocompile
 from translate.tools import pogrep
 from Pootle import pootlefile
@@ -560,6 +561,27 @@ class TranslationProject(object):
         print "error adding %s" % filename, e
         continue
     archive.close()
+
+  def ootemplate(self):
+    """Tests whether this project has an OpenOffice.org template SDF file in
+    the templates directory."""
+    projectdir = os.path.join(self.potree.podirectory, self.projectcode)
+    templatefilename = os.path.join(projectdir, "templates", "en-US.sdf")
+    if os.path.exists(templatefilename):
+      return templatefilename
+    else:
+      return None
+
+  def getoo(self):
+    """Returns an OpenOffice.org gsi file"""
+    #TODO: implement caching
+    templateoo = self.ootemplate()
+    if templateoo is None:
+      return
+    outputoo = os.path.join(self.podir, self.languagecode + ".sdf")
+    inputdir = os.path.join(self.potree.podirectory, self.projectcode, self.languagecode)
+    po2oo.main(["-i%s"%inputdir, "-t%s"%templateoo, "-o%s"%outputoo, "-l%s"%self.languagecode, "--progress=none"])
+    return file(os.path.join(self.podir, self.languagecode + ".sdf"), "r").read()
 
   def browsefiles(self, dirfilter=None, depth=None, maxdepth=None, includedirs=False, includefiles=True):
     """gets a list of pofilenames, optionally filtering with the parent directory"""
