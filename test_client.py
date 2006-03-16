@@ -6,6 +6,8 @@ ServerTester is mixed in with the different server tests below to generate the r
 
 from Pootle import test_create
 from Pootle import test_cmdlineserver
+from Pootle import potree
+from Pootle import projects
 from jToolkit.web import postMultipart
 import zipfile
 from translate.misc import wStringIO
@@ -176,6 +178,35 @@ class ServerTester:
 			assert open(pofile_storename).read() == contents
 			pocontents_download = self.fetch_page("zxx/testproject/%s" % filename)
 			assert pocontents_download == contents
+
+	def test_upload_over_file(self):
+		"""tests that we can upload a new version of a file into a project"""
+		self.login()
+		podir = self.setup_testproject_dir()
+		tree = potree.POTree(self.prefs.Pootle)
+		project = projects.TranslationProject("zxx", "testproject", tree)
+		po1contents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n\n#: frog.c\nmsgid "tadpole"\nmsgstr "fish"\n'
+		open(os.path.join(podir, "test_existing.po"), "w").write(po1contents)
+		po2contents = '#: test.c\nmsgid "test"\nmsgstr "rested"\n\n#: toad.c\nmsgid "slink"\nmsgstr "stink"\n'
+		fields = [("doupload", "Upload File")]
+		files = [("uploadfile", "test_existing.po", po2contents)]
+		content_type, upload_contents = postMultipart.encode_multipart_formdata(fields, files)
+		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
+		response = self.post_request("zxx/testproject/", upload_contents, headers)
+		# NOTE: this is what we do currently, any altered strings become suggestions.
+		# It may be a good idea to change this
+		mergedcontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n\n#: frog.c\nmsgid "tadpole"\nmsgstr "fish"\n\n#: toad.c\nmsgid "slink"\nmsgstr "stink"\n\n'
+		suggestedcontents = '#: test.c\nmsgid "_: suggested by testuser"\n"test"\nmsgstr "rested"\n\n'
+		assert '<A href="test_existing.po">PO file</A>' in response
+		pofile_storename = os.path.join(podir, "test_existing.po")
+		assert os.path.isfile(pofile_storename)
+		assert open(pofile_storename).read() == mergedcontents
+		pendingfile_storename = os.path.join(podir, "test_existing.po.pending")
+		assert os.path.isfile(pendingfile_storename)
+		assert open(pendingfile_storename).read() == suggestedcontents
+		pocontents_download = self.fetch_page("zxx/testproject/test_existing.po")
+		assert pocontents_download == mergedcontents
+	test_upload_over_file.userprefs = {"rights.siteadmin": True}
 
 def MakeServerTester(baseclass):
 	"""Makes a new Server Tester class using the base class to setup webserver etc"""
