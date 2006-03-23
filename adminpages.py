@@ -237,7 +237,6 @@ class ProjectsAdminPage(pagelayout.PootlePage):
         optiontextbox = widgets.Input(inputoptions)
       projects.setcell(rownum, colnum, table.TableCell(optiontextbox))
       colnum += 1
-    rownum = projects.maxrownum()+1
     codetextbox = widgets.Input({"name": "newprojectcode", "value": "", "size": 6})
     nametextbox = widgets.Input({"name": "newprojectname", "value": self.localize("(add project here)")})
     descriptiontextbox = widgets.Input({"name": "newprojectdescription", "value": self.localize("(project description)")})
