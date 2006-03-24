@@ -66,7 +66,12 @@ class POTree:
         if not languagecode.strip():
           continue
         if not languagecode.isalpha():
-          raise ValueError("Language code must be alphabetic")
+          if languagecode.find("_") >= 0:
+            for part in languagecode.split("_"):
+              if not part.isalpha():
+                raise ValueError("Language code must be alphabetic")
+          else: 
+            raise ValueError("Language code must be alphabetic")
         if self.haslanguage(languagecode):
           raise ValueError("Already have language with the code %s" % languagecode)
         languagename = argdict.get("newlanguagename", languagecode)
