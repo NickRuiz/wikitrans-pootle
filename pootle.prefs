@@ -78,7 +78,7 @@ Pootle:
   #
   #   specialchars = "ÄËÏÖÜäëïöü ÂÊÎÔÛâêîôû"
   # Special characters used by the language that you wish users to be able to
-  # see then they are editing translations. Useful for people who do not have
+  # see when they are editing translations. Useful for people who do not have
   # a properly configured keyboard for the language.
   # 
   #   nplurals = 2
