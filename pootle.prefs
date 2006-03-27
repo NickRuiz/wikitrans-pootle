@@ -56,7 +56,7 @@ Pootle:
   # A short description of the project
   #
   #   checkerstyle = "standard"
-  # Defines what checks shoudl be used for this project.  One of: mozilla, kde,
+  # Defines what checks should be used for this project.  One of: mozilla, kde,
   # openoffice or standard
   projects:
     pootle:
@@ -74,11 +74,11 @@ Pootle:
   #
   #   fullname = Afrikaans"
   # The fullname of the language, also from ISO639 but can be the name of the
-  # language in your language not necisarily in English.
+  # language in your language not necessarily in English.
   #
   #   specialchars = "ÄËÏÖÜäëïöü ÂÊÎÔÛâêîôû"
   # Special characters used by the language that you wish users to be able to
-  # see then they are editing translations. Usefull for people who do not have
+  # see then they are editing translations. Useful for people who do not have
   # a properly configured keyboard for the language.
   # 
   #   nplurals = 2
@@ -86,7 +86,7 @@ Pootle:
   # order to edit plural form messages.  Don't know about plural forms? Read
   # about them in the Gettext manual.  This value will also be used to set the
   # value in the PO header if it is not already set.  Also note that the header
-  # value should take precident no matter what is set here.
+  # value should take precedence no matter what is set here.
   #
   #   pluralequation = "(n != 1)"
   # As above in nplural this relates to plural forms.  This defines the
