@@ -341,7 +341,6 @@ class UsersAdminPage(pagelayout.PootlePage):
         optiontextbox = widgets.Input(inputoptions)
       users.setcell(rownum, colnum, table.TableCell(optiontextbox))
       colnum += 1
-    rownum = users.maxrownum()+1
     codetextbox = widgets.Input({"name": "newusername", "value": "", "size": 6})
     newfullnametextbox = widgets.Input({"name": "newfullname", "value": self.localize("(add full name here)")})
     newemailtextbox = widgets.Input({"name": "newuseremail", "value": self.localize("(add email here)")})
