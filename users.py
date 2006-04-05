@@ -141,7 +141,7 @@ class UserOptions(pagelayout.PootlePage):
     selectlanguage = widgets.Select({"value": uilanguage, "name": "option-uilanguage"}, languageoptions)
     interface.setcell(1, 0, table.TableCell(self.localize("User Interface language")))
     interface.setcell(1, 1, table.TableCell(selectlanguage))
-    options = {"inputheight": self.localize("Input Height"), "inputwidth": self.localize("Input Width"),
+    options = {"inputheight": self.localize("Input Height (in lines)"), "inputwidth": self.localize("Input Width (in characters)"),
           "viewrows": self.localize("Number of rows in view mode"), 
           "translaterows": self.localize("Number of rows in translate mode")}
     for option, optionname in options.items():
