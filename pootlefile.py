@@ -568,6 +568,8 @@ class pootlefile(po.pofile):
       newpofile.makeindex()
     matches = []
     for newpo in newpofile.units:
+      if newpo.isheader():
+        continue
       foundid = False
       if useids:
         newids = newpo.getids()
