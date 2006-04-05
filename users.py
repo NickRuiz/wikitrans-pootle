@@ -237,6 +237,8 @@ class OptionalLoginAppServer(server.LoginAppServer):
           continue
         if not (username[:1].isalpha() and username.replace("_","").isalnum()):
           raise ValueError("Login must be alphanumeric and start with an alphabetic character (got %r)" % username)
+        if username in ["nobody", "default"]:
+          raise ValueError('"%s" is a reserved username.' % username)
         if self.hasuser(users, username):
           raise ValueError("Already have user with the login: %s" % username)
         userpassword = argdict.get("newuserpassword", None)
