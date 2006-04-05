@@ -623,6 +623,35 @@ class pootlefile(po.pofile):
         self.mergeitem(oldpo, newpo, username)
         # we invariably want to get the ids (source locations) from the newpo
         oldpo.sourcecomments = newpo.sourcecomments
+
+    #Let's update selected header entries. Only the ones listed below, and ones
+    #that are empty in self can be updated. The check in header_order is just
+    #a basic sanity check so that people don't insert garbage.
+    updatekeys = ['Content-Type', 
+                  'POT-Creation-Date', 
+                  'Last-Translator', 
+                  'Project-Id-Version', 
+                  'PO-Revision-Date', 
+                  'Language-Team']
+    headerstoaccept = {}
+    ownheader = self.parseheader()
+    for (key, value) in newpofile.parseheader().items():
+      if key in updatekeys or (not key in ownheader or not ownheader[key]) and key in self.header_order:
+        headerstoaccept[key] = value
+    self.updateheader(add=True, **headerstoaccept)
+    
+    #Now update the comments above the header:
+    header = self.header()
+    newheader = newpofile.header()
+    if header is None and not newheader is None:
+      header = self.elementclass("", encoding=self.encoding)
+      header.target = ""
+    if header:  
+      header.initallcomments(blankall=True)
+      if newheader:
+        for i in range(len(header.allcomments)):
+          header.allcomments[i].extend(newheader.allcomments[i])
+    
     self.savepofile()
     # the easiest way to recalculate everything
     self.readpofile()
