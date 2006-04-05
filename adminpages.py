@@ -85,7 +85,7 @@ class LanguagesAdminPage(pagelayout.PootlePage):
                {"name": "specialchars", "title": self.localize("Special Chars"), "newvalue": self.localize("(special characters)")},
                {"name": "nplurals", "title": self.localize("Number of Plurals"), "newvalue": self.localize("(number of plurals)")},
                {"name": "pluralequation", "title": self.localize("Plural Equation"), "newvalue": self.localize("(plural equation)")},
-               {"name": "remove", "title": self.localize("Remove Language"), "existingonly": True}]
+               {"name": "remove", "title": self.localize("Remove Language")}]
     for option in options:
       if "newvalue" in option:
         option["newname"] = "newlanguage" + option["name"]
@@ -130,9 +130,9 @@ class LanguagesAdminPage(pagelayout.PootlePage):
     rownum = languages.maxrownum()+1
     colnum = 0
     for option in self.getoptions():
-      if "existingonly" in option and option["existingonly"]:
-        continue
-      if "newname" in option:
+      if "newvalue" not in option:
+        optionwidget = widgets.PlainContents("asdfasdadsfasdfasd")
+      elif "newname" in option:
         inputoptions = {"name": option["newname"], "value": option["newvalue"]}
         if "size" in option:
           inputoptions["size"] = option["size"]
