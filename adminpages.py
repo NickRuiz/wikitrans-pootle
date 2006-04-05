@@ -476,7 +476,15 @@ class TranslationProjectAdminPage(pagelayout.PootlePage):
     for username in userlist:
       self.addrightsrow(rightstable, rownum, username, self.project.getrights(username=username))
       rownum += 1
-    rightstable.setcell(rownum, 0, table.TableCell(widgets.Input({"name": "rightsnew-username"})))
+    users = self.session.loginchecker.users.iteritems(sorted=True)
+    userlist = []
+    for usercode, usernode in users:
+      fullname = getattr(usernode, "name", usercode)
+      if fullname:
+        userlist.append((usercode, fullname))
+      else:
+        userlist.append((usercode, usercode))
+    rightstable.setcell(rownum, 0, table.TableCell(widgets.Select({"name": "rightsnew-username"}, userlist)))
     selectrights = widgets.MultiSelect({"name": "rightsnew", "value": defaultrights}, self.rightnames)
     rightstable.setcell(rownum, 1, table.TableCell(selectrights))
     submitbutton = widgets.Input({"type": "submit", "name": "doupdaterights", "value": self.localize("Update Rights")})
