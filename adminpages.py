@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from jToolkit.widgets import widgets
-from jToolkit.widgets import table
-try:
-    from jToolkit.xml import taldom
-except ImportError:
-    taldom = None
 from Pootle import pagelayout
 from Pootle import projects
 from translate.filters import checks
@@ -18,20 +12,11 @@ class AdminPage(pagelayout.PootlePage):
     self.session = session
     self.instance = instance
     self.localize = session.localize
-    if self.session.issiteadmin():
-      homelink = pagelayout.IntroText(widgets.Link("../home/", self.localize("Home page")))
-      userslink = pagelayout.IntroText(widgets.Link("users.html", self.localize("Users")))
-      langlink = pagelayout.IntroText(widgets.Link("languages.html", self.localize("Languages")))
-      projlink = pagelayout.IntroText(widgets.Link("projects.html", self.localize("Projects")))
-      contents = [homelink, userslink, langlink, projlink, self.getgeneral()]
-    else:
-      contents = pagelayout.IntroText(self.localize("You do not have the rights to administer pootle."))
-    pagelayout.PootlePage.__init__(self, self.localize("Pootle Admin Page"), contents, session)
-    if taldom is not None and not getattr(self.instance, "disabletemplates", False):
-        self.templatename = "adminindex"
-        sessionvars = {"status": taldom.escapedunicode(self.session.status), "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
-        instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
-        self.templatevars = {"options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
+    templatename = "adminindex"
+    sessionvars = {"status": self.session.status, "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
+    instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
+    templatevars = {"options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
+    pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
   def getoptions(self):
     optiontitles = {"title": self.localize("Title"), "description": self.localize("Description"), "baseurl": self.localize("Base URL"), "homepage": self.localize("Home Page")}
@@ -42,23 +27,6 @@ class AdminPage(pagelayout.PootlePage):
       options.append(option)
     return options
 
-  def getgeneral(self):
-    """gets the general options"""
-    generaltitle = pagelayout.Title(self.localize('General Options'))
-    general = table.TableLayout()
-    general.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Option"))))
-    general.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Current value"))))
-    options = self.getoptions()
-    for option in options:
-      valuetextbox = widgets.Input({"name": option["name"], "value": option["value"]})
-      rownum = general.maxrownum()+1
-      general.setcell(rownum, 0, table.TableCell(option["title"]))
-      general.setcell(rownum, 1, table.TableCell(valuetextbox))
-    rownum = general.maxrownum()+1
-    submitbutton = widgets.Input({"type":"submit", "name":"changegeneral", "value":self.localize("Save changes")})
-    generalform = widgets.Form([general, submitbutton], {"name": "general", "action":""})
-    return pagelayout.Contents([generaltitle, generalform])
-
 class LanguagesAdminPage(pagelayout.PootlePage):
   """page for administering pootle..."""
   def __init__(self, potree, session, instance):
@@ -66,18 +34,11 @@ class LanguagesAdminPage(pagelayout.PootlePage):
     self.session = session
     self.instance = instance
     self.localize = session.localize
-    if self.session.issiteadmin():
-      homelink = pagelayout.IntroText(widgets.Link("../home/", self.localize("Home page")))
-      indexlink = pagelayout.IntroText(widgets.Link("index.html", self.localize("Main Admin page")))
-      contents = [homelink, indexlink, self.getlanguages()]
-    else:
-      contents = pagelayout.IntroText(self.localize("You do not have the rights to administer pootle."))
-    pagelayout.PootlePage.__init__(self, self.localize("Pootle Languages Admin Page"), contents, session)
-    if taldom is not None and not getattr(self.instance, "disabletemplates", False):
-        self.templatename = "adminlanguages"
-        sessionvars = {"status": taldom.escapedunicode(self.session.status), "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
-        instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
-        self.templatevars = {"languages": self.getlanguagesoptions(), "options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
+    templatename = "adminlanguages"
+    sessionvars = {"status": self.session.status, "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
+    instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
+    templatevars = {"languages": self.getlanguagesoptions(), "options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
+    pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
   def getoptions(self):
     options = [{"name": "code", "title": self.localize("ISO Code"), "size": 6, "newvalue": ""},
@@ -99,7 +60,7 @@ class LanguagesAdminPage(pagelayout.PootlePage):
       languagepluralequation = self.potree.getlanguagepluralequation(languagecode)
       languageremove = None
       # TODO: make label work like this
-      removelabel = self.localize("Remove %s") % languagecode
+      removelabel = self.localize("Remove %s", languagecode)
       languageoptions = [{"name": "languagename-%s" % languagecode, "value": languagename, "type": "text"},
                          {"name": "languagespecialchars-%s" % languagecode, "value": languagespecialchars, "type": "text"},
                          {"name": "languagenplurals-%s" % languagecode, "value": languagenplurals, "type": "text"},
@@ -108,44 +69,6 @@ class LanguagesAdminPage(pagelayout.PootlePage):
       languages.append({"code": languagecode, "options": languageoptions})
     return languages
 
-  def getlanguages(self):
-    """gets the links to the languages"""
-    languagestitle = pagelayout.Title(self.localize('Languages'))
-    languages = table.TableLayout()
-    colnum = 0
-    for option in self.getoptions():
-      languages.setcell(0, colnum, table.TableCell(pagelayout.Title(option["title"])))
-      colnum += 1
-    for language in self.getlanguagesoptions():
-      rownum = languages.maxrownum()+1
-      languagecode = language["code"]
-      languages.setcell(rownum, 0, table.TableCell(languagecode))
-      colnum = 1
-      for optiondict in language["options"]:
-        optionwidget = widgets.Input(optiondict)
-        if "label" in optiondict:
-          optionwidget = [optionwidget, optiondict["label"]]
-        languages.setcell(rownum, colnum, table.TableCell(optionwidget))
-        colnum += 1
-    rownum = languages.maxrownum()+1
-    colnum = 0
-    for option in self.getoptions():
-      if "newvalue" not in option:
-        optionwidget = widgets.PlainContents("asdfasdadsfasdfasd")
-      elif "newname" in option:
-        inputoptions = {"name": option["newname"], "value": option["newvalue"]}
-        if "size" in option:
-          inputoptions["size"] = option["size"]
-        if "selectoptions" in optiondict:
-          optionwidget = widgets.Select(optiondict, options=optiondict["selectoptions"])
-        else:
-          optionwidget = widgets.Input(inputoptions)
-      languages.setcell(rownum, colnum, table.TableCell(optionwidget))
-      colnum += 1
-    submitbutton = widgets.Input({"type":"submit", "name":"changelanguages", "value":self.localize("Save changes")})
-    languageform = widgets.Form([languages, submitbutton], {"name": "languages", "action":""})
-    return pagelayout.Contents([languagestitle, languageform])
-
 class ProjectsAdminPage(pagelayout.PootlePage):
   """page for administering pootle..."""
   def __init__(self, potree, session, instance):
@@ -153,20 +76,13 @@ class ProjectsAdminPage(pagelayout.PootlePage):
     self.session = session
     self.instance = instance
     self.localize = session.localize
-    if self.session.issiteadmin():
-      homelink = pagelayout.IntroText(widgets.Link("../home/", self.localize("Home page")))
-      indexlink = pagelayout.IntroText(widgets.Link("index.html", self.localize("Main Admin page")))
-      self.allchecks = [{"value": check, "description": check} for check in checks.projectcheckers.keys()]
-      self.allchecks.append({"value": "", "description": self.localize("Standard")})
-      contents = [homelink, indexlink, self.getprojects()]
-    else:
-      contents = pagelayout.IntroText(self.localize("You do not have the rights to administer pootle."))
-    pagelayout.PootlePage.__init__(self, self.localize("Pootle Projects Admin Page"), contents, session)
-    if taldom is not None and not getattr(self.instance, "disabletemplates", False):
-        self.templatename = "adminprojects"
-        sessionvars = {"status": taldom.escapedunicode(self.session.status), "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
-        instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
-        self.templatevars = {"projects": self.getprojectsoptions(), "options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
+    templatename = "adminprojects"
+    self.allchecks = [{"value": check, "description": check} for check in checks.projectcheckers.keys()]
+    self.allchecks.insert(0, {"value": "", "description": self.localize("Standard")})
+    sessionvars = {"status": self.session.status, "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
+    instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
+    templatevars = {"projects": self.getprojectsoptions(), "options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
+    pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
   def getoptions(self):
     options = [{"name": "code", "title": self.localize("Project Code"), "size": 6, "newvalue": ""},
@@ -178,6 +94,8 @@ class ProjectsAdminPage(pagelayout.PootlePage):
     for option in options:
       if "newvalue" in option:
         option["newname"] = "newproject" + option["name"]
+      if "type" not in option and "selectoptions" not in option:
+        type="text"
     return options
 
   def getprojectsoptions(self):
@@ -193,7 +111,7 @@ class ProjectsAdminPage(pagelayout.PootlePage):
       else:
         projectcreatemofiles = ""
       projectremove = None
-      removelabel = self.localize("Remove %s") % projectcode
+      removelabel = self.localize("Remove %s", projectcode)
       projectoptions = [{"name": "projectname-%s" % projectcode, "value": projectname, "type": "text"},
                         {"name": "projectdescription-%s" % projectcode, "value": projectdescription, "type": "text"},
                         {"name": "projectcheckerstyle-%s" % projectcode, "value": projectcheckerstyle, "selectoptions": self.allchecks},
@@ -201,57 +119,6 @@ class ProjectsAdminPage(pagelayout.PootlePage):
                         {"name": "projectremove-%s" % projectcode, "value": projectremove, "type": "checkbox", "label": removelabel}]
       projects.append({"code": projectcode, "adminlink": projectadminlink, "options": projectoptions})
     return projects
-
-  def getprojects(self):
-    """gets the links to the projects"""
-    projectstitle = pagelayout.Title(self.localize("Projects"))
-    projects = table.TableLayout()
-    colnum = 0
-    for option in self.getoptions():
-      projects.setcell(0, colnum, table.TableCell(pagelayout.Title(option["title"])))
-      colnum += 1
-    rownum = 1
-    for project in self.getprojectsoptions():
-      projectcode = project["code"]
-      projectadminlink = project["adminlink"]
-      colnum = 0
-      projects.setcell(rownum, 0, table.TableCell(widgets.Link(projectadminlink, projectcode)))
-      for optiondict in project["options"]:
-        colnum += 1
-        if "selectoptions" in optiondict:
-          optionwidget = widgets.Select(optiondict, options=[(o["value"], o["description"]) for o in optiondict["selectoptions"]])
-        else:
-          optionwidget = widgets.Input(optiondict)
-        if "label" in optiondict:
-          optionwidget = [optionwidget, optiondict["label"]]
-        projects.setcell(rownum, colnum, table.TableCell(optionwidget))
-      rownum = projects.maxrownum()+1
-    rownum = projects.maxrownum()+1
-    colnum = 0
-    for option in self.getoptions():
-      projects.setcell(rownum, colnum, table.TableCell(pagelayout.Title(option["title"])))
-      if "newname" in option:
-        inputoptions = {"name": option["newname"], "value": option["newvalue"]}
-        if "size" in option:
-          inputoptions["size"] = option["size"]
-        if "type" in option:
-          inputoptions["type"] = option["type"]
-        optiontextbox = widgets.Input(inputoptions)
-      projects.setcell(rownum, colnum, table.TableCell(optiontextbox))
-      colnum += 1
-    codetextbox = widgets.Input({"name": "newprojectcode", "value": "", "size": 6})
-    nametextbox = widgets.Input({"name": "newprojectname", "value": self.localize("(add project here)")})
-    descriptiontextbox = widgets.Input({"name": "newprojectdescription", "value": self.localize("(project description)")})
-    checkerstyleselect = widgets.Select({"name": "newprojectcheckerstyle"}, options=[(o["value"], o["description"]) for o in self.allchecks])
-    createmofilescheckbox = widgets.Input({"name": "newprojectcreatemofiles", "type": "checkbox"})
-    projects.setcell(rownum, 0, table.TableCell(codetextbox))
-    projects.setcell(rownum, 1, table.TableCell(nametextbox))
-    projects.setcell(rownum, 2, table.TableCell(descriptiontextbox))
-    projects.setcell(rownum, 3, table.TableCell(checkerstyleselect))
-    projects.setcell(rownum, 4, table.TableCell(createmofilescheckbox))
-    submitbutton = widgets.Input({"type":"submit", "name":"changeprojects", "value":self.localize("Save changes")})
-    projectform = widgets.Form([projects, submitbutton], {"name": "projects", "action":""})
-    return pagelayout.Contents([projectstitle, projectform])
 
 class UsersAdminPage(pagelayout.PootlePage):
   """page for administering pootle..."""
@@ -261,18 +128,11 @@ class UsersAdminPage(pagelayout.PootlePage):
     self.session = session
     self.instance = instance
     self.localize = session.localize
-    if self.session.issiteadmin():
-      homelink = pagelayout.IntroText(widgets.Link("../home/", self.localize("Home page")))
-      adminlink = pagelayout.IntroText(widgets.Link("index.html", self.localize("Admin page")))
-      contents = [homelink, adminlink, self.getusers()]
-    else:
-      contents = pagelayout.IntroText(self.localize("You do not have the rights to administer Pootle."))
-    pagelayout.PootlePage.__init__(self, self.localize("Pootle User Admin Page"), contents, session)
-    if taldom is not None and not getattr(self.instance, "disabletemplates", False):
-        self.templatename = "adminusers"
-        sessionvars = {"status": taldom.escapedunicode(self.session.status), "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
-        instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
-        self.templatevars = {"users": self.getusersoptions(), "options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
+    templatename = "adminusers"
+    sessionvars = {"status": self.session.status, "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
+    instancetitle = getattr(self.instance, "title", session.localize("Pootle Demo"))
+    templatevars = {"users": self.getusersoptions(), "options": self.getoptions(), "session": sessionvars, "instancetitle": instancetitle}
+    pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
   def getoptions(self):
     options = [{"name": "name", "title": self.localize("Login"), "newvalue": "", "size": 6},
@@ -301,7 +161,7 @@ class UsersAdminPage(pagelayout.PootlePage):
       else:
         activatedattr = ""
       userremove = None
-      removelabel = self.localize("Remove %s") % usercode
+      removelabel = self.localize("Remove %s", usercode)
       useroptions = [{"name": "username-%s" % usercode, "value": fullname, "type": "text"},
                      {"name": "useremail-%s" % usercode, "value": email, "type": "text"},
                      {"name": "userpassword-%s" % usercode, "value": None, "type": "text"},
@@ -309,55 +169,6 @@ class UsersAdminPage(pagelayout.PootlePage):
                      {"name": "userremove-%s" % usercode, "value": None, "type": "checkbox", "label": removelabel}]
       users.append({"code": usercode, "options": useroptions})
     return users
-
-  def getusers(self):
-    """user list and adding"""
-    userstitle = pagelayout.Title(self.localize("Users"))
-    users = table.TableLayout()
-    colnum = 0
-    for option in self.getoptions():
-      users.setcell(0, colnum, table.TableCell(pagelayout.Title(option["title"])))
-      colnum += 1
-    rownum = 1
-    for user in self.getusersoptions():
-      username = user["code"]
-      colnum = 0
-      users.setcell(rownum, 0, table.TableCell(username))
-      for optiondict in user["options"]:
-        colnum += 1
-        optionwidget = widgets.Input(optiondict)
-        if "label" in optiondict:
-          optionwidget = [optionwidget, optiondict["label"]]
-        users.setcell(rownum, colnum, table.TableCell(optionwidget))
-      rownum = users.maxrownum()+1
-    rownum = users.maxrownum()+1
-    colnum = 0
-    for option in self.getoptions():
-      users.setcell(rownum, colnum, table.TableCell(pagelayout.Title(option["title"])))
-      if "newname" in option:
-        inputoptions = {"name": option["newname"], "value": option["newvalue"]}
-        if "size" in option:
-          inputoptions["size"] = option["size"]
-        if "type" in option:
-          inputoptions["type"] = option["type"]
-        optiontextbox = widgets.Input(inputoptions)
-      users.setcell(rownum, colnum, table.TableCell(optiontextbox))
-      colnum += 1
-    codetextbox = widgets.Input({"name": "newusername", "value": "", "size": 6})
-    newfullnametextbox = widgets.Input({"name": "newfullname", "value": self.localize("(add full name here)")})
-    newemailtextbox = widgets.Input({"name": "newuseremail", "value": self.localize("(add email here)")})
-    passwordtextbox = widgets.Input({"name": "newuserpassword", "value": self.localize("(add password here)")})
-    # sendemailcheckbox = widgets.Input({"name": "newusersendemail", "type": "checkbox", "checked": "true"})
-    activatecheckbox = widgets.Input({"name": "newuseractivate", "type": "checkbox", "checked": "true"})
-    users.setcell(rownum, 0, table.TableCell(codetextbox))
-    users.setcell(rownum, 1, table.TableCell(newfullnametextbox))
-    users.setcell(rownum, 2, table.TableCell(newemailtextbox))
-    users.setcell(rownum, 3, table.TableCell(passwordtextbox))
-    # users.setcell(rownum, 3, table.TableCell([sendemailcheckbox, self.localize("Email New User")]))
-    users.setcell(rownum, 4, table.TableCell([activatecheckbox, self.localize("Activate New User")]))
-    submitbutton = widgets.Input({"type":"submit", "name":"changeusers", "value":self.localize("Save changes")})
-    userform = widgets.Form([users, submitbutton], {"name": "users", "action":""})
-    return pagelayout.Contents([userstitle, userform])
 
 class ProjectAdminPage(pagelayout.PootlePage):
   """list of languages belonging to a project"""
@@ -382,43 +193,43 @@ class ProjectAdminPage(pagelayout.PootlePage):
         for languagecode in languagecodes:
           translationproject = self.potree.getproject(languagecode, self.projectcode)
           translationproject.converttemplates(self.session)
-      mainpagelink = pagelayout.Title(widgets.Link("index.html", self.localize("Back to main page")))
-      languagestitle = pagelayout.Title(self.localize("Existing languages"))
-      languagelinks = self.getlanguagelinks()
-      existing = pagelayout.ContentsItem([languagestitle, languagelinks])
-      updatebutton = widgets.Input({"type": "submit", "name": "doupdatelanguage", "value": self.localize("Update Languages")})
-      multiupdate = widgets.HiddenFieldList({"allowmultikey": "updatelanguage"})
-      updateform = widgets.Form([existing, updatebutton, multiupdate], {"action": "", "name":"updatelangform"})
-      newlangform = self.getnewlangform()
-      contents = [mainpagelink, updateform, newlangform]
-    else:
-      contents = pagelayout.IntroText(self.localize("You do not have the rights to administer this project."))
-    pagelayout.PootlePage.__init__(self, "Pootle Admin: "+projectname, contents, session, bannerheight=81, returnurl="projects/%s/admin.html" % projectcode)
+    main_link = self.localize("Back to main page")
+    existing_title = self.localize("Existing languages")
+    existing_languages = self.getexistinglanguages()
+    new_languages = self.getnewlanguages()
+    update_button = self.localize("Update Languages")
+    pagetitle = self.localize("Pootle Admin: %s", projectname)
+    norights_text = self.localize("You do not have the rights to administer this project.")
+    update_link = self.localize("Update from templates")
+    templatename = "projectadmin"
+    sessionvars = {"status": self.session.status, "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
+    instancetitle = getattr(self.session.instance, "title", session.localize("Pootle Demo"))
+    templatevars = {"pagetitle": pagetitle, "norights_text": norights_text,
+        "project": {"code": projectcode, "name": projectname},
+        "existing_title": existing_title, "existing_languages": existing_languages,
+        "new_languages": new_languages,
+        "update_button": update_button, "add_button": self.localize("Add Language"),
+        "main_link": main_link, "update_link": update_link,
+        "session": sessionvars, "instancetitle": instancetitle}
+    pagelayout.PootlePage.__init__(self, templatename, templatevars, session, bannerheight=81)
 
-  def getlanguagelinks(self):
-    """gets the links to the languages"""
+  def getexistinglanguages(self):
+    """gets the info on existing languages"""
     languages = self.potree.getlanguages(self.projectcode)
-    languageitems = [self.getlanguageitem(languagecode, languagename) for languagecode, languagename in languages]
-    return pagelayout.Item(languageitems)
+    languageitems = [{"code": languagecode, "name": languagename} for languagecode, languagename in languages]
+    for n, item in enumerate(languageitems):
+      item["parity"] = ["even", "odd"][n % 2]
+    return languageitems
 
-  def getlanguageitem(self, languagecode, languagename):
-    adminlink = widgets.Link("../../%s/%s/admin.html" % (languagecode, self.projectcode), languagename)
-    updatecheckbox = widgets.Input({'type': 'checkbox', 'name': 'updatelanguage', 'value': languagecode})
-    updatelink = widgets.Link("?doupdatelanguage=1&updatelanguage=%s" % languagecode, self.localize("Update from templates"))
-    return pagelayout.ItemDescription([adminlink, updatecheckbox, updatelink])
-
-  def getnewlangform(self):
+  def getnewlanguages(self):
     """returns a box that lets the user add new languages"""
     existingcodes = self.potree.getlanguagecodes(self.projectcode)
     allcodes = self.potree.getlanguagecodes()
     newcodes = [code for code in allcodes if not (code in existingcodes or code == "templates")]
     newoptions = [(self.potree.getlanguagename(code), code) for code in newcodes]
     newoptions.sort()
-    newoptions = [(code, languagename) for (languagename, code) in newoptions]
-    languageselect = widgets.Select({'name':'newlanguage'}, options=newoptions)
-    submitbutton = widgets.Input({"type": "submit", "name": "doaddlanguage", "value": self.localize("Add Language")})
-    newlangform = widgets.Form([languageselect, submitbutton], {"action": "", "name":"newlangform"})
-    return newlangform
+    newoptions = [{"code": code, "name": languagename} for (languagename, code) in newoptions]
+    return newoptions
 
 class TranslationProjectAdminPage(pagelayout.PootlePage):
   """admin page for a translation project (project+language)"""
@@ -428,12 +239,13 @@ class TranslationProjectAdminPage(pagelayout.PootlePage):
     self.session = session
     self.localize = session.localize
     self.rightnames = self.project.getrightnames(session)
-    title = self.localize("Pootle Admin: %s %s") % (self.project.languagename, self.project.projectname)
-    mainlink = widgets.Link("index.html", self.localize("Project home page"))
-    links = [pagelayout.Title(title), pagelayout.IntroText(mainlink)]
+    pagetitle = self.localize("Pootle Admin: %s %s", self.project.languagename, self.project.projectname)
+    main_link = self.localize("Project home page")
     if "admin" in self.project.getrights(self.session):
       if "doupdaterights" in argdict:
         for key, value in argdict.iteritems():
+          if isinstance(key, str):
+            key = key.decode("utf-8")
           if key.startswith("rights-"):
             username = key.replace("rights-", "", 1)
             self.project.setrights(username, value)
@@ -446,59 +258,70 @@ class TranslationProjectAdminPage(pagelayout.PootlePage):
           if self.session.loginchecker.userexists(username):
             self.project.setrights(username, argdict.get("rightsnew", ""))
           else:
-            raise IndexError(self.localize("Cannot set rights for username %s - user does not exist") % username)
-      contents = [self.getoptions()]
-    else:
-      contents = pagelayout.IntroText(self.localize("You do not have the rights to administer this project."))
-    pagelayout.PootlePage.__init__(self, title, [links, contents], session, bannerheight=81)
+            raise IndexError(self.localize("Cannot set rights for username %s - user does not exist", username))
+    norights_text = self.localize("You do not have the rights to administer this project.")
+    templatename = "projectlangadmin"
+    sessionvars = {"status": self.session.status, "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
+    instancetitle = getattr(self.session.instance, "title", session.localize("Pootle Demo"))
+    templatevars = {"pagetitle": pagetitle, "norights_text": norights_text,
+        "project": {"code": self.project.projectcode, "name": self.project.projectname},
+        "language": {"code": self.project.languagecode, "name": self.project.languagename},
+        "main_link": main_link,
+        "session": sessionvars, "instancetitle": instancetitle}
+    templatevars.update(self.getoptions())
+    pagelayout.PootlePage.__init__(self, templatename, templatevars, session, bannerheight=81)
 
   def getoptions(self):
     """returns a box that describes the options"""
     self.project.readprefs()
     if self.project.filestyle == "gnu":
-      filestyle = pagelayout.IntroText(self.localize("This is a GNU-style project (one directory, files named per language)."))
+      filestyle_text = self.localize("This is a GNU-style project (one directory, files named per language).")
     else:
-      filestyle = pagelayout.IntroText(self.localize("This is a standard style project (one directory per language)."))
-    rightstitle = pagelayout.Title(self.localize("User Permissions"))
-    rightstable = table.TableLayout()
-    rightstable.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Username"))))
-    rightstable.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Rights"))))
-    rightstable.setcell(0, 2, table.TableCell(pagelayout.Title(self.localize("Remove"))))
-    self.addrightsrow(rightstable, 1, "nobody", self.project.getrights(username=None), delete=False)
+      filestyle_text = self.localize("This is a standard style project (one directory per language).")
+    permissions_title = self.localize("User Permissions")
+    username_title = self.localize("Username")
+    adduser_text = self.localize("(select to add user)")
+    rights_title = self.localize("Rights")
+    remove_title = self.localize("Remove")
+    nobodyrights = self.project.getrights(username=None)
+    nobody_dict = self.getuserdict("nobody", delete=False)
     defaultrights = self.project.getrights(username="default")
-    self.addrightsrow(rightstable, 2, "default", defaultrights, delete=False)
-    rownum = 3
-    userlist = []
-    for username, rights in getattr(self.project.prefs, "rights", {}).iteritems():
+    default_dict = self.getuserdict("default", delete=False)
+    users_with_rights = ["nobody", "default"]
+    rights = {"nobody": nobodyrights, "default": defaultrights}
+    for username in self.project.getuserswithrights():
       if username in ("nobody", "default"): continue
-      userlist.append(username)
-    userlist.sort()
-    for username in userlist:
-      self.addrightsrow(rightstable, rownum, username, self.project.getrights(username=username))
-      rownum += 1
+      users_with_rights.append(username)
+      rights[username] = self.project.getrights(username=username)
     users = self.session.loginchecker.users.iteritems(sorted=True)
-    userlist = []
-    for usercode, usernode in users:
-      fullname = getattr(usernode, "name", usercode)
-      if fullname:
-        userlist.append((usercode, fullname))
-      else:
-        userlist.append((usercode, usercode))
-    rightstable.setcell(rownum, 0, table.TableCell(widgets.Select({"name": "rightsnew-username"}, userlist)))
-    selectrights = widgets.MultiSelect({"name": "rightsnew", "value": defaultrights}, self.rightnames)
-    rightstable.setcell(rownum, 1, table.TableCell(selectrights))
-    submitbutton = widgets.Input({"type": "submit", "name": "doupdaterights", "value": self.localize("Update Rights")})
-    rightsform = widgets.Form([rightstitle, rightstable, submitbutton], {"action": "", "name":"rightsform"})
-    return [filestyle, rightsform]
+    user_details = {"nobody": nobody_dict, "default": default_dict}
+    for username, usernode in users:
+      if not isinstance(username, unicode):
+        username = username.decode("utf-8")
+      user_dict = self.getuserdict(username, usernode=usernode)
+      user_details[username] = user_dict
+    users_without_rights = [username for username in user_details if username not in users_with_rights]
+    newuser_dict = self.getuserdict(None, delete=False)
+    updaterights_text = self.localize("Update Rights")
+    return {"filestyle_text": filestyle_text,
+            "permissions_title": permissions_title,
+            "username_title": username_title,
+            "rights_title": rights_title,
+            "remove_title": remove_title,
+            "users_with_rights": users_with_rights,
+            "users_without_rights": users_without_rights,
+            "user_details": user_details,
+            "rights": rights,
+            "newuser": newuser_dict,
+            "updaterights_text": updaterights_text,
+            "rightnames": self.rightnames,
+            "adduser_text": adduser_text,
+           }
 
-  def addrightsrow(self, rightstable, rownum, username, rights, delete=True):
-    """adds a row for the given user's rights"""
-    if not isinstance(rights, list):
-      rights = [right.strip() for right in rights.split(",")]
-    rightstable.setcell(rownum, 0, table.TableCell(username))
-    selectrights = widgets.MultiSelect({"name": "rights-%s" % username, "value": rights}, self.rightnames)
-    rightstable.setcell(rownum, 1, table.TableCell(selectrights))
-    removecheckbox = widgets.Input({"type":"checkbox", "name":"rightsremove-%s" % username})
-    if delete: 
-      rightstable.setcell(rownum, 2, table.TableCell([removecheckbox, self.localize("Remove %s") % username]))
+  def getuserdict(self, username, delete=True, usernode=None):
+    """gets a dictionary for the given user given user's rights"""
+    remove_text = self.localize("Remove %s", username)
+    fullname = getattr(usernode, "name", None) or username
+    userdict = {"username": username, "delete": delete or None, "remove_text": remove_text, "fullname": fullname}
+    return userdict
 

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:py="http://purl.org/kid/ns#" xmlns:over="http://dev.sjsoft.com/ns/overlay" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta name="generator" content="HTML Tidy for Linux/x86 (vers 1st September 2004), see www.w3.org" />
+
+  <title py:content="pagetitle">Pootle: translating ${project.name} into ${language.name}: ${pofilename}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+  <link rel="stylesheet" type="text/css" href="/pootle.css" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+<script src="/js/autoexpand.js" type="text/javascript">
+<!--
+//-->
+</script>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <div id="banner" over:include="pootlepage#banner"/>
+
+  <div id="content">
+    <div class="navbar" py:for="item in navitems">
+      <div over:include="navbar#item">
+        <h3 over:replace="itemtitle" class="title">
+          <span py:strip="True" py:if="item.path.language">[ <a href="${item.path.language.href}">${item.path.language.text}</a> ]</span>
+          <span py:strip="True" py:if="item.path.project">[ <a href="${item.path.project.href}">${item.path.project.text}</a> ]</span>
+          <span py:strip="True" py:for="pathlink in item.path.pathlinks">
+            <a href="${pathlink.href}">${pathlink.text}</a>${pathlink.sep}
+          </span>
+        </h3>
+      </div>
+
+      <div over:include="navbar#itemstats"/>
+
+      <div class="item-statistics" py:if="pagelinks">
+        <span py:strip="True" py:for="pagelink in pagelinks">
+          <a href="${pagelink.href}">${pagelink.text}</a>${pagelink.sep}
+        </span>
+      </div>
+    </div>
+
+    <div class="translate-form">
+      <span py:if="notice" py:replace="notice">Notice</span>
+      <form action="${actionurl}" method="post" name="translate" id="translate">
+        <table cellpadding="10" cellspacing="1" class="translate-table">
+          <tr>
+            <td colspan="1" rowspan="1" type="td" class="translate-table-title" py:content="original_title">original</td>
+
+            <td colspan="1" rowspan="1" type="td" class="translate-table-title" py:content="translation_title">translation</td>
+          </tr>
+
+          <tr py:for="item in items">
+            <td colspan="1" rowspan="1" type="td" class="translate-original translate-original-${item.polarity} ${item.focus_class}">
+              <div id="${item.orig.itemid}" class="translate-original ${item.orig.focus_class}">
+                <input py:for="field in item.orig.pure" type="hidden" name="${field.pureid}" value="${field.value}" id="${field.pureid}"/>
+                <span py:if="not item.orig.isplural" py:replace="XML(item.orig.text)">
+                </span>
+                <span py:if="item.orig.isplural" py:strip="True">
+                  <span class="translation-text-headers" py:content="item.orig.singular_title">Singular</span><br/>
+                  <span py:content="XML(item.orig.singular_text)">singular text</span><br/>
+                  <span class="translation-text-headers" py:content="item.orig.plural_title">Plural</span><br/>
+                  <span py:content="XML(item.orig.plural_text)">plural text</span><br/>
+                </span>
+              </div>
+            </td>
+
+            <td colspan="1" rowspan="1" type="td" class="translate-translation translate-translation-${item.polarity} ${item.focus_class}">
+              <div id="${item.trans.itemid}" class="translate-translation">
+                <span py:if="item.editable and reviewmode" class="translation-text">
+                  <b py:content="item.trans.current_title">Current Translation:</b><br />
+                  <span py:for="form in item.trans.forms" py:strip="True">
+                    <span class="translation-text-headers" py:if="form.title" py:content="form.title">Plural Form ${form.n}</span>
+                    <br py:if="form.title"/>
+                    <span py:replace="XML(form.diff)">Text with diffs</span><br/>
+                  </span>
+                  <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
+                  <span py:for="sugg in item.trans.suggestions" py:strip="True">
+                    <b py:content="sugg.title">Suggestion by testuser:</b><br />
+                    <span py:for="form in sugg.forms" py:strip="True">
+                      <span class="translation-text-headers" py:if="form.title" py:content="form.title">Plural Form ${form.n}</span>
+                      <br py:if="form.title"/>
+                      <span py:replace="XML(form.diff)">Text with diffs</span><br/>
+                      <input type="hidden" name="${form.suggid}" value="${form.value}" />
+                      <br />
+                    </span>
+                    <br />
+                    <span py:if="sugg.canreview" py:strip="True">
+                      <input type="submit" name="accept${sugg.suggid}" value="${accept_button}"/>
+                      <input type="submit" name="reject${sugg.suggid}" value="${reject_button}"/>
+                    </span>
+                    <input py:if="sugg.skip" type="submit" name="skip${sugg.skip.item}" value="${sugg.skip.text}"/>
+                  </span>
+                  <input py:if="item.trans.skip" type="submit" name="skip${item.trans.skip.item}" value="${item.trans.skip.text}"/>
+                </span>
+                <span py:if="item.editable and not reviewmode" py:strip="True">
+                  <span py:if="not item.trans.isplural" py:strip="True">
+                    <!--! TODO: spell checking -->
+                    <textarea name="${item.trans.itemid}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(item.trans.text)">
+                      translatable text
+                    </textarea>
+                  </span>
+                  <span py:if="item.trans.isplural" py:strip="True">
+                    <input type="hidden" name="pluralforms${item.itemid}" value="${item.trans.nplurals}"/>
+                    <span py:for="form in item.trans.forms" py:strip="True">
+                      <span class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</span><br/>
+                      <!--! TODO: spell checking -->
+                      <textarea name="${form.name}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(form.text)">
+                        translatable text for plural form
+                      </textarea>
+                    </span>
+                  </span>
+                  <span py:strip="True" py:for="buttons in [item.trans.buttons]">
+                    <input py:if="'skip' in buttons.desired" type="submit" name="skip${buttons.item}" accesskey="k" value="${buttons.skip}"/>
+                    <button py:if="'copy' in buttons.desired" accesskey="c"
+                      onclick="document.forms.translate.trans${buttons.item}.value = document.getElementById('orig-pure${buttons.item}.0').value ; document.forms.translate.trans${buttons.item}.focus()"
+                      py:content="buttons.copy_text">Copy</button>
+                    <input py:if="'suggest' in buttons.desired" type="submit" name="submitsuggest${buttons.item}" accesskey="e" value="${buttons.suggest}"/>
+                    <input py:if="'translate' in buttons.desired" type="submit" name="submit${buttons.item}" accesskey="s" value="${buttons.submit}"/>
+                    <span py:if="'specialchars' in buttons.desired" py:replace="specialchars">Special Chars for Language</span>
+                    <span py:if="'resize' in buttons.desired">
+                      <a href='#' onclick="return expandtextarea(this)" accesskey="=" py:content="buttons.grow">Grow</a>
+                      <a href='#' onclick="return contracttextarea(this)" accesskey="-" py:content="buttons.shrink">Shrink</a>
+                      <a href='#' onclick="return broadentextarea(this)" accesskey="+" py:content="buttons.broaden">Broaden</a>
+                      <a href='#' onclick="return narrowtextarea(this)" accesskey="_" py:content="buttons.narrow">Narrow</a>
+                      <a href='#' onclick="return resettextarea(this, ${buttons.rows}, ${buttons.cols})" py:content="buttons.reset">Reset</a>
+                    </span>
+                  </span>
+                  <script type="text/javascript">
+                    <!--
+                    document.forms.translate['${item.trans.focusbox}'].focus()
+                    //-->
+                  </script>
+                </span>
+                <span py:if="not item.editable" py:strip="True">
+                  <span py:if="not item.trans.isplural" py:strip="True" py:content="XML(item.trans.text)">
+                    text
+                  </span>
+                  <span py:if="item.trans.isplural" class="translation-text">
+                    <span py:for="form in item.trans.forms" py:strip="True">
+                      <span class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</span><br/>
+                      <span py:replace="XML(form.text)">Text</span><br/>
+                    </span>
+                  </span>
+                  <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
+                </span>
+              </div>
+            </td>
+          </tr>
+
+
+        </table>
+        <input type="hidden" name="searchtext" value="${searchtext}" />
+        <input type="hidden" name="pofilename" value="${pofilename}" />
+      </form>
+
+      <div class="item-statistics" py:if="pagelinks">
+        <span py:strip="True" py:for="pagelink in pagelinks">
+          <a href="${pagelink.href}">${pagelink.text}</a>${pagelink.sep}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div id="links" over:include="pootlepage#links">
+    <form id="searchform">
+      <input type="hidden" name="pofilename" value="${pofilename}" />
+    </form>
+
+    <div py:if="defined('assigns')" class="sidetitle" py:content="assigns.title">Assign Strings</div>
+    <form py:if="defined('assigns')" action="?index=1" name="assignform">
+      <select name="assignto" title="${assigns.user_title}">
+        <option py:for="user in assigns.users" value="${user}" py:content="user">Username</option>
+      </select>
+      <input name="action" value="translate" title="${assigns.action_title}"/>
+      <input name="doassign" type="submit" value="${assigns.submit_text}"/>
+    </form>
+
+    <div class="side" py:if="defined('checking_text')" py:content="checking_text">
+      checking has-suggestion, etc
+    </div>
+  </div>
+</body>
+</html>

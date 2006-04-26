@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns:tal="http://xml.zope.org/namespaces/tal" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns:py="http://purl.org/kid/ns#" xmlns:over="http://dev.sjsoft.com/ns/overlay" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta name="generator" content="HTML Tidy for Linux/x86 (vers 1st January 2004), see www.w3.org" />
 
@@ -11,35 +11,14 @@
 </head>
 
 <body bgcolor="#FFFFFF">
-  <div id="banner">
-    <table cellpadding="0" width="100%" border="0" cellspacing="0">
-      <tr>
-        <td rowspan="1" colspan="1" align="left" width="180" valign="top" type="td"><img src="/images/pootle-medium.jpg" height="135" type="button" width=
-        "180" /></td>
+  <div id="banner" over:include="pootlepage#banner"/>
 
-        <td colspan="1" rowspan="1" type="td" width="5"><img src="/images/gap.png" height="5" type="button" width="5" /></td>
-
-        <td colspan="1" rowspan="1" type="td" width="100%">
-          <table cellspacing="0" height="135" width="100%" cellpadding="0" border="0" class="header">
-            <tr>
-              <td colspan="1" align="center" rowspan="1" type="td" valign="middle"><img src="/images/top.png" height="81" type="button" width="238" /></td>
-            </tr>
-
-            <tr>
-              <td rowspan="1" colspan="1" align="right" valign="middle" type="td" class="border_top"></td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </div>
-
-  <div id="content" tal:condition="not session/issiteadmin">
+  <div id="content" py:if="not session.issiteadmin">
     <div class="intro">
       You do not have the rights to administer Pootle
     </div>
   </div>
-  <div id="content" tal:condition="session/issiteadmin">
+  <div id="content" py:if="session.issiteadmin">
     <div class="intro">
       <a href="../home/">Home page</a>
     </div>
@@ -54,25 +33,25 @@
       <form action="" method="post" name="users" id="users">
         <table cellpadding="1" cellspacing="1">
           <tr>
-            <td colspan="1" rowspan="1" type="td" tal:repeat="option options">
-              <h3 class="title" tal:content="option/title">Login</h3>
+            <td colspan="1" rowspan="1" type="td" py:for="option in options">
+              <h3 class="title" py:content="option.title">Login</h3>
             </td>
           </tr>
 
-          <tr tal:repeat="user users">
-            <td colspan="1" rowspan="1" type="td" tal:content="user/code">davidfraser</td>
+          <tr py:for="user in users">
+            <td colspan="1" rowspan="1" type="td" py:content="user.code">davidfraser</td>
 
-            <td colspan="1" rowspan="1" type="td" tal:repeat="option user/options">
-               <input type="text" tal:attributes="name option/name; type option/type; value option/value"/>
-               <span tal:condition="option/label" tal:content="option/label"/>
+            <td colspan="1" rowspan="1" type="td" py:for="option in user.options">
+               <input name="${option.name}" type="${option.type}" value="${option.value}"/>
+               <span py:if="option.label" py:content="option.label"/>
             </td>
 
           </tr>
 
           <tr>
-            <td colspan="1" rowspan="1" type="td" tal:repeat="option options">
-              <input type="text" tal:condition="option/newname" tal:attributes="name option/newname; value option/newvalue; size option/size; type option/type; checked option/checked"/>
-               <span tal:condition="option/label" tal:content="option/label"/>
+            <td colspan="1" rowspan="1" type="td" py:for="option in options">
+               <input py:if="option.newname" name="${option.name}" type="${option.type}" value="${option.value}" size="${option.size}" checked="${option.checked}"/>
+               <span py:if="option.label" py:content="option.label"/>
             </td>
           </tr>
         </table><input type="submit" name="changeusers" value="Save changes" />
@@ -80,27 +59,6 @@
     </div>
   </div>
 
-  <div id="links">
-    <div class="sidetitle" tal:content="instancetitle">
-      Pootle
-    </div>
-
-    <div class="side">
-      <a href="/doc/index.html">Docs &amp; Help</a> | <a href="/projects/">All Projects</a> | <a href="/languages/">All Languages</a> |
-      <a href="/home/">Home</a> <span tal:condition="session/issiteadmin"> | <a href="/admin/">Admin</a> </span>
-    </div>
-
-    <div class="side">
-      <img src="/images/person.png" type="button" class="icon"/>
-      <span tal:content="session/status">logged in as <b>somebody</b></span>
-    </div>
-
-    <div class="side" tal:condition="session/isopen">
-      <a href="/?islogout=1">Log Out</a>
-    </div>
-    <div class="side" tal:condition="not session/isopen">
-      <a href="/login.html">Log In</a> <a href="/register.html">Register</a> <a href="/activate.html">Activate</a>
-    </div>
-  </div>
+  <div id="links" over:include="pootlepage#links"/>
 </body>
 </html>

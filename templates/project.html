@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:py="http://purl.org/kid/ns#" xmlns:over="http://dev.sjsoft.com/ns/overlay" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta name="generator" content="HTML Tidy for Linux/x86 (vers 1st September 2004), see www.w3.org" />
+
+  <title py:content="pagetitle">Pootle: ${project.name}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+  <link rel="stylesheet" type="text/css" href="/pootle.css" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+</head>
+
+<body bgcolor="#FFFFFF">
+  <div id="banner" over:include="pootlepage#banner"/>
+
+  <div id="content">
+    <div class="navbar">
+      <img src="/images/folder.png" type="button" class="icon" />
+
+      <h3 class="title">[ <a href="/projects/${project.code}/" py:content="project.name">Project</a> ]</h3>
+
+      <div class="item-description" py:if="session.issiteadmin">
+        <a href="admin.html" py:content="adminlink">Admin</a>
+      </div>
+
+      <div class="item-statistics" py:content="project.stats">
+        0 languages, average 0% translated
+      </div>
+    </div>
+
+    <div py:for="l in languages" class="item item-${l.parity}">
+      <div class="contentsitem">
+        <img src="/images/language.png" type="button" class="icon"></img>
+        <h3 class="title"><a href="../../${l.code}/${project.code}/" py:content="l.name">Language</a></h3>
+      </div>
+      <div class="item-statistics" py:content="XML(l.stats)">0 files, 0/0 words (0%) translated
+        <span class="string-statistics">[0/0 strings]</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="links" over:include="pootlepage#links"/>
+</body>
+</html>

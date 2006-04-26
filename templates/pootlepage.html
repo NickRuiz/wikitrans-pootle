@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:py="http://purl.org/kid/ns#" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Pootle Page</title>
+</head>
+<body>
+  <div id="banner">
+    <table cellpadding="0" width="100%" border="0" cellspacing="0">
+      <tr>
+        <td rowspan="1" colspan="1" align="left" width="${banner_width}" valign="top" type="td">
+          <img src="/images/${banner_image}" type="button" height="${banner_height}" width="${banner_width}"/>
+        </td>
+
+        <td colspan="1" rowspan="1" type="td" width="5">
+          <img src="/images/gap.png" height="5" type="button" width="5"/>
+        </td>
+
+        <td colspan="1" rowspan="1" type="td" width="100%">
+          <table cellspacing="0" height="${banner_height}" width="100%" cellpadding="0" border="0" class="header">
+            <tr>
+              <td colspan="1" align="center" rowspan="1" type="td" valign="middle">
+                 <img src="/images/top.png" height="${logo_height}" type="button" width="${logo_width}"/>
+              </td>
+            </tr>
+
+            <tr>
+              <td rowspan="1" colspan="1" align="right" valign="middle" type="td" class="border_top"/>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="links">
+    <div class="sidetitle" py:content="instancetitle">
+      Pootle
+    </div>
+
+    <div class="side">
+      <a href="/doc/index.html">Docs &amp; Help</a> | <a href="/projects/">All Projects</a> | <a href="/languages/">All Languages</a> |
+      <a href="/home/">Home</a> <span py:if="session.issiteadmin"> | <a href="/admin/">Admin</a> </span>
+    </div>
+
+    <div class="side">
+      <img src="/images/person.png" type="button" class="icon"/>
+      <span py:content="XML(session.status)">logged in as <b>somebody</b></span>
+    </div>
+
+    <div class="side" py:if="session.isopen">
+      <a href="/?islogout=1">Log Out</a>
+    </div>
+    <div class="side" py:if="not session.isopen">
+      <a href="/login.html">Log In</a> <a href="/register.html">Register</a> <a href="/activate.html">Activate</a>
+    </div>
+
+    <div py:if="search" class="sidetitle" py:content="search.title">
+      Search
+    </div>
+
+    <form py:if="search" action="translate.html" method="post" name="searchform" id="searchform">
+      <input type="text" name="searchtext" value="" />
+    </form>
+
+  </div>
+</body>
+</html>
+

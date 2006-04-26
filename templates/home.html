@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:py="http://purl.org/kid/ns#" xmlns:over="http://dev.sjsoft.com/ns/overlay" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta name="generator" content="HTML Tidy for Linux/x86 (vers 1st September 2004), see www.w3.org" />
+
+  <title py:content="pagetitle">User Page for: ${username}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+  <link rel="stylesheet" type="text/css" href="/pootle.css" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+</head>
+
+<body bgcolor="#FFFFFF">
+  <div id="banner" over:include="pootlepage#banner"/>
+
+  <div id="content">
+    <div class="contents"><h3 class="title" py:content="quicklinkstitle">Quick Links</h3>
+      <div py:for="language in quicklinks" py:strip="True">
+        <h3 class="title" py:for="language in quicklinks">
+          <a href="../${language.code}/" py:content="language.name">Language</a>
+        </h3>
+        <div py:if="language.projects" class="item-description">
+          <span py:for="project in language.projects" py:strip="True">
+            <a href="../${language.code}/${project.code}/" py:content="project.name">Language Project</a>
+            <span py:replace="XML(project.sep)"/>
+          </span>
+        </div>
+      </div>
+      <div py:if="not quicklinks" class="item-description" py:content="setoptionstext">
+        Please click on 'Change options' and select some languages and projects
+      </div>
+    </div>
+
+    <div class="intro">
+      <a href="options.html" py:content="optionslink">Change options</a>
+    </div>
+
+    <div class="intro" py:if="session.issiteadmin">
+      <a href="../admin/" py:content="adminlink">Admin page</a>
+    </div>
+  </div>
+
+  <div id="links" over:include="pootlepage#links"/>
+</body>
+</html>

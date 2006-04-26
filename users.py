@@ -3,9 +3,6 @@
 
 from jToolkit.web import server
 from jToolkit.web import session
-from jToolkit.widgets import widgets
-from jToolkit.widgets import form
-from jToolkit.widgets import table
 from jToolkit import mailer
 from jToolkit import prefs
 from Pootle import pagelayout
@@ -13,17 +10,26 @@ from Pootle import pagelayout
 class RegistrationError(ValueError):
   pass
 
-class LoginPage(server.LoginPage, pagelayout.PootlePage):
+class LoginPage(pagelayout.PootlePage):
   """wraps the normal login page in a PootlePage layout"""
-  def __init__(self, session, extraargs={}, confirmlogin=0, specialmessage=None, languagenames=None):
-    server.LoginPage.__init__(self, session, extraargs, confirmlogin, specialmessage, languagenames)
-    contents = pagelayout.IntroText(self.contents)
-    pagelayout.PootlePage.__init__(self, session.localize("Login to Pootle"), contents, session)
+  def __init__(self, session, languagenames=None):
+    self.localize = session.localize
+    self.languagenames = languagenames
+    pagetitle = self.localize("Login to Pootle")
+    templatename = "login"
+    instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
+    sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
+    templatevars = {"pagetitle": pagetitle,
+        "username_title": self.localize("Username:"),
+        "username": getattr(session, 'username', ''),
+        "password_title": self.localize("Password:"),
+        "language_title": self.localize('Language:'),
+        "languages": self.getlanguageoptions(session),
+        "login_text": self.localize('Login'),
+        "session": sessionvars, "instancetitle": pagetitle}
+    pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
-  def getcontents(self):
-    return pagelayout.PootlePage.getcontents(self)
-
-  def getlanguageselect(self, session):
+  def getlanguageoptions(self, session):
     """returns the language selector..."""
     # TODO: work out how we handle localization of language names...
     languageoptions = [('', session.localize("Default"))]
@@ -31,50 +37,61 @@ class LoginPage(server.LoginPage, pagelayout.PootlePage):
       languageoptions += self.languagenames.items()
     else:
       languageoptions += self.languagenames
-    languageselect = widgets.Select({'name':'language','value':session.language_set}, options=languageoptions)
-    return languageselect
+    return [{"code": key, "name": value, "selected": key==session.language or None} for key, value in languageoptions]
 
 class RegisterPage(pagelayout.PootlePage):
   """page for new registrations"""
   def __init__(self, session, argdict):
     self.localize = session.localize
-    introtext = [pagelayout.IntroText(self.localize("Please enter your registration details"))]
-    if session.status:
-      statustext = pagelayout.IntroText(session.status)
-      introtext.append(statustext)
+    introtext = self.localize("Please enter your registration details")
+    pagetitle = self.localize("Pootle Registration")
     self.argdict = argdict
-    contents = [introtext, self.getform()]
-    pagelayout.PootlePage.__init__(self, self.localize("Pootle Registration"), contents, session)
-
-  def getform(self):
-    columnlist = [("email", self.localize("Email Address"), self.localize("Must be a valid email address")),
-                  ("username", self.localize("Username"), self.localize("Your requested username")),
-                  ("name", self.localize("Full Name"), self.localize("Your full name")),
-                  ("password", self.localize("Password"), self.localize("Your desired password"))]
-    formlayout = {1:("username", ), 2:("password", ), 3:("name", ), 4:("email", )}
-    extrawidgets = [widgets.Input({'type': 'submit', 'name':'register', 'value':self.localize('Register')})]
-    record = dict([(column[0], self.argdict.get(column[0], "")) for column in columnlist])
-    return form.SimpleForm(record, "register", columnlist, formlayout, {}, extrawidgets)
+    templatename = "register"
+    instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
+    sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
+    templatevars = {"pagetitle": pagetitle, "introtext": introtext,
+        "username_title": self.localize("Username"),
+        "username_tooltip": self.localize("Your requested username"),
+        "username": self.argdict.get("username", ""),
+        "email_title": self.localize("Email Address"),
+        "email_tooltip": self.localize("Must be a valid email address"),
+        "email": self.argdict.get("email", ""),
+        "fullname_title": self.localize("Full Name"),
+        "fullname_tooltip": self.localize("Your full name"),
+        "fullname": self.argdict.get("name", ""),
+        "password_title": self.localize("Password"),
+        "password_tooltip": self.localize("Your desired password"),
+        "password": self.argdict.get("password", ""),
+        "register_text": self.localize('Register Account'),
+        "session": sessionvars, "instancetitle": pagetitle}
+    pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
 class ActivatePage(pagelayout.PootlePage):
   """page for new registrations"""
-  def __init__(self, session, argdict):
+  def __init__(self, session, argdict, title=None, message=None):
     self.localize = session.localize
-    introtext = [pagelayout.IntroText(self.localize("Please enter your activation details"))]
-    if session.status:
-      statustext = pagelayout.IntroText(session.status)
-      introtext.append(statustext)
+    if not message:
+      introtext = self.localize("Please enter your activation details")
+    else:
+      introtext = message
     self.argdict = argdict
-    contents = [introtext, self.getform()]
-    pagelayout.PootlePage.__init__(self, self.localize("Pootle Account Activation"), contents, session)
-
-  def getform(self):
-    columnlist = [("username", self.localize("Username"), self.localize("Your requested username")),
-                  ("activationcode", self.localize("Activation Code"), self.localize("The activation code you received"))]
-    formlayout = {1:("username", ), 2:("activationcode", )}
-    extrawidgets = [widgets.Input({'type': 'submit', 'name':'activate', 'value':self.localize('Activate Account')})]
-    record = dict([(column[0], self.argdict.get(column[0], "")) for column in columnlist])
-    return form.SimpleForm(record, "activate", columnlist, formlayout, {}, extrawidgets)
+    if title is None:
+      pagetitle = self.localize("Pootle Account Activation")
+    else:
+      pagetitle = title
+    templatename = "activate"
+    instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
+    sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
+    templatevars = {"pagetitle": pagetitle, "introtext": introtext,
+        "username_title": self.localize("Username"),
+        "username_tooltip": self.localize("Your requested username"),
+        "username": self.argdict.get("username", ""),
+        "code_title": self.localize("Activation Code"),
+        "code_tooltip": self.localize("The activation code you received"),
+        "code": self.argdict.get("activationcode", ""),
+        "activate_text": self.localize('Activate Account'),
+        "session": sessionvars, "instancetitle": pagetitle}
+    pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
 class UserOptions(pagelayout.PootlePage):
   """page for user to change their options"""
@@ -82,78 +99,66 @@ class UserOptions(pagelayout.PootlePage):
     self.potree = potree
     self.session = session
     self.localize = session.localize
-    submitbutton = widgets.Input({"type":"submit", "name":"changeoptions", "value": self.localize("Save changes")})
-    hiddenfields = widgets.HiddenFieldList([("allowmultikey","languages"), ("allowmultikey","projects")])
-    formmembers = [self.getprojectoptions(), self.getlanguageoptions(), hiddenfields, submitbutton]
-    useroptions = widgets.Form(formmembers, {"name": "useroptions", "action":""})
-    homelink = pagelayout.IntroText(widgets.Link("index.html", self.localize("Home page")))
-    contents = [self.getpersonaloptions(), useroptions, homelink]
-    pagelayout.PootlePage.__init__(self, self.localize("Options for: %s") % session.username, contents, session)
+    pagetitle = self.localize("Options for: %s", session.username)
+    templatename = "options"
+    instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
+    sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
+    templatevars = {"pagetitle": pagetitle,
+        "detailstitle": self.localize("Personal Details"),
+        "option_heading": self.localize("Option"),
+        "value_heading": self.localize("Current value"),
+        "fullname_title": self.localize("Name"),
+        "fullname": self.session.prefs.name,
+        "email_title": self.localize("Email"),
+        "email": self.session.prefs.email,
+        "interface_title": self.localize("Translation Interface Configuration"),
+        "uilanguage_heading": self.localize("User Interface language"),
+        "projects_title": self.localize("My Projects"),
+        "projects": self.getprojectoptions(),
+        "languages_title": self.localize("My Languages"),
+        "languages": self.getlanguageoptions(),
+        "home_link": self.localize("Home page"),
+        "submit_button": self.localize("Save changes"),
+        "session": sessionvars, "instancetitle": pagetitle}
+    otheroptions = self.getotheroptions()
+    templatevars.update(otheroptions)
+    pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
   def getprojectoptions(self):
     """gets the options box to change the user's projects"""
-    projectstitle = pagelayout.Title(self.localize("My Projects"))
     projectoptions = []
     userprojects = self.session.getprojects()
     for projectcode in self.potree.getprojectcodes():
       projectname = self.potree.getprojectname(projectcode)
-      projectoptions.append((projectcode, projectname))
-    projectselect = widgets.MultiSelect({"value": userprojects, "name": "projects"}, projectoptions)
-    bodydescription = pagelayout.ItemDescription([projectselect, widgets.HiddenFieldList({"allowmultikey":"projects"})])
-    return pagelayout.Contents([projectstitle, bodydescription])
+      projectoptions.append({"code": projectcode, "name": projectname, "selected": projectcode in userprojects or None})
+    return projectoptions
 
   def getlanguageoptions(self):
-    """gets the options box to change the user's languages"""
-    languagestitle = pagelayout.Title(self.localize("My Languages"))
-    languageoptions = []
+    """returns options for languages"""
     userlanguages = self.session.getlanguages()
     languageoptions = self.potree.getlanguages()
-    languageselect = widgets.MultiSelect({"value": userlanguages, "name": "languages"}, languageoptions)
-    bodydescription = pagelayout.ItemDescription(languageselect)
-    return pagelayout.Contents([languagestitle, bodydescription])
+    languages = []
+    for language, name in languageoptions:
+      languages.append({"code": language, "name": name, "selected": language in userlanguages or None})
+    return languages
 
-  def getpersonaloptions(self):
-    """get the options fields to change the user's personal details"""
-    personaltitle = pagelayout.Title(self.localize("Personal Details"))
-    personal = table.TableLayout()
-    personal.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Option"))))
-    personal.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Current value"))))
-    options = {"name": self.localize("Name"), "email": self.localize("Email")}
-    for option, optionname in options.items():
-      optionvalue = getattr(self.session.prefs, option, "")
-      valuetextbox = widgets.Input({"name": "option-%s" % option, "value": optionvalue})
-      rownum = personal.maxrownum()+1
-      personal.setcell(rownum, 0, table.TableCell(optionname))
-      personal.setcell(rownum, 1, table.TableCell(valuetextbox))
-    rownum = personal.maxrownum()+1
-    submitbutton = widgets.Input({"type":"submit", "name":"changepersonal", "value":self.localize("Save changes")})
-    personalform = widgets.Form([personal, submitbutton], {"name": "personal", "action":""})
-    interfacetitle = pagelayout.Title(self.localize("Translation Interface Configuration"))
-    interface = table.TableLayout()
-    interface.setcell(0, 0, table.TableCell(pagelayout.Title(self.localize("Option"))))
-    interface.setcell(0, 1, table.TableCell(pagelayout.Title(self.localize("Current value"))))
+  def getotheroptions(self):
     uilanguage = getattr(self.session.prefs, "uilanguage", "")
     if not uilanguage:
       userlanguages = self.session.getlanguages()
       if userlanguages:
         uilanguage = userlanguages[0]
-    languageoptions = [('', '')] + self.potree.getlanguages()
-    selectlanguage = widgets.Select({"value": uilanguage, "name": "option-uilanguage"}, languageoptions)
-    interface.setcell(1, 0, table.TableCell(self.localize("User Interface language")))
-    interface.setcell(1, 1, table.TableCell(selectlanguage))
+    languageoptions = [{"code": '', "name": ''}]
+    for code, name in self.potree.getlanguages():
+      languageoptions.append({"code": code, "name": name, "selected": uilanguage == code or None})
     options = {"inputheight": self.localize("Input Height (in lines)"), "inputwidth": self.localize("Input Width (in characters)"),
           "viewrows": self.localize("Number of rows in view mode"), 
           "translaterows": self.localize("Number of rows in translate mode")}
-    for option, optionname in options.items():
+    optionlist = []
+    for option, description in options.items():
       optionvalue = getattr(self.session.prefs, option, "")
-      valuetextbox = widgets.Input({"name": "option-%s" % option, "value": optionvalue})
-      rownum = interface.maxrownum()+1
-      interface.setcell(rownum, 0, table.TableCell(optionname))
-      interface.setcell(rownum, 1, table.TableCell(valuetextbox))
-    rownum = interface.maxrownum()+1
-    submitbutton = widgets.Input({"type":"submit", "name":"changeinterface", "value":self.localize("Save changes")})
-    interfaceform = widgets.Form([interface, submitbutton], {"name": "interface", "action":""})
-    return pagelayout.Contents([personaltitle, personalform, interfacetitle, interfaceform])
+      optionlist.append({"code": option, "description": description, "value": optionvalue})
+    return {"uilanguage": uilanguage, "uilanguage_options": languageoptions, "other_options": optionlist}
 
 class OptionalLoginAppServer(server.LoginAppServer):
   """a server that enables login but doesn't require it except for specified pages"""
@@ -335,11 +340,17 @@ class OptionalLoginAppServer(server.LoginAppServer):
         displaymessage, redirecturl = self.handleregistration(session, argdict)
       except RegistrationError, message:
         session.status = str(message)
+        displaymessage = session.status
         return RegisterPage(session, argdict)
-      message = pagelayout.IntroText(displaymessage)
-      redirectpage = pagelayout.PootlePage("Redirecting...", [message], session)
-      redirectpage.attribs["refresh"] = 10
-      redirectpage.attribs["refreshurl"] = redirecturl
+      redirectpage = pagelayout.PootlePage("Redirecting...", [], session)
+      redirectpage.templatename = "redirect"
+      redirectpage.templatevars = {
+          "pagetitle": session.localize("Redirecting to Registration Page..."),
+          "refresh": 10,
+          "refreshurl": redirecturl,
+          "message": displaymessage,
+          }
+      redirectpage.completevars()
       return redirectpage
     else:
       return RegisterPage(session, argdict)
@@ -355,14 +366,18 @@ class OptionalLoginAppServer(server.LoginAppServer):
         if correctcode and correctcode.strip().lower() == activationcode.strip().lower():
           setattr(usernode, "activated", 1)
           session.saveprefs()
-          redirecttext = pagelayout.IntroText("Your account has been activated! Redirecting to login...")
-          redirectpage = pagelayout.PootlePage("Redirecting to login...", redirecttext, session)
-          redirectpage.attribs["refresh"] = 10
-          redirectpage.attribs["refreshurl"] = "login.html?username=%s" % username
+          redirectpage = pagelayout.PootlePage("Redirecting to login...", [], session)
+          redirectpage.templatename = "redirect"
+          redirectpage.templatevars = {
+              "pagetitle": session.localize("Redirecting to login Page..."),
+              "refresh": 10,
+              "refreshurl": "login.html?username=%s" % username,
+              "message": session.localize("Your account has been activated! Redirecting to login..."),
+              }
+          redirectpage.completevars()
           return redirectpage
-      failedtext = pagelayout.IntroText("The activation link you have entered was not valid")
-      failedpage = pagelayout.PootlePage("Activation Failed", failedtext, session)
-      return failedpage
+      failedmessage = session.localize("The activation link you have entered was not valid")
+      return ActivatePage(session, argdict, title=session.localize("Activation Failed"), message=failedmessage)
     else:
       return ActivatePage(session, argdict)
 

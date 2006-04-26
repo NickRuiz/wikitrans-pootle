@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sre
-from jToolkit.widgets import widgets
-from jToolkit.widgets import table
-from jToolkit.widgets import spellui
 from jToolkit import spellcheck
 from Pootle import pagelayout
 from Pootle import projects
 from Pootle import pootlefile
 import difflib
+import urllib
 
 def oddoreven(polarity):
   if polarity % 2 == 0:
@@ -45,24 +43,23 @@ class TranslatePage(pagelayout.PootleNavPage):
     # TODO: clean up modes to be one variable
     self.viewmode = self.argdict.get("view", 0) and "view" in self.rights
     self.reviewmode = self.argdict.get("review", 0)
-    notice = ""
+    notice = {}
     try:
       self.finditem()
     except StopIteration, stoppedby:
       notice = self.getfinishedtext(stoppedby)
       self.item = None
-    self.maketable()
-    searchcontextinfo = widgets.HiddenFieldList({"searchtext": self.searchtext})
-    contextinfo = widgets.HiddenFieldList({"pofilename": self.pofilename})
+    items = self.maketable()
+    # self.pofilename can change in search...
+    givenpofilename = self.pofilename
     formaction = self.makelink("")
-    translateform = widgets.Form([self.transtable, searchcontextinfo, contextinfo], {"name": "translate", "action":formaction})
-    title = self.localize("Pootle: translating %s into %s: %s") % (self.project.projectname, self.project.languagename, self.pofilename)
+    title = self.localize("Pootle: translating %s into %s: %s", self.project.projectname, self.project.languagename, self.pofilename)
     mainstats = []
     if self.pofilename is not None:
       postats = self.project.getpostats(self.pofilename)
       blank, fuzzy = postats["blank"], postats["fuzzy"]
       translated, total = postats["translated"], postats["total"]
-      mainstats = self.localize("%d/%d translated\n(%d blank, %d fuzzy)") % (len(translated), len(total), len(blank), len(fuzzy))
+      mainstats = self.localize("%d/%d translated\n(%d blank, %d fuzzy)", len(translated), len(total), len(blank), len(fuzzy))
     if self.viewmode:
       rows = self.getdisplayrows("view")
       pagelinks = self.getpagelinks("?translate=1&view=1", rows)
@@ -70,20 +67,49 @@ class TranslatePage(pagelayout.PootleNavPage):
     else:
       pagelinks = []
       icon="edit"
-    mainitem = self.makenavbar(icon=icon, path=self.makenavbarpath(self.project, self.session, self.pofilename), stats=mainstats, pagelinks=pagelinks)
-    translatediv = pagelayout.TranslateForm([notice, translateform, pagelinks])
-    pagelayout.PootleNavPage.__init__(self, title, [mainitem, translatediv], session, bannerheight=81, returnurl="%s/%s/%s" % (self.project.languagecode, self.project.projectcode, dirfilter))
+    navbarpath_dict = self.makenavbarpath_dict(self.project, self.session, self.pofilename)
+    # templatising
+    templatename = "translatepage"
+    pagetitle = self.localize("Pootle: translating %s into %s: %s", self.project.projectname, self.project.languagename, self.pofilename)
+    instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
+    sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
+    stats = {"summary": mainstats, "checks": [], "tracks": [], "assigns": []}
+    templatevars = {"pagetitle": pagetitle,
+        "project": {"code": self.project.projectcode, "name": self.project.projectname},
+        "language": {"code": self.project.languagecode, "name": self.project.languagename},
+        "pofilename": self.pofilename,
+        # navigation bar
+        "navitems": [{"icon": "edit", "path": navbarpath_dict, "actions": {}, "stats": stats}],
+        "pagelinks": pagelinks,
+        # translation form
+        "actionurl": formaction,
+        "notice": notice,
+        "original_title": self.localize("Original"),
+        "translation_title": self.localize("Translation"),
+        "items": items,
+        "reviewmode": self.reviewmode,
+        "accept_button": self.localize("accept"),
+        "reject_button": self.localize("reject"),
+        # optional sections, will appear if these values are replaced
+        "assign": None,
+        "search": {"title": self.localize("Search")},
+        # hidden widgets
+        "searchtext": self.searchtext,
+        "pofilename": givenpofilename,
+        # general vars
+        "session": sessionvars, "instancetitle": pagetitle}
+    if self.showassigns and "assign" in self.rights:
+      templatevars["assign"] = self.getassignbox()
+    pagelayout.PootleNavPage.__init__(self, templatename, templatevars, session, bannerheight=81)
     self.addfilelinks(self.pofilename, self.matchnames)
-    autoexpandscript = widgets.Script('text/javascript', '', newattribs={'src': self.instance.baseurl + 'js/autoexpand.js'})
-    self.headerwidgets.append(autoexpandscript)
 
   def getfinishedtext(self, stoppedby):
     """gets notice to display when the translation is finished"""
-    title = pagelayout.Title(self.localize("End of batch"))
+    title = self.localize("End of batch")
     finishedlink = "index.html?" + "&".join(["%s=%s" % (arg, value) for arg, value in self.argdict.iteritems() if arg.startswith("show")])
-    returnlink = widgets.Link(finishedlink, self.localize("Click here to return to the index"))
+    returnlink = self.localize("Click here to return to the index")
     stoppedbytext = stoppedby.args[0]
-    return [title, pagelayout.IntroText(stoppedbytext), returnlink]
+    return {"title": title, "stoppedby": stoppedbytext, "finishedlink": returnlink}
 
   def getpagelinks(self, baselink, pagesize):
     """gets links to other pages of items, based on the given baselink"""
@@ -93,48 +119,52 @@ class TranslatePage(pagelayout.PootleNavPage):
       return pagelinks
     lastitem = min(pofilelen-1, self.firstitem + pagesize - 1)
     if pofilelen > pagesize and not self.firstitem == 0:
-      pagelinks.append(widgets.Link(baselink + "&item=0", self.localize("Start")))
+      pagelinks.append({"href": baselink + "&item=0", "text": self.localize("Start")})
     else:
-      pagelinks.append(self.localize("Start")) 
+      pagelinks.append({"text": self.localize("Start")})
     if self.firstitem > 0:
       linkitem = max(self.firstitem - pagesize, 0)
-      pagelinks.append(widgets.Link(baselink + "&item=%d" % linkitem, self.localize("Previous %d") % (self.firstitem - linkitem)))
+      pagelinks.append({"href": baselink + "&item=%d" % linkitem, "text": self.localize("Previous %d", (self.firstitem - linkitem))})
     else:
-      pagelinks.append(self.localize("Previous %d") % pagesize)
-    pagelinks.append(self.localize("Items %d to %d of %d") % (self.firstitem+1, lastitem+1, pofilelen))
+      pagelinks.append({"text": self.localize("Previous %d", pagesize)})
+    pagelinks.append({"text": self.localize("Items %d to %d of %d", self.firstitem+1, lastitem+1, pofilelen)})
     if self.firstitem + len(self.translations) < self.project.getpofilelen(self.pofilename):
       linkitem = self.firstitem + pagesize
       itemcount = min(pofilelen - linkitem, pagesize)
-      pagelinks.append(widgets.Link(baselink + "&item=%d" % linkitem, self.localize("Next %d") % itemcount))
+      pagelinks.append({"href": baselink + "&item=%d" % linkitem, "text": self.localize("Next %d", itemcount)})
     else:
-      pagelinks.append(self.localize("Next %d") % pagesize)
+      pagelinks.append(self.localize("Next %d", pagesize))
     if pofilelen > pagesize and (self.item + pagesize) < pofilelen:
-      pagelinks.append(widgets.Link(baselink + "&item=%d" % max(pofilelen - pagesize, 0), self.localize("End")))
+      pagelinks.append({"href": baselink + "&item=%d" % max(pofilelen - pagesize, 0), "text": self.localize("End")})
     else:
-      pagelinks.append(self.localize("End"))
-    return pagelayout.ItemStatistics(widgets.SeparatedList(pagelinks, " | "))
+      pagelinks.append({"text": self.localize("End")})
+    for n, pagelink in enumerate(pagelinks):
+      if n < len(pagelinks)-1:
+        pagelink["sep"] = " | "
+      else:
+        pagelink["sep"] = ""
+    return pagelinks
 
   def addfilelinks(self, pofilename, matchnames):
     """adds a section on the current file, including any checks happening"""
-    searchcontextinfo = widgets.HiddenFieldList({"pofilename": self.pofilename})
-    self.addsearchbox(self.searchtext, searchcontextinfo)
     if self.showassigns and "assign" in self.rights:
-      self.addassignbox()
+      self.templatevars["assigns"] = self.getassignbox()
     if self.pofilename is not None:
       if matchnames:
         checknames = [matchname.replace("check-", "", 1) for matchname in matchnames]
-        self.links.addcontents(pagelayout.SidebarText(self.localize("checking %s") % ", ".join(checknames)))
+        self.templatevars["checking_text"] = self.localize("checking %s", ", ".join(checknames))
 
-  def addassignbox(self):
-    """adds a box that lets the user assign strings"""
-    self.links.addcontents(pagelayout.SidebarTitle(self.localize("Assign Strings")))
+  def getassignbox(self):
+    """gets strings if the user can assign strings"""
     users = [username for username, userprefs in self.session.loginchecker.users.iteritems() if username != "__dummy__"]
     users.sort()
-    assigntoselect = widgets.Select({"name": "assignto", "value": "", "title": self.localize("Assign to User")}, options=[(user, user) for user in users])
-    actionbox = widgets.Input({"name": "action", "value": "translate", "title": self.localize("Assign Action")})
-    submitbutton = widgets.Input({"type": "submit", "name": "doassign", "value": self.localize("Assign Strings")})
-    assignform = widgets.Form([assigntoselect, actionbox, submitbutton], {"action": "?index=1", "name":"assignform"})
-    self.links.addcontents(assignform)
+    return {
+      title: self.localize("Assign Strings"),
+      user_title: self.localize("Assign to User"),
+      action_title: self.localize("Assign Action"),
+      submit_text: self.localize("Assign Strings"),
+      users: users,
+    }
 
   def receivetranslations(self):
     """receive any translations submitted by the user"""
@@ -229,7 +259,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       self.project.acceptsuggestion(self.pofilename, item, suggid, value, self.session)
       self.lastitem = item
 
-  def getmatchnames(self, checker): 
+  def getmatchnames(self, checker):
     """returns any checker filters the user has asked to match..."""
     matchnames = []
     for checkname in self.argdict:
@@ -260,7 +290,7 @@ class TranslatePage(pagelayout.PootleNavPage):
         self.pofilename, self.item = self.project.searchpoitems(self.pofilename, self.lastitem, search).next()
       except StopIteration:
         if self.lastitem is None:
-          raise StopIteration(self.localize("There are no items matching that search ('%s')") % self.searchtext)
+          raise StopIteration(self.localize("There are no items matching that search ('%s')", self.searchtext))
         else:
           raise StopIteration(self.localize("You have finished going through the items you selected"))
     else:
@@ -317,145 +347,140 @@ class TranslatePage(pagelayout.PootleNavPage):
     self.translations = self.gettranslations()
     if self.reviewmode and self.item is not None:
       suggestions = {self.item: self.project.getsuggestions(self.pofilename, self.item)}
-    self.transtable = table.TableLayout({"class":"translate-table", "cellpadding":10})
-    origtitle = table.TableCell(self.localize("original"), {"class":"translate-table-title"})
-    transtitle = table.TableCell(self.localize("translation"), {"class":"translate-table-title"})
-    self.transtable.setcell(-1, 0, origtitle)
-    self.transtable.setcell(-1, 1, transtitle)
+    items = []
     for row, thepo in enumerate(self.translations):
       orig = thepo.unquotedmsgid
       trans = thepo.unquotedmsgstr
       item = self.firstitem + row
-      origdiv = self.getorigdiv(item, orig, item in self.editable)
+      origdict = self.getorigdict(item, orig, item in self.editable)
+      transmerge = {}
       if item in self.editable:
         if self.reviewmode:
           itemsuggestions = [suggestion.unquotedmsgstr for suggestion in suggestions[item]]
-          transdiv = self.gettransreview(item, trans, itemsuggestions)
+          transmerge = self.gettransreview(item, trans, itemsuggestions)
         else:
-          transdiv = self.gettransedit(item, trans)
+          transmerge = self.gettransedit(item, trans)
       else:
-        transdiv = self.gettransview(item, trans)
+        transmerge = self.gettransview(item, trans)
+      transdict = {"itemid": "trans%d" % item,
+                   "focus_class": origdict["focus_class"],
+                   "isplural": len(trans) > 1,
+                  }
+      transdict.update(transmerge)
       polarity = oddoreven(item)
-      origcell = table.TableCell(origdiv, {"class":"translate-original translate-original-%s" % polarity})
-      self.transtable.setcell(row, 0, origcell)
-      transcell = table.TableCell(transdiv, {"class":"translate-translation translate-translation-%s" % polarity})
-      self.transtable.setcell(row, 1, transcell)
+      origcell_class = "translate-original translate-original-%s" % polarity
+      transcell_class = "translate-translation translate-translation-%s" % polarity
       if item in self.editable:
-        origcell.attribs["class"] += " translate-focus"
-        transcell.attribs["class"] += " translate-focus"
-    self.transtable.shrinkrange()
-    return self.transtable
+        focus_class = "translate-focus"
+      else:
+        focus_class = ""
+      itemdict = {
+                 "itemid": item,
+                 "orig": origdict,
+                 "trans": transdict,
+                 "polarity": polarity,
+                 "focus_class": focus_class,
+                 "editable": item in self.editable,
+                 }
+      items.append(itemdict)
+    return items
 
   def escapetext(self, text):
-    return self.escape(text).replace("\n", "</br>\n")
+    """Replace special characters &, <, >, add and handle quotes if asked"""
+    text = text.replace("&", "&amp;") # Must be done first!
+    text = text.replace("<", "&lt;").replace(">", "&gt;")
+    text = text.replace("\n", "</br>\n")
+    return text
 
-  def getorigdiv(self, item, orig, editable):
-    origclass = "translate-original "
+  def getorigdict(self, item, orig, editable):
     if editable:
-      origclass += "translate-original-focus "
+      focus_class = "translate-original-focus"
     else:
-      origclass += "autoexpand "
+      focus_class = "autoexpand"
     purefields = []
     for pluralid, pluraltext in enumerate(orig):
       pureid = "orig-pure%d.%d" % (item, pluralid)
-      purefields.append(widgets.Input({"type": "hidden", "id": pureid, "name": pureid, "value": pluraltext}))
+      purefields.append({"pureid": pureid, "name": pureid, "value": pluraltext})
+    origdict = {
+           "focus_class": focus_class,
+           "itemid": "orig%d" % item,
+           "pure": purefields,
+           "isplural": len(orig) > 1 or None,
+           "singular_title": self.localize("Singular"),
+           "plural_title": self.localize("Plural"),
+           }
     if len(orig) > 1:
-      htmlbreak = "<br/>\n"
-      origpretty = [pagelayout.TranslationHeaders(self.localize("Singular")), htmlbreak, 
-                    self.escapetext(orig[0]), htmlbreak,
-                    pagelayout.TranslationHeaders(self.localize("Plural")), htmlbreak,
-                    self.escapetext(orig[1])]
+      origdict["singular_text"] = self.escapetext(orig[0])
+      origdict["plural_text"] = self.escapetext(orig[1])
     else:
-      origpretty = self.escapetext(orig[0])
-    origdiv = widgets.Division([purefields, origpretty], "orig%d" % item, cls=origclass)
-    return origdiv
+      origdict["text"] = self.escapetext(orig[0])
+    return origdict
 
   def geteditlink(self, item):
     """gets a link to edit the given item, if the user has permission"""
     if "translate" in self.rights or "suggest" in self.rights:
-      translateurl = "?translate=1&item=%d&pofilename=%s" % (item, self.quote(self.pofilename))
-      return pagelayout.TranslateActionLink(translateurl , self.localize("Edit"), "editlink%d" % item)
+      translateurl = "?translate=1&item=%d&pofilename=%s" % (item, urllib.quote(self.pofilename, '/'))
+      return {"href": translateurl, "text": self.localize("Edit"), "linkid": "editlink%d" % item}
     else:
-      return ""
+      return None
 
-  def gettransbuttons(self, item, desiredbuttons=["skip", "copy", "suggest", "translate", "resize"]):
+  def gettransbuttons(self, item, desiredbuttons):
     """gets buttons for actions on translation"""
-    buttons = []
-    if "skip" in desiredbuttons:
-      skipbutton = widgets.Input({"type":"submit", "name":"skip%d" % item, "accesskey": "k", "value":self.localize("skip")})
-      buttons.append(skipbutton)
-    if "copy" in desiredbuttons:
-      pureid = "orig-pure%d.0" % item
-      fullitemid = "document.forms.translate.trans%d" % (item)
-      copyscript = "%s.value = document.getElementById('%s').value ; %s.focus()" % (fullitemid, pureid, fullitemid)
-      copybutton = widgets.Button({"onclick": copyscript, "accesskey": "c"}, self.localize("copy"))
-      buttons.append(copybutton)
-    if "suggest" in desiredbuttons and "suggest" in self.rights:
-      suggestbutton = widgets.Input({"type":"submit", "name":"submitsuggest%d" % item, "accesskey": "e", "value":self.localize("suggest")})
-      buttons.append(suggestbutton)
-    if "translate" in desiredbuttons and "translate" in self.rights:
-      submitbutton = widgets.Input({"type":"submit", "name":"submit%d" % item, "accesskey": "s", "value":self.localize("submit")})
-      buttons.append(submitbutton)
-    if "translate" in desiredbuttons or "suggest" in desiredbuttons:
-      specialchars = getattr(getattr(self.session.instance.languages, self.project.languagecode, None), "specialchars", "")
-      buttons.append(specialchars)
-    if "resize" in desiredbuttons:
-      growlink = widgets.Link('#', self.localize("Grow"), newattribs={"onclick": 'return expandtextarea(this)', "accesskey": "="})
-      shrinklink = widgets.Link('#', self.localize("Shrink"), newattribs={"onclick": 'return contracttextarea(this)', "accesskey": "-"})
-      broadenlink = widgets.Link('#', self.localize("Broaden"), newattribs={"onclick": 'return broadentextarea(this)', "accesskey": "+"})
-      narrowlink = widgets.Link('#', self.localize("Narrow"), newattribs={"onclick": 'return narrowtextarea(this)', "accesskey": "_"})
-      usernode = self.getusernode()
-      rows = getattr(usernode, "inputheight", 5)
-      cols = getattr(usernode, "inputwidth", 40)
-      resetlink = widgets.Link('#', self.localize("Reset"), newattribs={"onclick": 'return resettextarea(this, %s, %s)' % (rows, cols)})
-      buttons += [growlink, shrinklink, broadenlink, narrowlink, resetlink]
-    return buttons
+    if "suggest" in desiredbuttons and "suggest" not in self.rights:
+      desiredbuttons.remove("suggest")
+    if "translate" in desiredbuttons and "translate" not in self.rights:
+      desiredbuttons.remove("translate")
+    specialchars = getattr(getattr(self.session.instance.languages, self.project.languagecode, None), "specialchars", "")
+    usernode = self.getusernode()
+    return {"desired": desiredbuttons,
+            "item": item,
+            "copy_text": self.localize("Copy"),
+            "skip": self.localize("skip"),
+            "suggest": self.localize("suggest"),
+            "submit": self.localize("submit"),
+            "specialchars": specialchars,
+            "rows": getattr(usernode, "inputheight", 5),
+            "cols": getattr(usernode, "inputwidth", 40),
+           }
 
   def gettransedit(self, item, trans):
     """returns a widget for editing the given item and translation"""
     if "translate" in self.rights or "suggest" in self.rights:
       usernode = self.getusernode()
-      rows = getattr(usernode, "inputheight", 5)
-      cols = getattr(usernode, "inputwidth", 40)
+      transdict = {
+                  "isplural": len(trans) > 1 or None,
+                  "rows": getattr(usernode, "inputheight", 5),
+                  "cols": getattr(usernode, "inputwidth", 40),
+                  }
       focusbox = ""
       spellargs = {"standby_url": "spellingstandby.html", "js_url": "/js/spellui.js", "target_url": "spellcheck.html"}
       if len(trans) > 1:
         buttons = self.gettransbuttons(item, ["skip", "suggest", "translate"])
-        pluralforms = [widgets.HiddenFieldList([("pluralforms%d" % item, len(trans))])]
-        htmlbreak = "<br />"
+        transdict["nplurals"] = len(trans)
+        forms = []
         for pluralitem, pluraltext in enumerate(trans):
-          pluralform = self.localize("Plural Form %d") % pluralitem
-          pluraltext = self.escape(pluraltext).decode("utf-8")
+          pluralform = self.localize("Plural Form %d", pluralitem)
+          pluraltext = self.escapetext(pluraltext)
           textid = "trans%d.%d" % (item, pluralitem)
+          forms.append({"title": pluralform, "name": textid, "text": pluraltext, "n": pluralitem})
           if not focusbox:
             focusbox = textid
-          if spellcheck.can_check_lang(self.project.languagecode):
-            text = spellui.SpellCheckable({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext, **spellargs)
-          else:
-            text = widgets.TextArea({"name": textid, "rows":rows, "cols":cols}, contents=pluraltext)
-          pluralforms += [pagelayout.TranslationHeaders(pluralform), htmlbreak, text, htmlbreak]
-        transdiv = widgets.Division([pluralforms, buttons], "trans%d" % item, cls="translate-translation")
+        transdict["forms"] = forms
       else:
-        buttons = self.gettransbuttons(item)
-        trans = self.escape(trans[0]).decode("utf8")
+        buttons = self.gettransbuttons(item, ["skip", "copy", "suggest", "translate", "resize"])
+        transdict["text"] = self.escapetext(trans[0])
         textid = "trans%d" % item
         focusbox = textid
-        if spellcheck.can_check_lang(self.project.languagecode):
-          text = spellui.SpellCheckable({"name":textid, "rows":rows, "cols":cols}, contents=trans, **spellargs)
-        else:
-          text = widgets.TextArea({"name":textid, "rows":rows, "cols":cols}, contents=trans)
-        transdiv = widgets.Division([text, "<br />", buttons], textid, cls="translate-translation")
-      if "." in focusbox:
-        focusscript = "document.forms.translate['%s'].focus()" % focusbox
-      else:
-        focusscript = "document.forms.translate.%s.focus()" % focusbox
-      setfocusscript = widgets.Script('text/javascript', focusscript)
-      transdiv.addcontents(setfocusscript)
+      transdict["can_spell"] = spellcheck.can_check_lang(self.project.languagecode)
+      transdict["spell_args"] = spellargs
+      transdict["buttons"] = buttons
+      transdict["focusbox"] = focusbox
     else:
-      transdiv = self.gettransview(item, trans)
+      # TODO: work out how to handle this (move it up?)
+      transdict = self.gettransview(item, trans)
       buttons = self.gettransbuttons(item, ["skip"])
-      transdiv.addcontents(buttons)
-    return transdiv
+    transdict["buttons"] = buttons
+    return transdict
 
   def highlightdiffs(self, text, diffs, issrc=True):
     """highlights the differences in diffs in the text.
@@ -473,8 +498,12 @@ class TranslatePage(pagelayout.PootleNavPage):
     textdiff = ""
     textnest = 0
     textpos = 0
+    spanempty = False
     for i, switch, tag in diffswitches:
-      textdiff += self.escape(text[textpos:i])
+      textsection = self.escapetext(text[textpos:i])
+      textdiff += textsection
+      if textsection:
+        spanempty = False
       if switch == 'start':
         textnest += 1
       elif switch == 'stop':
@@ -482,11 +511,15 @@ class TranslatePage(pagelayout.PootleNavPage):
       if switch == 'start' and textnest == 1:
         # start of a textition
         textdiff += "<span class='translate-diff-%s'>" % tag
+        spanempty = True
       elif switch == 'stop' and textnest == 0:
         # start of an equals block
+        if spanempty:
+          # FIXME: work out why kid swallows empty spans, and browsers display them horribly, then remove this
+          textdiff += "()"
         textdiff += "</span>"
       textpos = i
-    textdiff += self.escape(text[textpos:])
+    textdiff += self.escapetext(text[textpos:])
     return textdiff
 
   def getdiffcodes(self, cmp1, cmp2):
@@ -495,11 +528,7 @@ class TranslatePage(pagelayout.PootleNavPage):
 
   def gettransreview(self, item, trans, suggestions):
     """returns a widget for reviewing the given item's suggestions"""
-    htmlbreak = "<br/>"
-    currenttitle = [self.localize("<b>Current Translation:</b>"), htmlbreak]
     hasplurals = len(trans) > 1
-    editlink = self.geteditlink(item)
-    currenttext = [editlink]
     diffcodes = {}
     for pluralitem, pluraltrans in enumerate(trans):
       if isinstance(pluraltrans, str):
@@ -508,70 +537,76 @@ class TranslatePage(pagelayout.PootleNavPage):
       for pluralitem, pluralsugg in enumerate(suggestion):
         if isinstance(pluralsugg, str):
           suggestion[pluralitem] = pluralsugg.decode("utf-8")
+    forms = []
     for pluralitem, pluraltrans in enumerate(trans):
       pluraldiffcodes = [self.getdiffcodes(pluraltrans, suggestion[pluralitem]) for suggestion in suggestions]
       diffcodes[pluralitem] = pluraldiffcodes
       combineddiffs = reduce(list.__add__, pluraldiffcodes, [])
       transdiff = self.highlightdiffs(pluraltrans, combineddiffs, issrc=True)
+      form = {"n": pluralitem, "diff": transdiff, "title": None}
       if hasplurals:
-        pluralform = self.localize("Plural Form %d") % pluralitem
-        currenttext.append([pagelayout.TranslationHeaders(pluralform), htmlbreak])
-      currenttext.append([transdiff, htmlbreak])
+        pluralform = self.localize("Plural Form %d", pluralitem)
+        form["title"] = pluralform
+      forms.append(form)
+    transdict = {
+                "current_title": self.localize("Current Translation:"),
+                "editlink": self.geteditlink(item),
+                "forms": forms,
+                "isplural": hasplurals or None,
+                "itemid": "trans%d" % item,
+                }
     suggitems = []
     for suggid, msgstr in enumerate(suggestions):
-      suggtext = []
       suggestedby = self.project.getsuggester(self.pofilename, item, suggid)
       if len(suggestions) > 1:
         if suggestedby:
-          suggtitle = self.localize("Suggestion %d by %s:") % (suggid+1, suggestedby)
+          suggtitle = self.localize("Suggestion %d by %s:", suggid+1, suggestedby)
         else:
-          suggtitle = self.localize("Suggestion %d:") % (suggid+1)
+          suggtitle = self.localize("Suggestion %d:", suggid+1)
       else:
         if suggestedby:
-          suggtitle = self.localize("Suggestion by %s:") % (suggestedby)
+          suggtitle = self.localize("Suggestion by %s:", suggestedby)
         else:
           suggtitle = self.localize("Suggestion:")
-      suggtitle = ["<b>%s</b>" % suggtitle, htmlbreak]
+      forms = []
       for pluralitem, pluraltrans in enumerate(trans):
         pluralsuggestion = msgstr[pluralitem]
         suggdiffcodes = diffcodes[pluralitem][suggid]
         suggdiff = self.highlightdiffs(pluralsuggestion, suggdiffcodes, issrc=False)
         if isinstance(pluralsuggestion, str):
           pluralsuggestion = pluralsuggestion.decode("utf8")
+        form = {"diff": suggdiff}
+        form["suggid"] = "suggest%d.%d.%d" % (item, suggid, pluralitem)
+        form["value"] = pluralsuggestion
         if hasplurals:
-          pluralform = self.localize("Plural Form %d") % pluralitem
-          suggtext.append([pagelayout.TranslationHeaders(pluralform), htmlbreak])
-        hiddensuggid = "suggest%d.%d.%d" % (item, suggid, pluralitem)
-        hiddensuggvalue = widgets.Input({'type': 'hidden', "name": hiddensuggid, 'value': pluralsuggestion})
-        suggtext.append([pagelayout.TranslationText(suggdiff), hiddensuggvalue, htmlbreak])
-      if "review" in self.rights:
-        acceptbutton = widgets.Input({"type":"submit", "name":"accept%d.%d" % (item, suggid), "value":self.localize("accept")})
-        rejectbutton = widgets.Input({"type":"submit", "name":"reject%d.%d" % (item, suggid), "value":self.localize("reject")})
-        buttons = [acceptbutton, rejectbutton]
-      else:
-        buttons = []
-      suggdiv = [suggtitle, suggtext, htmlbreak, buttons]
-      suggitems.append(suggdiv)
-    transbuttons = self.gettransbuttons(item, ["skip"])
+          form["title"] = self.localize("Plural Form %d", pluralitem)
+        forms.append(form)
+      suggdict = {"title": suggtitle,
+                  "forms": forms,
+                  "suggid": "%d.%d" % (item, suggid),
+                  "canreview": "review" in self.rights,
+                  "skip": None,
+                 }
+      suggitems.append(suggdict)
+    skipbutton = {"item": item, "text": self.localize("skip")}
     if suggitems:
-      suggitems[-1].append(transbuttons)
+      suggitems[-1]["skip"] = skipbutton
     else:
-      suggitems.append(transbuttons)
-    transdiv = widgets.Division(pagelayout.TranslationText([currenttitle, currenttext] + suggitems), "trans%d" % item, cls="translate-translation")
-    return transdiv
+      transdict["skip"] = skipbutton
+    transdict["suggestions"] = suggitems
+    return transdict
 
   def gettransview(self, item, trans):
     """returns a widget for viewing the given item's translation"""
     editlink = self.geteditlink(item)
+    transdict = {"editlink": editlink}
     if len(trans) > 1:
-      text = [editlink]
-      htmlbreak = "<br />"
+      forms = []
       for pluralitem, pluraltext in enumerate(trans):
-        pluralform = self.localize("Plural Form %d") % pluralitem
-        text += [pagelayout.TranslationHeaders(pluralform), htmlbreak, self.escapetext(pluraltext), htmlbreak]
-      text = pagelayout.TranslationText(text)
+        form = {"title": self.localize("Plural Form %d", pluralitem), "n": pluralitem, "text": self.escapetext(pluraltext)}
+        forms.append(form)
+      transdict["forms"] = forms
     else:
-      text = pagelayout.TranslationText([editlink, self.escapetext(trans[0])])
-    transdiv = widgets.Division(text, "trans%d" % item, cls="translate-translation autoexpand")
-    return transdiv
+      transdict["text"] = self.escapetext(trans[0])
+    return transdict
 
