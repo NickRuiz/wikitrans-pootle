@@ -94,16 +94,16 @@ class ServerTester:
 		"""checks that we can add a project successfully"""
 		self.login()
 		projects_list = self.fetch_page("admin/projects.html")
-		testproject_present = '<A href="../projects/testproject/admin.html">testproject</A>' in projects_list
+		testproject_present = '<a href="../projects/testproject/admin.html">testproject</a>' in projects_list
 		assert testproject_present
-		testproject2_present = '<A href="../projects/testproject2/admin.html">testproject2</A>' in projects_list
+		testproject2_present = '<a href="../projects/testproject2/admin.html">testproject2</a>' in projects_list
 		assert not testproject2_present
 		add_dict = {"newprojectcode": "testproject2", "newprojectname": "Test Project 2",
 			"newprojectdescription": "Test Project Addition", "changeprojects": "Save changes"}
                 add_args = "&".join(["%s=%s" % (key, urllib.quote_plus(value)) for key, value in add_dict.items()])
 		add_url = "admin/projects.html?" + add_args
 		add_result = self.fetch_page(add_url)
-		testproject2_present = '<A href="../projects/testproject2/admin.html">testproject2</A>' in add_result
+		testproject2_present = '<a href="../projects/testproject2/admin.html">testproject2</a>' in add_result
 		assert testproject2_present
 	test_add_project.userprefs = {"rights.siteadmin": True}
 
