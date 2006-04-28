@@ -127,7 +127,7 @@ msgstr ""'''
         pofile = self.poparse(posource)
         assert len(pofile.units) == 1
         thepo = pofile.units[0]
-        assert thepo.getids() == ["test.c"]
+        assert thepo.getlocations() == ["test.c"]
         assert thepo.source == "test"
         assert thepo.target == "rest"
 

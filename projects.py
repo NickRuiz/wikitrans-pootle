@@ -432,13 +432,13 @@ class TranslationProject(object):
       originfile = cStringIO.StringIO(origcontents)
       origpofile.parse(originfile)
       # matching current file with BASE version
-      matches = origpofile.matchitems(currentpofile, usesources=False)
+      matches = origpofile.matchitems(currentpofile, uselocations=False)
       # TODO: add some locking here...
       # reading new version of file
       versioncontrol.updatefile(pathname)
       newpofile = pootlefile.pootlefile(self, popath)
       newpofile.pofreshen()
-      if not hasattr(newpofile, "msgidindex"):
+      if not hasattr(newpofile, "sourceindex"):
         newpofile.makeindex()
       newmatches = []
       # sorting through old matches
@@ -456,17 +456,17 @@ class TranslationProject(object):
             continue
         foundsource = False
         if usesources:
-          for source in origpo.getids():
-            if source in newpofile.sourceindex:
-              newpo = newpofile.sourceindex[source]
+          for location in origpo.getlocations():
+            if location in newpofile.locationindex:
+              newpo = newpofile.locationindex[location]
               if newpo is not None:
                 foundsource = True
                 newmatches.append((newpo, localpo))
                 continue
         if not foundsource:
           msgid = origpo.unquotedmsgid
-          if msgid in newpofile.msgidindex:
-            newpo = newpofile.msgidindex[msgid]
+          if msgid in newpofile.sourceindex:
+            newpo = newpofile.sourceindex[msgid]
             newmatches.append((newpo, localpo))
           else:
             newmatches.append((None, localpo))
@@ -1136,9 +1136,9 @@ class TranslationProject(object):
       if pofile.pomtime != pootlefile.getmodtime(pofile.filename):
         pofile.readpofile()
         pofile.makeindex()
-      elif not hasattr(pofile, "msgidindex"):
+      elif not hasattr(pofile, "sourceindex"):
         pofile.makeindex()
-      thepo = pofile.msgidindex.get(message, None)
+      thepo = pofile.sourceindex.get(message, None)
       if not thepo or thepo.isblankmsgstr():
         continue
       tmsg = thepo.target
@@ -1153,9 +1153,9 @@ class TranslationProject(object):
         if pofile.pomtime != pootlefile.getmodtime(pofile.filename):
           pofile.readpofile()
           pofile.makeindex()
-        elif not hasattr(pofile, "msgidindex"):
+        elif not hasattr(pofile, "sourceindex"):
           pofile.makeindex()
-        thepo = pofile.msgidindex.get(message, None)
+        thepo = pofile.sourceindex.get(message, None)
         if not thepo or thepo.isblankmsgstr() or thepo.isfuzzy():
           continue
         tmsg = thepo.target
@@ -1175,12 +1175,12 @@ class TranslationProject(object):
         if pofile.pomtime != pootlefile.getmodtime(pofile.filename):
           pofile.readpofile()
           pofile.makeindex()
-        elif not hasattr(pofile, "msgidindex"):
+        elif not hasattr(pofile, "sourceindex"):
           pofile.makeindex()
         nplural, pluralequation = pofile.getheaderplural()
         if pluralequation:
           pluralfn = gettext.c2py(pluralequation)
-          thepo = pofile.msgidindex.get(singular, None)
+          thepo = pofile.sourceindex.get(singular, None)
           if not thepo or thepo.isblankmsgstr() or thepo.isfuzzy():
             continue
           tmsg = po.unquotefrompo(thepo.msgstr[pluralfn(n)])
