@@ -436,3 +436,36 @@ class POTree:
         print
         self.projectcache = {}
 
+class DummyPoTree:
+    """A dummy PO tree for testing etc - just treats everything as a single directory"""
+    def __init__(self, podir):
+        self.podirectory = podir
+    def getlanguagename(self, languagecode):
+        return languagecode
+    def getprojectname(self, projectcode):
+        return projectcode
+    def getprojectdescription(self, projectcode):
+        return projectcode
+    def getprojectcheckerstyle(self, projectcode):
+        return ""
+    def getpodir(self, languagecode, projectcode):
+        return self.podirectory
+    def hasgnufiles(self, podir, languagecode):
+        return False
+    def getprojectcreatemofiles(self, projectcode):
+        return False
+    def getpofiles(self, languagecode, projectcode, poext):
+        pofiles = []
+        for dirpath, subdirs, filenames in os.walk(self.podirectory, topdown=False):
+            if dirpath == self.podirectory:
+                subdirpath = ""
+            else:
+                subdirpath = dirpath.replace(self.podirectory+os.path.sep, "", 1)
+            print dirpath, subdirpath, self.podirectory
+            pofiles.extend([os.path.join(subdirpath, name) for name in filenames if name.endswith(poext)])
+        return pofiles
+    def gettemplates(self, projectcode):
+        return []
+    def languagematch(self, languagecode, filename):
+        return True
+

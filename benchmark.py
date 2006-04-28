@@ -2,6 +2,7 @@
 
 from Pootle import pootlefile
 from Pootle import projects
+from Pootle import potree
 from translate.storage import po
 from jToolkit.data import indexer
 import os
@@ -70,39 +71,8 @@ class PootleBenchmarker:
     def parse_and_create_index(self):
         """parses all the po files in the test directory into memory, using pootlefile, and allow index creation"""
         count = 0
-        class DummyPoTree:
-            def __init__(self, podir):
-                self.podirectory = podir
-            def getlanguagename(self, languagecode):
-                return languagecode
-            def getprojectname(self, projectcode):
-                return projectcode
-            def getprojectdescription(self, projectcode):
-                return projectcode
-            def getprojectcheckerstyle(self, projectcode):
-                return ""
-            def getpodir(self, languagecode, projectcode):
-                return self.podirectory
-            def hasgnufiles(self, podir, languagecode):
-                return False
-            def getprojectcreatemofiles(self, projectcode):
-                return False
-            def getpofiles(self, languagecode, projectcode, poext):
-                pofiles = []
-                for dirpath, subdirs, filenames in os.walk(self.podirectory, topdown=False):
-                    if dirpath == self.podirectory:
-                        subdirpath = ""
-                    else:
-                        subdirpath = dirpath.replace(self.podirectory+os.path.sep, "", 1)
-                    print dirpath, subdirpath, self.podirectory
-                    pofiles.extend([os.path.join(subdirpath, name) for name in filenames if name.endswith(poext)])
-                return pofiles
-            def gettemplates(self, projectcode):
-                return []
-            def languagematch(self, languagecode, filename):
-                return True
         indexer.HAVE_INDEXER = True
-        project = projects.TranslationProject("zxx", "benchmark", DummyPoTree(self.test_dir))
+        project = projects.TranslationProject("zxx", "benchmark", potree.DummyPoTree(self.test_dir))
         for name in project.browsefiles():
             count += len(project.getpofile(name).units)
         print "indexed %d elements" % count
@@ -110,8 +80,9 @@ class PootleBenchmarker:
 
 if __name__ == "__main__":
     for sample_file_sizes in [
-      (1, 1, 1, 1, 1),
-      (1, 10, 10, 10, 10),
+      # (1, 1, 1, 1, 1),
+      (1, 5, 10, 10, 10),
+      # (1, 10, 10, 10, 10),
       (5, 10, 10, 10, 10),
       # (5, 10, 100, 20, 20),
       # (10, 20, 100, 10, 10),
