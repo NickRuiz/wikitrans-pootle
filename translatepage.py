@@ -389,7 +389,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     """Replace special characters &, <, >, add and handle quotes if asked"""
     text = text.replace("&", "&amp;") # Must be done first!
     text = text.replace("<", "&lt;").replace(">", "&gt;")
-    text = text.replace("\n", "</br>\n")
+    text = text.replace("\n", "<br />\n")
     return text
 
   def getorigdict(self, item, orig, editable):
