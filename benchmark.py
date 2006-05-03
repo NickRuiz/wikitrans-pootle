@@ -155,6 +155,7 @@ Pootle:
 
 if __name__ == "__main__":
     for sample_file_sizes in [
+      # num_dirs, files_per_dir, strings_per_file, source_words_per_string, target_words_per_string
       # (1, 1, 1, 1, 1),
       (1, 1, 30, 10, 10),
       # (1, 5, 10, 10, 10),
