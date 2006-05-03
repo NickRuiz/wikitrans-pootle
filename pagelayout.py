@@ -21,6 +21,8 @@ def completetemplatevars(templatevars, session, bannerheight=135):
   if not "session" in templatevars:
     templatevars["session"] = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
   banner_layout = layout_banner(bannerheight)
+  banner_layout["banner_alttext"] = session.localize("WordForge Translation Project")
+  banner_layout["logo_alttext"] = session.localize("Pootle Logo")
   templatevars.update(banner_layout)
   if "search" not in templatevars:
     templatevars["search"] = None
