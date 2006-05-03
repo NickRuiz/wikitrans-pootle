@@ -32,6 +32,38 @@ class PootleBenchmarker:
         if os.path.exists(self.test_dir): os.rmdir(self.test_dir)
         assert not os.path.exists(self.test_dir)
 
+    def setup_server(self):
+        """gets a pootle server"""
+        cwd = os.path.abspath(os.path.curdir)
+        parser = pootle.PootleOptionParser()
+        prefsfile = os.path.join(self.test_dir, "pootle.prefs")
+        pootleprefsstr = """
+importmodules.pootleserver = 'Pootle.pootle'
+Pootle:
+  serverclass = pootleserver.PootleServer
+  sessionkey = 'dummy'
+  baseurl = "/"
+  userprefs = "users.prefs"
+  podirectory = "%s"
+  projects.benchmark:
+    fullname = "Benchmark"
+    description = "Benchmark auto-created files"
+    checkstyle = "standard"
+  languages.zxx.fullname = "Test Language"
+""" % (self.test_dir)
+        open(prefsfile, "w").write(pootleprefsstr)
+        userprefsfile = os.path.join(self.test_dir, "users.prefs")
+        open(userprefsfile, "w").write("testuser.activated=1\ntestuser.passwdhash = 'dd82c1882969461de74b46427961ea2c'\n")
+        options, args = parser.parse_args(["--prefsfile=%s" % prefsfile])
+        options.servertype = "dummy"
+        self.server = parser.getserver(options)
+        os.chdir(cwd)
+        return self.server
+
+    def get_session(self):
+        """gets a new session object"""
+        return users.PootleSession(self.server.sessioncache, self.server)
+
     def create_sample_files(self, num_dirs, files_per_dir, strings_per_file, source_words_per_string, target_words_per_string):
         """creates sample files for benchmarking"""
         if not os.path.exists(self.test_dir):
@@ -87,38 +119,6 @@ class PootleBenchmarker:
         print "indexed %d elements" % count
         assert os.path.exists(os.path.join(self.po_dir, ".poindex-%s-%s" % (project.projectcode, project.languagecode)))
 
-    def setup_server(self):
-        """gets a pootle server"""
-        cwd = os.path.abspath(os.path.curdir)
-        parser = pootle.PootleOptionParser()
-        prefsfile = os.path.join(self.test_dir, "pootle.prefs")
-        pootleprefsstr = """
-importmodules.pootleserver = 'Pootle.pootle'
-Pootle:
-  serverclass = pootleserver.PootleServer
-  sessionkey = 'dummy'
-  baseurl = "/"
-  userprefs = "users.prefs"
-  podirectory = "%s"
-  projects.benchmark:
-    fullname = "Benchmark"
-    description = "Benchmark auto-created files"
-    checkstyle = "standard"
-  languages.zxx.fullname = "Test Language"
-""" % (self.test_dir)
-        open(prefsfile, "w").write(pootleprefsstr)
-        userprefsfile = os.path.join(self.test_dir, "users.prefs")
-        open(userprefsfile, "w").write("testuser.activated=1\ntestuser.passwdhash = 'dd82c1882969461de74b46427961ea2c'\n")
-        options, args = parser.parse_args(["--prefsfile=%s" % prefsfile])
-        options.servertype = "dummy"
-        self.server = parser.getserver(options)
-        os.chdir(cwd)
-        return self.server
-
-    def get_session(self):
-        """gets a new session object"""
-        return users.PootleSession(self.server.sessioncache, self.server)
-
     def generate_main_page(self):
         """tests generating the main page"""
         session = self.get_session()
@@ -139,6 +139,20 @@ Pootle:
         page = self.server.getpage(["zxx", "benchmark", "translate.html"], session, {})
         print page.templatevars
 
+    def submit_translation_change(self):
+        """tests generating the translation page for the file"""
+        session = self.get_session()
+        project = self.server.potree.getproject("zxx", "benchmark")
+        project.setrights(None, ["view", "translate"])
+        pofilename = project.browsefiles()[0]
+        args = {"pofilename": pofilename, "submit0": "true", "trans0": "changed"}
+        page = self.server.getpage(["zxx", "benchmark", "translate.html"], session, args)
+        pofile = project.getpofile(pofilename)
+        print str(pofile.transelements[0])
+        # assert fails because of multistring
+        # assert pofile.transelements[0].unquotedmsgstr == "changed"
+        print page.templatevars
+
 if __name__ == "__main__":
     for sample_file_sizes in [
       # (1, 1, 1, 1, 1),
@@ -153,7 +167,10 @@ if __name__ == "__main__":
         benchmarker.clear_test_dir()
         benchmarker.create_sample_files(*sample_file_sizes)
         benchmarker.setup_server()
-        methods = ["parse_po_files", "parse_and_create_stats", "parse_and_create_index", "generate_main_page", "generate_projectindex_page", "generate_translation_page"]
+        methods = ["parse_po_files", "parse_and_create_stats", "parse_and_create_index",
+                   "generate_main_page", "generate_projectindex_page", "generate_translation_page",
+                   "submit_translation_change",
+                  ]
         for methodname in methods:
             print methodname, "%d dirs, %d files, %d strings, %d/%d words" % sample_file_sizes
             print "_______________________________________________________"
