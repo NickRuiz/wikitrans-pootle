@@ -17,7 +17,9 @@ class PootleBenchmarker:
     UnitClass = pootlefile.pootleelement
     def __init__(self, test_dir):
         """sets up benchmarking on the test directory"""
-        self.test_dir = test_dir
+        self.test_dir = os.path.abspath(test_dir)
+        self.project_dir = os.path.join(self.test_dir, "benchmark")
+        self.po_dir = os.path.join(self.project_dir, "zxx")
 
     def clear_test_dir(self):
         """removes the given directory"""
@@ -34,13 +36,17 @@ class PootleBenchmarker:
         """creates sample files for benchmarking"""
         if not os.path.exists(self.test_dir):
             os.mkdir(self.test_dir)
+        if not os.path.exists(self.project_dir):
+            os.mkdir(self.project_dir)
+        if not os.path.exists(self.po_dir):
+            os.mkdir(self.po_dir)
         for dirnum in range(num_dirs):
             if num_dirs > 1:
-                dirname = os.path.join(self.test_dir, "sample_%d" % dirnum)
+                dirname = os.path.join(self.po_dir, "sample_%d" % dirnum)
                 if not os.path.exists(dirname):
                     os.mkdir(dirname)
             else:
-                dirname = self.test_dir
+                dirname = self.po_dir
             for filenum in range(files_per_dir):
                 sample_file = self.StoreClass(pofilename=os.path.join(dirname, "file_%d.po" % filenum))
                 for stringnum in range(strings_per_file):
@@ -52,7 +58,7 @@ class PootleBenchmarker:
     def parse_po_files(self):
         """parses all the po files in the test directory into memory"""
         count = 0
-        for dirpath, subdirs, filenames in os.walk(self.test_dir, topdown=False):
+        for dirpath, subdirs, filenames in os.walk(self.po_dir, topdown=False):
             for name in filenames:
                 pofilename = os.path.join(dirpath, name)
                 parsedfile = po.pofile(open(pofilename, 'r'))
@@ -63,7 +69,7 @@ class PootleBenchmarker:
         """parses all the po files in the test directory into memory, using pootlefile, which creates Stats"""
         count = 0
         indexer.HAVE_INDEXER = False
-        for dirpath, subdirs, filenames in os.walk(self.test_dir, topdown=False):
+        for dirpath, subdirs, filenames in os.walk(self.po_dir, topdown=False):
             for name in filenames:
                 pofilename = os.path.join(dirpath, name)
                 parsedfile = pootlefile.pootlefile(pofilename=pofilename, stats=True)
@@ -74,13 +80,14 @@ class PootleBenchmarker:
         """parses all the po files in the test directory into memory, using pootlefile, and allow index creation"""
         count = 0
         indexer.HAVE_INDEXER = True
-        project = projects.TranslationProject("zxx", "benchmark", potree.DummyPoTree(self.test_dir))
+        self.server.potree.projectcache.clear()
+        project = self.server.potree.getproject("zxx", "benchmark")
         for name in project.browsefiles():
             count += len(project.getpofile(name).units)
         print "indexed %d elements" % count
-        assert os.path.exists(os.path.join(self.test_dir, ".poindex-%s-%s" % (project.projectcode, project.languagecode)))
+        assert os.path.exists(os.path.join(self.po_dir, ".poindex-%s-%s" % (project.projectcode, project.languagecode)))
 
-    def get_server(self):
+    def setup_server(self):
         """gets a pootle server"""
         cwd = os.path.abspath(os.path.curdir)
         parser = pootle.PootleOptionParser()
@@ -102,29 +109,35 @@ Pootle:
         open(prefsfile, "w").write(pootleprefsstr)
         userprefsfile = os.path.join(self.test_dir, "users.prefs")
         open(userprefsfile, "w").write("testuser.activated=1\ntestuser.passwdhash = 'dd82c1882969461de74b46427961ea2c'\n")
-        options, args = parser.parse_args(["prefsfile=%s" % prefsfile])
+        options, args = parser.parse_args(["--prefsfile=%s" % prefsfile])
         options.servertype = "dummy"
-        server = parser.getserver(options)
+        self.server = parser.getserver(options)
         os.chdir(cwd)
-        return server
+        return self.server
+
+    def get_session(self):
+        """gets a new session object"""
+        return users.PootleSession(self.server.sessioncache, self.server)
 
     def generate_main_page(self):
         """tests generating the main page"""
-        server = self.get_server()
-        session = users.PootleSession(server.sessioncache, server)
-        server.getpage(["index.html"], session, {})
+        session = self.get_session()
+        page = self.server.getpage(["index.html"], session, {})
+        print page.templatevars
 
     def generate_projectindex_page(self):
         """tests generating the index page for the project"""
-        server = self.get_server()
-        session = users.PootleSession(server.sessioncache, server)
-        server.getpage(["zxx/benchmark/"], session, {})
+        session = self.get_session()
+        assert self.server.potree.haslanguage("zxx")
+        assert self.server.potree.hasproject("zxx", "benchmark")
+        page = self.server.getpage(["zxx", "benchmark"], session, {})
+        print page.templatevars
 
     def generate_translation_page(self):
         """tests generating the translation page for the file"""
-        server = self.get_server()
-        session = users.PootleSession(server.sessioncache, server)
-        server.getpage(["zxx/benchmark/translate.html"], session, {})
+        session = self.get_session()
+        page = self.server.getpage(["zxx", "benchmark", "translate.html"], session, {})
+        print page.templatevars
 
 if __name__ == "__main__":
     for sample_file_sizes in [
@@ -139,6 +152,7 @@ if __name__ == "__main__":
         benchmarker = PootleBenchmarker("BenchmarkDir")
         benchmarker.clear_test_dir()
         benchmarker.create_sample_files(*sample_file_sizes)
+        benchmarker.setup_server()
         methods = ["parse_po_files", "parse_and_create_stats", "parse_and_create_index", "generate_main_page", "generate_projectindex_page", "generate_translation_page"]
         for methodname in methods:
             print methodname, "%d dirs, %d files, %d strings, %d/%d words" % sample_file_sizes
