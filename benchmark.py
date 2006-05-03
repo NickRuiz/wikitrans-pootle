@@ -82,6 +82,7 @@ class PootleBenchmarker:
 
     def get_server(self):
         """gets a pootle server"""
+        cwd = os.path.abspath(os.path.curdir)
         parser = pootle.PootleOptionParser()
         prefsfile = os.path.join(self.test_dir, "pootle.prefs")
         pootleprefsstr = """
@@ -99,11 +100,12 @@ Pootle:
   languages.zxx.fullname = "Test Language"
 """ % (self.test_dir)
         open(prefsfile, "w").write(pootleprefsstr)
-        userprefsfile = os.path.join(self.test_dir, "pootle.prefs")
+        userprefsfile = os.path.join(self.test_dir, "users.prefs")
         open(userprefsfile, "w").write("testuser.activated=1\ntestuser.passwdhash = 'dd82c1882969461de74b46427961ea2c'\n")
         options, args = parser.parse_args(["prefsfile=%s" % prefsfile])
         options.servertype = "dummy"
         server = parser.getserver(options)
+        os.chdir(cwd)
         return server
 
     def generate_main_page(self):
