@@ -125,9 +125,10 @@ class TranslationProject(object):
       return [right for right, localizedright in self.getrightnames(session)]
     if session is not None and session.isopen and username is None:
       username = session.username
-    rightstree = getattr(self.prefs, "rights", None)
     if username is None:
       username = "nobody"
+    rights = None
+    rightstree = getattr(self.prefs, "rights", None)
     if rightstree is not None:
       if rightstree.__hasattr__(username):
         rights = rightstree.__getattr__(username)
