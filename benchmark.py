@@ -3,6 +3,8 @@
 from Pootle import pootlefile
 from Pootle import projects
 from Pootle import potree
+from Pootle import pootle
+from Pootle import users
 from translate.storage import po
 from jToolkit.data import indexer
 import os
@@ -78,11 +80,56 @@ class PootleBenchmarker:
         print "indexed %d elements" % count
         assert os.path.exists(os.path.join(self.test_dir, ".poindex-%s-%s" % (project.projectcode, project.languagecode)))
 
+    def get_server(self):
+        """gets a pootle server"""
+        parser = pootle.PootleOptionParser()
+        prefsfile = os.path.join(self.test_dir, "pootle.prefs")
+        pootleprefsstr = """
+importmodules.pootleserver = 'Pootle.pootle'
+Pootle:
+  serverclass = pootleserver.PootleServer
+  sessionkey = 'dummy'
+  baseurl = "/"
+  userprefs = "users.prefs"
+  podirectory = "%s"
+  projects.benchmark:
+    fullname = "Benchmark"
+    description = "Benchmark auto-created files"
+    checkstyle = "standard"
+  languages.zxx.fullname = "Test Language"
+""" % (self.test_dir)
+        open(prefsfile, "w").write(pootleprefsstr)
+        userprefsfile = os.path.join(self.test_dir, "pootle.prefs")
+        open(userprefsfile, "w").write("testuser.activated=1\ntestuser.passwdhash = 'dd82c1882969461de74b46427961ea2c'\n")
+        options, args = parser.parse_args(["prefsfile=%s" % prefsfile])
+        options.servertype = "dummy"
+        server = parser.getserver(options)
+        return server
+
+    def generate_main_page(self):
+        """tests generating the main page"""
+        server = self.get_server()
+        session = users.PootleSession(server.sessioncache, server)
+        server.getpage(["index.html"], session, {})
+
+    def generate_projectindex_page(self):
+        """tests generating the index page for the project"""
+        server = self.get_server()
+        session = users.PootleSession(server.sessioncache, server)
+        server.getpage(["zxx/benchmark/"], session, {})
+
+    def generate_translation_page(self):
+        """tests generating the translation page for the file"""
+        server = self.get_server()
+        session = users.PootleSession(server.sessioncache, server)
+        server.getpage(["zxx/benchmark/translate.html"], session, {})
+
 if __name__ == "__main__":
     for sample_file_sizes in [
       # (1, 1, 1, 1, 1),
-      (1, 5, 10, 10, 10),
-      # (1, 10, 10, 10, 10),
+      (1, 1, 30, 10, 10),
+      # (1, 5, 10, 10, 10),
+      (1, 10, 10, 10, 10),
       (5, 10, 10, 10, 10),
       # (5, 10, 100, 20, 20),
       # (10, 20, 100, 10, 10),
@@ -90,13 +137,14 @@ if __name__ == "__main__":
         benchmarker = PootleBenchmarker("BenchmarkDir")
         benchmarker.clear_test_dir()
         benchmarker.create_sample_files(*sample_file_sizes)
-        for methodname in ("parse_po_files", "parse_and_create_stats", "parse_and_create_index"):
+        methods = ["parse_po_files", "parse_and_create_stats", "parse_and_create_index", "generate_main_page", "generate_projectindex_page", "generate_translation_page"]
+        for methodname in methods:
             print methodname, "%d dirs, %d files, %d strings, %d/%d words" % sample_file_sizes
             print "_______________________________________________________"
             statsfile = methodname + '_%d_%d_%d_%d_%d.stats' % sample_file_sizes
             profile.run('benchmarker.%s()' % methodname, statsfile)
             stats = pstats.Stats(statsfile)
-            stats.sort_stats('cumulative').print_stats(10)
+            stats.sort_stats('cumulative').print_stats(20)
             print "_______________________________________________________"
         benchmarker.clear_test_dir()
 
