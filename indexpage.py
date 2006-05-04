@@ -594,7 +594,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     basename = os.path.basename(fileentry)
     projectstats = self.project.combinestats([fileentry])
     browseurl = self.getbrowseurl(basename, **newargs)
-    fileitem = {"href": browseurl, "title": basename, "icon": "folder", "isfile": True}
+    fileitem = {"href": browseurl, "title": basename, "icon": "file", "isfile": True}
     actions = self.getactionlinks(basename, projectstats, linksrequired=linksrequired)
     actionlinks = actions["extended"]
     if "po" in linksrequired:
