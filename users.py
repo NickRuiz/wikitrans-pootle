@@ -342,7 +342,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
         session.status = str(message)
         displaymessage = session.status
         return RegisterPage(session, argdict)
-      redirectpage = pagelayout.PootlePage("Redirecting...", [], session)
+      redirectpage = pagelayout.PootlePage("Redirecting...", {}, session)
       redirectpage.templatename = "redirect"
       redirectpage.templatevars = {
           "pagetitle": session.localize("Redirecting to Registration Page..."),
@@ -366,7 +366,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
         if correctcode and correctcode.strip().lower() == activationcode.strip().lower():
           setattr(usernode, "activated", 1)
           session.saveprefs()
-          redirectpage = pagelayout.PootlePage("Redirecting to login...", [], session)
+          redirectpage = pagelayout.PootlePage("Redirecting to login...", {}, session)
           redirectpage.templatename = "redirect"
           redirectpage.templatevars = {
               "pagetitle": session.localize("Redirecting to login Page..."),
