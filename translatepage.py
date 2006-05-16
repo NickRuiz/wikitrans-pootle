@@ -159,11 +159,11 @@ class TranslatePage(pagelayout.PootleNavPage):
     users = [username for username, userprefs in self.session.loginchecker.users.iteritems() if username != "__dummy__"]
     users.sort()
     return {
-      title: self.localize("Assign Strings"),
-      user_title: self.localize("Assign to User"),
-      action_title: self.localize("Assign Action"),
-      submit_text: self.localize("Assign Strings"),
-      users: users,
+      "title": self.localize("Assign Strings"),
+      "user_title": self.localize("Assign to User"),
+      "action_title": self.localize("Assign Action"),
+      "submit_text": self.localize("Assign Strings"),
+      "users": users,
     }
 
   def receivetranslations(self):
