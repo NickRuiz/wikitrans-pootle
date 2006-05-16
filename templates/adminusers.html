@@ -50,7 +50,7 @@
 
           <tr>
             <td colspan="1" rowspan="1" type="td" py:for="option in options">
-               <input py:if="option.newname" name="${option.name}" type="${option.type}" value="${option.value}" size="${option.size}" checked="${option.checked}"/>
+               <input py:if="option.newname" name="${option.newname}" type="${option.type}" value="${option.newvalue}" size="${option.size}" checked="${option.checked}"/>
                <span py:if="option.label" py:content="option.label"/>
             </td>
           </tr>

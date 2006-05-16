@@ -249,7 +249,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
         userpassword = argdict.get("newuserpassword", None)
         if userpassword is None or userpassword == self.localize("(add password here)"):
           raise ValueError("You must specify a password")
-        userfullname = argdict.get("newfullname", None)
+        userfullname = argdict.get("newuserfullname", None)
         if userfullname == self.localize("(add full name here)"):
           raise ValueError("Please set the users full name or leave it blank")
         useremail = argdict.get("newuseremail", None)
