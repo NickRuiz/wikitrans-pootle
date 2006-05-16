@@ -95,7 +95,7 @@ class ProjectsAdminPage(pagelayout.PootlePage):
       if "newvalue" in option:
         option["newname"] = "newproject" + option["name"]
       if "type" not in option and "selectoptions" not in option:
-        type="text"
+        option["type"] = "text"
     return options
 
   def getprojectsoptions(self):
