@@ -28,15 +28,34 @@
       <span py:for="i in language.info" py:strip="True"><b>${i.title}</b>: ${i.value}<br/></span>
     </div>
 
-    <div py:for="p in projects" class="item item-${p.parity}">
-      <div class="contentsitem">
-        <img src="/images/folder.png" type="button" class="icon"></img>
-        <h3 class="title"><a href="${p.code}/" py:content="p.name" py:title="p.description">Project</a></h3>
-      </div>
-      <div class="item-statistics" py:content="XML(p.stats)">0 files, 0/0 words (0%) translated
-        <span class="string-statistics">[0/0 strings]</span>
-      </div>
-    </div>
+    <table class="stats" cellpadding="5" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th class="stats">${statsheadings.name}</th>
+          <th class="stats">${statsheadings.translated}</th>
+          <th class="stats">${statsheadings.fuzzy}</th>
+          <th class="stats">${statsheadings.untranslated}</th>
+          <th class="stats">${statsheadings.total}</th>
+          <th class="stats" width="100">${statsheadings.graph}</th>
+        </tr>
+      </thead>
+      <tbody class="stats">
+        <div py:for="item in projects" py:strip="True">
+          <tr  class="item item-${item.parity}">
+            <div over:include="navbar2#itemdata" />
+          </tr>
+        </div>
+      </tbody>
+    </table>
+<!--!    <div py:for="item in projects" class="item item-${item.parity}">-->
+<!--!      <div class="contentsitem">-->
+<!--!        <img src="/images/folder.png" type="button" class="icon"></img>-->
+<!--!        <h3 class="title"><a href="${item.code}/" py:content="item.name" py:title="item.description">Project</a></h3>-->
+<!--!      </div>-->
+<!--!      <div class="item-statistics" py:content="XML(item.stats)">0 files, 0/0 words (0%) translated-->
+<!--!        <span class="string-statistics">[0/0 strings]</span>-->
+<!--!      </div>-->
+<!--!    </div>-->
   </div>
 
   <div id="links" over:include="pootlepage#links"/>

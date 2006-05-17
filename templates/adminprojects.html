@@ -58,6 +58,9 @@
                   <option py:for="o in option.selectoptions" value="${o.value}" py:content="o.description"/>
                 </select>
               </span>
+              <span style="visibility: hidden;" py:if="'newname' not in option">
+                ------------------------------              
+              </span>
             </td>
           </tr>
         </table><input type="submit" name="changeprojects" value="Save changes" />
