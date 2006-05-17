@@ -158,4 +158,48 @@ class PootleNavPage(PootlePage):
     stringstats = ' <span cls="string-statistics">[%d/%d strings]</span>' % (translated, total)
     return filestats + wordstats + stringstats
 
+  def getstatsheadings(self):
+    """returns a dictionary of localised headings"""
+    headings = {"name": self.localize("Name"),
+                "translated": self.localize("Translated"),
+                "translatedpercentage": self.localize("Translated percentage"),
+                "translatedwords": self.localize("Translated words"),
+                "fuzzy": self.localize("Fuzzy"),
+                "fuzzypercentage": self.localize("Fuzzy percentage"),
+                "fuzzywords": self.localize("Fuzzy words"),
+                "untranslated": self.localize("Untranslated"),
+                "untranslatedpercentage": self.localize("Untranslated percentage"),
+                "untranslatedwords": self.localize("Untranslated words"),
+                "total": self.localize("Total"),
+                "totalwords": self.localize("Total words"),
+                "graph": self.localize("Graph")}
+    return headings
+
+  def getstats(self, project, projectstats, numfiles):
+    """returns a list with the data items to fill a statistics table
+    Remember to update getstatsheadings() above as needed"""
+    wanted = ["translated", "fuzzy", "check-untranslated", "total"]
+    gotten = {}
+    for key in wanted:
+      gotten[key] = projectstats.get(key, [])
+      wordkey = key + "words"
+      if wordkey in projectstats:
+        gotten[wordkey] = projectstats[wordkey]
+      else:
+        count = projectstats.get(key, [])
+        gotten[wordkey] = project.countwords(count)
+      if isinstance(gotten[key], list):
+        #TODO: consider carefully:
+        gotten[key] = len(gotten[key])
+
+    for key in wanted[:-1]:
+      percentkey = key + "percentage"
+      wordkey = key + "words"
+      gotten[percentkey] = gotten[wordkey]*100/max(gotten["totalwords"], 1)
+
+    for key in gotten:
+      if key.find("check-") == 0:
+        value = gotten.pop(key)
+        gotten[key[len("check-"):]] = value
+    return gotten
 
