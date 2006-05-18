@@ -39,8 +39,11 @@
     </div>
 
     <div class="translate-form">
-      <span py:if="notice" py:replace="notice">Notice</span>
-      <form action="${actionurl}" method="post" name="translate" id="translate">
+      <span py:if="notice">${notice.stoppedby}
+        <br/>
+        <a href="${notice.finishedlink}">${notice.returnlink}</a>
+      </span>
+      <form py:if="not notice" action="${actionurl}" method="post" name="translate" id="translate">
         <table cellpadding="10" cellspacing="1" class="translate-table">
           <tr>
             <td colspan="1" rowspan="1" type="td" class="translate-table-title" py:content="original_title">original</td>
