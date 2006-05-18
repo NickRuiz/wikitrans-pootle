@@ -133,7 +133,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       itemcount = min(pofilelen - linkitem, pagesize)
       pagelinks.append({"href": baselink + "&item=%d" % linkitem, "text": self.localize("Next %d", itemcount)})
     else:
-      pagelinks.append(self.localize("Next %d", pagesize))
+      pagelinks.append({"text": self.localize("Next %d", pagesize)})
     if pofilelen > pagesize and (self.item + pagesize) < pofilelen:
       pagelinks.append({"href": baselink + "&item=%d" % max(pofilelen - pagesize, 0), "text": self.localize("End")})
     else:
