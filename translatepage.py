@@ -109,7 +109,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     finishedlink = "index.html?" + "&".join(["%s=%s" % (arg, value) for arg, value in self.argdict.iteritems() if arg.startswith("show")])
     returnlink = self.localize("Click here to return to the index")
     stoppedbytext = stoppedby.args[0]
-    return {"title": title, "stoppedby": stoppedbytext, "finishedlink": returnlink}
+    return {"title": title, "stoppedby": stoppedbytext, "finishedlink": finishedlink, "returnlink": returnlink}
 
   def getpagelinks(self, baselink, pagesize):
     """gets links to other pages of items, based on the given baselink"""
