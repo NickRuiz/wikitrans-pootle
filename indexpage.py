@@ -676,6 +676,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
       linksrequired = ["mine", "review", "quick", "all"]
     actionlinks = []
     actions = {}
+    actions["goalform"] = None
     if not basename or basename.endswith("/"):
       baseactionlink = basename + "translate.html?"
       baseindexlink = basename + "index.html?"
