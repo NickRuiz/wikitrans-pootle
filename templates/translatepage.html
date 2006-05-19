@@ -67,15 +67,15 @@
             </td>
 
             <td colspan="1" rowspan="1" type="td" class="translate-translation translate-translation-${item.polarity} ${item.focus_class}">
-              <div id="${item.trans.itemid}" class="translate-translation">
+              <div id="${item.trans.itemid}" class="translate-translation ${item.orig.focus_class}">
                 <span py:if="item.editable and reviewmode" class="translation-text">
+                  <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
                   <b py:content="item.trans.current_title">Current Translation:</b><br />
                   <span py:for="form in item.trans.forms" py:strip="True">
                     <span class="translation-text-headers" py:if="form.title" py:content="form.title">Plural Form ${form.n}</span>
                     <br py:if="form.title"/>
                     <span py:replace="XML(form.diff)">Text with diffs</span><br/>
                   </span>
-                  <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
                   <span py:for="sugg in item.trans.suggestions" py:strip="True">
                     <b py:content="sugg.title">Suggestion by testuser:</b><br />
                     <span py:for="form in sugg.forms" py:strip="True">
@@ -134,6 +134,7 @@
                   </script>
                 </span>
                 <span py:if="not item.editable" py:strip="True">
+                  <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
                   <span py:if="not item.trans.isplural" py:strip="True" py:content="XML(item.trans.text)">
                     text
                   </span>
@@ -143,7 +144,6 @@
                       <span py:replace="XML(form.text)">Text</span><br/>
                     </span>
                   </span>
-                  <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
                 </span>
               </div>
             </td>
