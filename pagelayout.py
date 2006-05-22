@@ -3,14 +3,12 @@
 
 def layout_banner(maxheight):
   """calculates dimensions, image name for banner"""
-  banner_width, banner_height = min((180*maxheight/135, maxheight), (180, 135))
-  logo_width, logo_height = min((238*maxheight/81, 81), (238, 81))
-  if banner_width <= 108:
-    banner_image = "pootle-small.jpg"
-  elif banner_width <= 180:
-    banner_image = "pootle-medium.jpg"
+  banner_width, banner_height = min((98*maxheight/130, maxheight), (98, 130))
+  logo_width, logo_height = min((290*maxheight/160, maxheight), (290, 160))
+  if banner_width <= 61:
+    banner_image = "pootle-medium.png"
   else:
-    banner_image = "pootle.jpg"
+    banner_image = "pootle.png"
   return {"banner_width": banner_width, "banner_height": banner_height,
     "logo_width": logo_width, "logo_height": logo_height, "banner_image": banner_image}
 
