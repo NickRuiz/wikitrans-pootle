@@ -30,7 +30,32 @@
       <div over:include="navbar#itemstats"/>
     </div>
 
-    <div py:for="item in children" py:strip="True">
+    <!-- The statistics view -->
+    <div py:if="not editing and children">
+      <br clear="all" />     
+      <table class="stats" cellpadding="5" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th class="stats">${statsheadings.name}</th>
+            <th class="stats">${statsheadings.translated}</th>
+            <th class="stats">${statsheadings.fuzzy}</th>
+            <th class="stats">${statsheadings.untranslated}</th>
+            <th class="stats">${statsheadings.total}</th>
+            <th class="stats">${statsheadings.graph}</th>
+          </tr>
+        </thead>
+        <tbody class="stats">
+          <div py:for="item in children" py:strip="True">
+            <tr  class="item item-${item.parity}">
+              <div py:if="not editing" over:include="navbar#itemdata"/>
+            </tr>
+          </div>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- The editing view -->
+    <div py:if="editing" py:for="item in children" py:strip="True">
       <div py:if="'isgoal' in item" class="goalitem">
         <div over:include="navbar#item">
           <div py:if="item.goal.users or item.goal.show_adduser">

@@ -146,7 +146,8 @@ class LanguageIndex(pagelayout.PootleNavPage):
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
     templatevars = {"pagetitle": pagetitle,
         "language": {"code": languagecode, "name": self.languagename, "stats": languagestats, "info": languageinfo},
-        "projects": languageprojects,
+        "projects": languageprojects, 
+        "statsheadings": self.getstatsheadings(),
         "session": sessionvars, "instancetitle": pagetitle}
     pagelayout.PootleNavPage.__init__(self, templatename, templatevars, session, bannerheight=81)
 
@@ -173,14 +174,21 @@ class LanguageIndex(pagelayout.PootleNavPage):
     return projectitems
 
   def getprojectitem(self, projectcode):
+    href = '%s/' % projectcode
     projectname = self.potree.getprojectname(projectcode)
     projectdescription = self.potree.getprojectdescription(projectcode)
     project = self.potree.getproject(self.languagecode, projectcode)
     numfiles = len(project.pofilenames)
-    projectstats = project.getquickstats()
-    self.updatepagestats(projectstats["translatedwords"], projectstats["totalwords"])
-    projectstats = self.describestats(project, projectstats, numfiles)
-    return {"code": projectcode, "name": projectname, "description": projectdescription, "stats": projectstats}
+      
+    pofilenames = project.browsefiles()
+    projectstats = project.combinestats(pofilenames)
+
+    #TODO: We cannot currently use the quick stats because we want more stats
+    #than what is stored in there. 
+    #projectstats = project.getquickstats()
+    projectdata = self.getstats(project, projectstats, len(pofilenames))
+    self.updatepagestats(projectdata["translatedwords"], projectdata["totalwords"])
+    return {"code": projectcode, "href": href, "icon": "folder", "title": projectname, "description": projectdescription, "data": projectdata, "isproject": True}
 
 class ProjectLanguageIndex(pagelayout.PootleNavPage):
   """list of languages belonging to a project"""
@@ -220,15 +228,19 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     numfiles = len(language.pofilenames)
     languagestats = language.combinestats()
     translated = languagestats.get("translated", [])
+    fuzzy = languagestats.get("fuzzy", [])
     total = languagestats.get("total", [])
     translatedwords = language.countwords(translated)
+    fuzzywords = language.countwords(fuzzy)
     totalwords = language.countwords(total)
     self.updatepagestats(translatedwords, totalwords)
     percentfinished = (translatedwords*100/max(totalwords, 1))
+    percentfuzzy = (fuzzywords*100/max(totalwords, 1))
     filestats = self.nlocalize("%d file", "%d files", numfiles, numfiles)
     wordstats = self.localize("%d/%d words (%d%%) translated", translatedwords, totalwords, percentfinished)
     stringstats = self.localize("[%d/%d strings]", len(translated), len(total))
-    stats = filestats + ", " + wordstats + " " + '<span class="string-statistics">%s</span>' % stringstats
+    fuzzystats = self.localize("%d/%d words (%d%%) fuzzy", fuzzywords, totalwords, percentfuzzy)
+    stats = filestats + ", " + wordstats + " " + '<span class="string-statistics">%s</span> %s' % stringstats
     return {"code": languagecode, "name": languagename, "stats": stats}
 
 class ProjectIndex(pagelayout.PootleNavPage):
@@ -254,6 +266,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     self.showchecks = self.getboolarg("showchecks")
     self.showassigns = self.getboolarg("showassigns")
     self.showgoals = self.getboolarg("showgoals")
+    self.editing = self.getboolarg("editing")
     self.currentgoal = self.argdict.pop("goal", None)
     if dirfilter and dirfilter.endswith(".po"):
       actionlinks = []
@@ -262,8 +275,12 @@ class ProjectIndex(pagelayout.PootleNavPage):
     else:
       pofilenames = self.project.browsefiles(dirfilter)
       projectstats = self.project.combinestats(pofilenames)
-      actionlinks = self.getactionlinks("", projectstats, ["mine", "review", "check", "assign", "goal", "quick", "all", "zip", "sdf"], dirfilter)
+      if self.editing:
+        actionlinks = self.getactionlinks("", projectstats, ["editing", "mine", "review", "check", "assign", "goal", "quick", "all", "zip", "sdf"], dirfilter)
+      else: 
+        actionlinks = self.getactionlinks("", projectstats, ["editing", "check", "goal", "zip", "sdf"])
       mainstats = self.getitemstats("", projectstats, len(pofilenames))
+      maindata = self.getstats(self.project, projectstats, len(pofilenames))
       mainicon = "folder"
     navbarpath_dict = self.makenavbarpath_dict(project=self.project, session=self.session, currentfolder=dirfilter, goal=self.currentgoal)
     if self.showgoals:
@@ -284,6 +301,10 @@ class ProjectIndex(pagelayout.PootleNavPage):
         "navitems": [{"icon": "folder", "path": navbarpath_dict, "actions": actionlinks, "stats": mainstats}],
         # children
         "children": childitems,
+        # are we in editing mode (otherwise stats)
+        "editing": self.editing,
+        # stats table headings
+        "statsheadings": self.getstatsheadings(), 
         # general vars
         "session": sessionvars, "instancetitle": pagetitle}
     pagelayout.PootleNavPage.__init__(self, templatename, templatevars, session, bannerheight=81)
@@ -565,6 +586,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
         goal["goal"]["otherusers"] = unassignedusers
         goal["goal"]["adduser_title"] = self.localize("Add User")
     goal["stats"] = self.getitemstats("", projectstats, len(pofilenames))
+    goal["data"] = self.getstats(self.project, projectstats, len(pofilenames))
     return goal
 
   def getdiritem(self, direntry, linksrequired=None, **newargs):
@@ -583,8 +605,10 @@ class ProjectIndex(pagelayout.PootleNavPage):
     diritem["actions"] = actionlinks
     if self.showgoals and "goal" in self.argdict:
       diritem["stats"] = self.getitemstats(basename, projectstats, (len(goalfilenames), len(pofilenames)))
+      diritem["data"] = self.getstats(self.projects, projectstats, (len(goalfilenames), len(pofilenames)))
     else:
       diritem["stats"] = self.getitemstats(basename, projectstats, len(pofilenames))
+      diritem["data"] = self.getstats(self.project, projectstats, len(pofilenames))
     return diritem
 
   def getfileitem(self, fileentry, linksrequired=None, **newargs):
@@ -629,6 +653,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
         actionlink["sep"] = ""
     fileitem["actions"] = actions
     fileitem["stats"] = self.getitemstats(basename, projectstats, None)
+    fileitem["data"] = self.getstats(self.project, projectstats, None)
     return fileitem
 
   def getgoalform(self, basename, goalfile, filegoals):
@@ -696,6 +721,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
           link = {"href": self.makelink(baseindexlink, **{attrname:1}), "text": showtext}
         link["sep"] = " | "
         actionlinks.append(link)
+    addoptionlink("editing", None, "editing", self.localize("Show Editing Functions"), self.localize("Show Statistics"))
     addoptionlink("track", None, "showtracks", self.localize("Show Tracks"), self.localize("Hide Tracks"))
     addoptionlink("check", "translate", "showchecks", self.localize("Show Checks"), self.localize("Hide Checks"))
     addoptionlink("goal", None, "showgoals", self.localize("Show Goals"), self.localize("Hide Goals"))
