@@ -39,8 +39,9 @@
     </div>
 
     <div class="translate-form">
-      <span py:if="notice">${notice.stoppedby}
-        <br/>
+      <span py:if="notice">
+        <h3 class="title">${notice.title}</h3>
+        <div class="intro">${notice.stoppedby}</div>
         <a href="${notice.finishedlink}">${notice.returnlink}</a>
       </span>
       <form py:if="not notice" action="${actionurl}" method="post" name="translate" id="translate">
