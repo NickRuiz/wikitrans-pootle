@@ -1,8 +1,8 @@
-a 		{ color: #694288; text-decoration: none; }
-a:link		{ color: #694288; text-decoration: none; }
-a:visited	{ color: #694288; text-decoration: none; }
-a:active	{ color: #694288; text-decoration: underline; }
-a:hover		{ color: #694288; text-decoration: underline; }
+a 		{ color: #7090B7; text-decoration: none; }
+a:link		{ color: #004077; text-decoration: none; }
+a:visited	{ color: #004077; text-decoration: none; }
+a:active	{ color: #004077; text-decoration: underline; }
+a:hover		{ color: #004077; text-decoration: underline; }
 h1, h2, h3
 {
 	margin: 0px;
@@ -12,7 +12,7 @@ h1, h2, h3
 {
 	font-family: verdana, arial, sans-serif;
 	font-size: small;
-	color: #694288;
+	color: #004077;
 }
 .icon
 {
@@ -46,7 +46,7 @@ div.navbar
 div.goalitem 
 {
 	margin-bottom:6px;
-	background-color: #ADBFD3;
+	background-color: #F0F0B0;
 	padding: 5px;
 }
 div.contentsitem
@@ -87,7 +87,7 @@ table.translate-table
 td.translate-table-title
 {
 	font-weight: bold;
-	color: #694288;
+	color: #004077;
 	text-align: center;
 }
 div.translate-original-focus
@@ -160,7 +160,7 @@ div.intro {
 }
 .header
 {
-	background-color: #c1add2;
+	background-color: #00b6de;
 }
 #content
 {
@@ -185,7 +185,7 @@ div.intro {
 .sidetitle
 {
 	font-family:verdana, arial, sans-serif;
-	color:#694288;
+	color:#004077;
 	font-size: small;
 	font-weight:bold;
 	padding:2px;
@@ -214,7 +214,7 @@ div.intro {
 	float: left;
 	text-align: left;
     font-weight: bold;
-	color: #000099;
+	color: #006699;
 }
 .translation-action
 {
