@@ -28,15 +28,25 @@
       </div>
     </div>
 
-    <div py:for="l in languages" class="item item-${l.parity}">
-      <div class="contentsitem">
-        <img src="/images/language.png" type="button" class="icon"></img>
-        <h3 class="title"><a href="../../${l.code}/${project.code}/" py:content="l.name">Language</a></h3>
-      </div>
-      <div class="item-statistics" py:content="XML(l.stats)">0 files, 0/0 words (0%) translated
-        <span class="string-statistics">[0/0 strings]</span>
-      </div>
-    </div>
+    <table class="stats" cellpadding="5" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th class="stats">${statsheadings.name}</th>
+          <th class="stats">${statsheadings.translated}</th>
+          <th class="stats">${statsheadings.fuzzy}</th>
+          <th class="stats">${statsheadings.untranslated}</th>
+          <th class="stats">${statsheadings.total}</th>
+          <th class="stats" width="100">${statsheadings.graph}</th>
+        </tr>
+      </thead>
+      <tbody class="stats">
+        <div py:for="item in languages" py:strip="True">
+          <tr  class="item item-${item.parity}">
+            <div over:include="navbar#itemdata" />
+          </tr>
+        </div>
+      </tbody>
+    </table>
 
   </div>
 

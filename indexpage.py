@@ -207,11 +207,15 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     adminlink = self.localize("Admin")
     instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
+    statsheadings = self.getstatsheadings()
+    statsheadings["name"] = self.localize("Language")
+    #XXX the following is unused:
     setoptionstext = self.localize("Please click on 'Change options' and select some languages and projects")
     templatevars = {"pagetitle": pagetitle,
         "project": {"code": projectcode, "name": projectname, "stats": projectstats},
         "adminlink": adminlink, "languages": languages,
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": pagetitle, 
+        "statsheadings": statsheadings}
     pagelayout.PootleNavPage.__init__(self, templatename, templatevars, session, bannerheight=81)
 
   def getlanguages(self):
@@ -225,6 +229,7 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
 
   def getlanguageitem(self, languagecode, languagename):
     language = self.potree.getproject(languagecode, self.projectcode)
+    href = "../../%s/%s/" % (languagecode, self.projectcode)
     numfiles = len(language.pofilenames)
     languagestats = language.combinestats()
     translated = languagestats.get("translated", [])
@@ -234,14 +239,17 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     fuzzywords = language.countwords(fuzzy)
     totalwords = language.countwords(total)
     self.updatepagestats(translatedwords, totalwords)
-    percentfinished = (translatedwords*100/max(totalwords, 1))
-    percentfuzzy = (fuzzywords*100/max(totalwords, 1))
-    filestats = self.nlocalize("%d file", "%d files", numfiles, numfiles)
-    wordstats = self.localize("%d/%d words (%d%%) translated", translatedwords, totalwords, percentfinished)
-    stringstats = self.localize("[%d/%d strings]", len(translated), len(total))
-    fuzzystats = self.localize("%d/%d words (%d%%) fuzzy", fuzzywords, totalwords, percentfuzzy)
-    stats = filestats + ", " + wordstats + " " + '<span class="string-statistics">%s</span> %s' % stringstats
-    return {"code": languagecode, "name": languagename, "stats": stats}
+    finishedpercentage = (translatedwords*100/max(totalwords, 1))
+    fuzzypercentage = (fuzzywords*100/max(totalwords, 1))
+    data = {}
+    data["translatedwords"] = translatedwords
+    data["translatedpercentage"] = finishedpercentage
+    data["fuzzywords"] = fuzzywords
+    data["fuzzypercentage"] = fuzzypercentage
+    data["untranslatedwords"] = totalwords - translatedwords - fuzzywords
+    data["untranslatedpercentage"] = 100 - finishedpercentage - fuzzypercentage
+    data["totalwords"] = totalwords
+    return {"code": languagecode, "icon": "language", "href": href, "title": languagename, "data": data}
 
 class ProjectIndex(pagelayout.PootleNavPage):
   """the main page"""
