@@ -74,8 +74,8 @@
 <!--!        <td bgcolor="grey"><img src="/images/grey.png" class="data" height="20" width="${item.data.fuzzypercentage}" /></td>-->
 <!--!        <td bgcolor="red"><img src="/images/red.png" class="data" height="20" width="${item.data.untranslatedpercentage}" /></td>-->
             <td bgcolor="green" class="data" height="20" width="${item.data.translatedpercentage}" />
-            <td bgcolor="lightgray" class="data" height="20" width="${item.data.fuzzypercentage}" />
-            <td bgcolor="red" class="data" height="20" width="${item.data.untranslatedpercentage}" />
+            <td bgcolor="lightgray" class="data" height="20" width="${item.data.fuzzypercentage}" py:if="item.data.fuzzypercentage"/>
+            <td bgcolor="red" class="data" height="20" width="${item.data.untranslatedpercentage}" py:if="item.data.untranslatedpercentage"/>
         </tr></table>
           
         <!--! The following is simpler, but kid reformats the img tags which inserts spaces between them -->
