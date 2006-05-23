@@ -138,6 +138,34 @@ td.translate-translation
 	background-color: #80ff00;
 	border: 1px solid #70f000;
 }
+
+table.stats
+{
+	width: 100%;
+	border-spacing: 0;
+	padding: 0;
+}
+th.stats
+{
+	font-weight: bold;
+	color: #004077;
+	text-align: center;
+}
+td.stats
+{
+	text-align: right;
+	border: 1px dotted #999;
+}
+td.stats-name
+{
+	text-align: left;
+	border: 1px dotted #999;
+}
+td.stats-graph
+{
+	border: 1px dotted #999;
+}
+
 div.intro {
 	font-family: verdana, arial, sans-serif;
 	color:#000;
