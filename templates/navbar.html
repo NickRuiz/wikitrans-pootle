@@ -63,11 +63,12 @@
       <h3 id="itemtitle" class="title"><a href="${item.href}">${item.title}</a></h3>
     </td>
     <span py:if="item.data" py:strip="True">
-      <td class="stats">${item.data.translatedwords} (${item.data.translatedpercentage}%)</td>
-      <td class="stats">${item.data.fuzzywords} (${item.data.fuzzypercentage}%)</td>
-      <td class="stats">${item.data.untranslatedwords} (${item.data.untranslatedpercentage}%)</td>
+      <td class="stats">${item.data.translatedwords}</td><td class="stats">${item.data.translatedpercentage}%</td>
+      <td class="stats">${item.data.fuzzywords}</td><td class="stats">${item.data.fuzzypercentage}%</td>
+      <td class="stats">${item.data.untranslatedwords}</td><td class="stats">${item.data.untranslatedpercentage}%</td>
       <td class="stats">${item.data.totalwords}</td>
       <td class="stats-graph">
+        <span class="sortkey">${item.data.translatedpercentage}</span>
         <table border="0" cellpadding="0" cellspacing="0"><tr>
 <!--!        <td bgcolor="green"><img src="/images/green.png" class="data" bgcolor="green" height="20" width="${item.data.translatedpercentage}" /></td>-->
 <!--!        <td bgcolor="grey"><img src="/images/grey.png" class="data" height="20" width="${item.data.fuzzypercentage}" /></td>-->

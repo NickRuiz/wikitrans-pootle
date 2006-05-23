@@ -8,6 +8,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <link rel="stylesheet" type="text/css" href="/pootle.css" />
   <link rel="shortcut icon" href="/favicon.ico" />
+  <script src="/js/sorttable.js"></script>
 </head>
 
 <body bgcolor="#FFFFFF">
@@ -28,15 +29,18 @@
       </div>
     </div>
 
-    <table class="stats" cellpadding="5" cellspacing="0" width="100%">
-      <thead>
-        <tr>
-          <th class="stats">${statsheadings.name}</th>
-          <th class="stats">${statsheadings.translated}</th>
-          <th class="stats">${statsheadings.fuzzy}</th>
-          <th class="stats">${statsheadings.untranslated}</th>
-          <th class="stats">${statsheadings.total}</th>
-          <th class="stats" width="100">${statsheadings.graph}</th>
+      <table class="sortable stats" id="stats" cellpadding="5" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th class="stats">${statsheadings.name}</th>
+            <th class="stats">${statsheadings.translated}</th>
+            <th class="stats">%</th>
+            <th class="stats">${statsheadings.fuzzy}</th>
+            <th class="stats">%</th>
+            <th class="stats">${statsheadings.untranslated}</th>
+            <th class="stats">%</th>
+            <th class="stats">${statsheadings.total}</th>
+            <th class="stats">${statsheadings.graph}</th>
         </tr>
       </thead>
       <tbody class="stats">

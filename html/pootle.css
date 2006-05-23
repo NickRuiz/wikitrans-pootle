@@ -276,3 +276,12 @@ div.intro {
 	color:#0000ff;
 }
 
+table.sortable img.sortarrow {
+  padding-left: 2px;
+  border: none;
+  position: relative;
+  top: 4px;
+}
+.sortkey {
+  display: none;
+}

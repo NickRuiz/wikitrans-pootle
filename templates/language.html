@@ -8,6 +8,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <link rel="stylesheet" type="text/css" href="/pootle.css" />
   <link rel="shortcut icon" href="/favicon.ico" />
+  <script src="/js/sorttable.js"></script>
 </head>
 
 <body bgcolor="#FFFFFF">
@@ -28,15 +29,18 @@
       <span py:for="i in language.info" py:strip="True"><b>${i.title}</b>: ${i.value}<br/></span>
     </div>
 
-    <table class="stats" cellpadding="5" cellspacing="0" width="100%">
-      <thead>
-        <tr>
-          <th class="stats">${statsheadings.name}</th>
-          <th class="stats">${statsheadings.translated}</th>
-          <th class="stats">${statsheadings.fuzzy}</th>
-          <th class="stats">${statsheadings.untranslated}</th>
-          <th class="stats">${statsheadings.total}</th>
-          <th class="stats" width="100">${statsheadings.graph}</th>
+      <table class="sortable stats" id="stats" cellpadding="5" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th class="stats">${statsheadings.name}</th>
+            <th class="stats">${statsheadings.translated}</th>
+            <th class="stats">%</th>
+            <th class="stats">${statsheadings.fuzzy}</th>
+            <th class="stats">%</th>
+            <th class="stats">${statsheadings.untranslated}</th>
+            <th class="stats">%</th>
+            <th class="stats">${statsheadings.total}</th>
+            <th class="stats">${statsheadings.graph}</th>
         </tr>
       </thead>
       <tbody class="stats">
@@ -47,15 +51,6 @@
         </div>
       </tbody>
     </table>
-<!--!    <div py:for="item in projects" class="item item-${item.parity}">-->
-<!--!      <div class="contentsitem">-->
-<!--!        <img src="/images/folder.png" type="button" class="icon"></img>-->
-<!--!        <h3 class="title"><a href="${item.code}/" py:content="item.name" py:title="item.description">Project</a></h3>-->
-<!--!      </div>-->
-<!--!      <div class="item-statistics" py:content="XML(item.stats)">0 files, 0/0 words (0%) translated-->
-<!--!        <span class="string-statistics">[0/0 strings]</span>-->
-<!--!      </div>-->
-<!--!    </div>-->
   </div>
 
   <div id="links" over:include="pootlepage#links"/>
