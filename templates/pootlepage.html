@@ -42,8 +42,10 @@
     </div>
 
     <div class="side">
-      <a href="/doc/index.html">Docs &amp; Help</a> | <a href="/projects/">All Projects</a> | <a href="/languages/">All Languages</a> |
-      <a href="/home/">Home</a> <span py:if="session.issiteadmin"> | <a href="/admin/">Admin</a> </span>
+      <a href="/doc/index.html">Docs &amp; Help</a> | <a href="/projects/">All Projects</a> | <a href="/languages/">All Languages</a> 
+      <span py:if="session.isopen"> | <a href="/home/">My account</a> </span> 
+      | <a href="/">Home</a> 
+      <span py:if="session.issiteadmin"> | <a href="/admin/">Admin</a> </span>
     </div>
 
     <div class="side">
@@ -55,7 +57,7 @@
       <a href="/?islogout=1">Log Out</a>
     </div>
     <div class="side" py:if="not session.isopen">
-      <a href="/login.html">Log In</a> <a href="/register.html">Register</a> <a href="/activate.html">Activate</a>
+      <a href="/login.html">Log In</a> | <a href="/register.html">Register</a> | <a href="/activate.html">Activate</a>
     </div>
 
     <div py:if="search" class="sidetitle" py:content="search.title">
