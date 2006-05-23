@@ -30,9 +30,9 @@ addEvent(window, "load", sortables_init);
 
 var SORT_COLUMN_INDEX;
 
-var arrowUp = "/images/up2.png";
-var arrowDown = "/images/down2.png";
-var arrowBlank = "/images/none2.png";
+var arrowUp = "/images/up.png";
+var arrowDown = "/images/down.png";
+var arrowBlank = "/images/none.png";
 
 function trim(str) {
     return str.replace(/^\s*|\s*$/g, "");
