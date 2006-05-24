@@ -51,7 +51,6 @@
                     <option py:if="o.value == option.value" selected="selected" value="${o.value}" py:content="o.description"/>
                     <option py:if="o.value != option.value" value="${o.value}" py:content="o.description"/>
                   </span>
-                 <option py:for="o in option.selectoptions" value="${o.value}" py:content="o.description"/>
                </select>
                <span py:if="'label' in option" py:content="option.label"/>
             </td>
