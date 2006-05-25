@@ -452,7 +452,7 @@ class TranslationProject(object):
           origpo = localpo
         else:
           origmsgstr = origpo.target
-          origmsgstr = localpo.target
+          localmsgstr = localpo.target
           if origmsgstr == localmsgstr:
             continue
         foundsource = False
