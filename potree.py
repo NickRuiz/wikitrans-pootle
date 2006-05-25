@@ -99,6 +99,10 @@ class POTree:
 
   def changeprojects(self, argdict):
     """changes project entries"""
+    #Let's reset all "createmofiles" to 0, otherwise we can't disable one
+    #since the key will never arrive
+    for project in self.getprojectcodes():
+      self.setprojectcreatemofiles(project, 0)
     for key, value in argdict.iteritems():
       if key.startswith("projectremove-"):
         projectcode = key.replace("projectremove-", "", 1)
