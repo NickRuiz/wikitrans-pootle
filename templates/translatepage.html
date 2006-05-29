@@ -106,7 +106,6 @@
                     </textarea>
                   </span>
                   <span py:if="item.trans.isplural" py:strip="True">
-                    <input type="hidden" name="pluralforms${item.itemid}" value="${item.trans.nplurals}"/>
                     <span py:for="form in item.trans.forms" py:strip="True">
                       <span class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</span><br/>
                       <!--! TODO: spell checking -->

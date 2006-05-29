@@ -201,9 +201,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       if keytype is None:
         continue
       item, pointitem, subpointitem = pointsplit(item)
-      if keytype == "pluralforms":
-        pluralitems[item] = int(value)
-      elif keytype == "skip":
+      if keytype == "skip":
         skips.append(item)
       elif keytype == "submitsuggest":
         submitsuggests.append(item)
@@ -456,7 +454,6 @@ class TranslatePage(pagelayout.PootleNavPage):
       spellargs = {"standby_url": "spellingstandby.html", "js_url": "/js/spellui.js", "target_url": "spellcheck.html"}
       if len(trans) > 1:
         buttons = self.gettransbuttons(item, ["skip", "suggest", "translate"])
-        transdict["nplurals"] = len(trans)
         forms = []
         for pluralitem, pluraltext in enumerate(trans):
           pluralform = self.localize("Plural Form %d", pluralitem)
