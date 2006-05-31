@@ -212,6 +212,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       elif keytype == "reject":
         rejects.append((item, pointitem))
       elif keytype == "trans":
+        value = self.unescapesubmition(value)
         if pointitem is not None:
           translations.setdefault(item, {})[pointitem] = value
         else:
@@ -387,7 +388,28 @@ class TranslatePage(pagelayout.PootleNavPage):
     """Replace special characters &, <, >, add and handle quotes if asked"""
     text = text.replace("&", "&amp;") # Must be done first!
     text = text.replace("<", "&lt;").replace(">", "&gt;")
-    text = text.replace("\n", "<br />\n")
+    #TODO:Show fancy spaces
+    text = text.replace("\r\n", '\\r\\n<br />\n')
+    text = text.replace("\n", '\\n<br />\n')
+    text = text.replace("\r", '\\r<br />\n')
+    text = text.replace("\t", '\\t')
+    return text
+
+  def escapefortextarea(self, text):
+    text = text.replace("&", "&amp;") # Must be done first!
+    text = text.replace("<", "&lt;").replace(">", "&gt;")
+    text = text.replace("\r\n", '\\r\\n\n')
+    text = text.replace("\n", '\\n\n')
+    text = text.replace("\t", '\\t')
+    return text
+
+  def unescapesubmition(self, text):
+    text = text.replace("\t", "")
+    text = text.replace("\n", "")
+    text = text.replace("\r", "")
+    text = text.replace("\\t", "\t")
+    text = text.replace("\\n", "\n")
+    text = text.replace("\\r", "\r")
     return text
 
   def getorigdict(self, item, orig, editable):
@@ -457,7 +479,7 @@ class TranslatePage(pagelayout.PootleNavPage):
         forms = []
         for pluralitem, pluraltext in enumerate(trans):
           pluralform = self.localize("Plural Form %d", pluralitem)
-          pluraltext = self.escapetext(pluraltext)
+          pluraltext = self.escapefortextarea(pluraltext)
           textid = "trans%d.%d" % (item, pluralitem)
           forms.append({"title": pluralform, "name": textid, "text": pluraltext, "n": pluralitem})
           if not focusbox:
@@ -465,7 +487,7 @@ class TranslatePage(pagelayout.PootleNavPage):
         transdict["forms"] = forms
       else:
         buttons = self.gettransbuttons(item, ["skip", "copy", "suggest", "translate", "resize"])
-        transdict["text"] = self.escapetext(trans[0])
+        transdict["text"] = self.escapefortextarea(trans[0])
         textid = "trans%d" % item
         focusbox = textid
       transdict["can_spell"] = spellcheck.can_check_lang(self.project.languagecode)
@@ -474,7 +496,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       transdict["focusbox"] = focusbox
     else:
       # TODO: work out how to handle this (move it up?)
-      transdict = self.gettransview(item, trans)
+      transdict = self.gettransview(item, trans, textarea=True)
       buttons = self.gettransbuttons(item, ["skip"])
     transdict["buttons"] = buttons
     return transdict
@@ -593,17 +615,21 @@ class TranslatePage(pagelayout.PootleNavPage):
     transdict["suggestions"] = suggitems
     return transdict
 
-  def gettransview(self, item, trans):
+  def gettransview(self, item, trans, textarea=False):
     """returns a widget for viewing the given item's translation"""
+    if textarea:
+      escapefunction = self.escapefortextarea
+    else:
+      escapefunction = self.escapetext
     editlink = self.geteditlink(item)
     transdict = {"editlink": editlink}
     if len(trans) > 1:
       forms = []
       for pluralitem, pluraltext in enumerate(trans):
-        form = {"title": self.localize("Plural Form %d", pluralitem), "n": pluralitem, "text": self.escapetext(pluraltext)}
+        form = {"title": self.localize("Plural Form %d", pluralitem), "n": pluralitem, "text": escapefunction(pluraltext)}
         forms.append(form)
       transdict["forms"] = forms
     else:
-      transdict["text"] = self.escapetext(trans[0])
+      transdict["text"] = escapefunction(trans[0])
     return transdict
 
