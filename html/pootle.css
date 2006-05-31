@@ -21,6 +21,7 @@ h1, h2, h3
 div.autoexpand
 {
 	max-height: 50px;
+	min-height: 1.5em;
 	overflow: hidden;
 	border-bottom: "";
 }
@@ -75,7 +76,7 @@ div.translate-form
 {
 	font-family:verdana, arial, sans-serif; 
 	font-size: x-small; 
-  	line-height:100%;
+  	line-height:150%;
 }
 table.translate-table
 {
