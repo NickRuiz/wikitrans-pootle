@@ -461,6 +461,11 @@ class TranslatePage(pagelayout.PootleNavPage):
             "specialchars": specialchars,
             "rows": getattr(usernode, "inputheight", 5),
             "cols": getattr(usernode, "inputwidth", 40),
+            "grow": self.localize("Grow"),
+            "shrink": self.localize("Shrink"),
+            "broaden": self.localize("Broaden"),
+            "narrow": self.localize("Narrow"),
+            "reset": self.localize("Reset")
            }
 
   def gettransedit(self, item, trans):
