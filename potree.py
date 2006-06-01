@@ -67,10 +67,14 @@ class POTree:
         if not languagecode.strip():
           continue
         if not languagecode.isalpha():
+          languagecode = languagecode.replace("-", "_")
           if languagecode.find("_") >= 0:
             for part in languagecode.split("_"):
               if not part.isalpha():
                 raise ValueError("Language code must be alphabetic")
+            languagecode, countrycode = languagecode.split("_")
+            countrycode = countrycode.upper()
+            languagecode = "%s_%s" % (languagecode, countrycode)
           else: 
             raise ValueError("Language code must be alphabetic")
         if self.haslanguage(languagecode):
