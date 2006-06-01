@@ -74,7 +74,7 @@ class ServerTester:
 	def test_non_admin_rights(self):
 		"""checks that without admin rights we can't access the admin screen"""
 		contents = self.login()
-		adminlink = '<A href="/admin/">Admin</A>' in contents
+		adminlink = '<a href="/admin/">Admin</a>' in contents
 		assert not adminlink
 		contents = self.fetch_page("admin/")
 		denied = "You do not have the rights to administer pootle" in contents
@@ -83,7 +83,7 @@ class ServerTester:
 	def test_admin_rights(self):
 		"""checks that admin rights work properly"""
 		contents = self.login()
-		adminlink = '<A href="/admin/">Admin</A>' in contents
+		adminlink = '<a href="/admin/">Admin</a>' in contents
 		assert adminlink
 		contents = self.fetch_page("admin/")
 		admintitle = "<title>Pootle Admin Page</title>" in contents
@@ -114,7 +114,7 @@ class ServerTester:
 		assert "Test Language" not in language_list
 		assert "Pootle Unit Tests" in language_list
 		project_admin = self.fetch_page("projects/testproject/admin.html")
-		assert '<OPTION value="zxx">Test Language</OPTION>' in project_admin
+		assert '<option value="zxx">Test Language</option>' in project_admin
 		add_dict = {"newlanguage": "zxx", "doaddlanguage": "Add Language"}
                 add_args = "&".join(["%s=%s" % (key, urllib.quote_plus(value)) for key, value in add_dict.items()])
 		add_language = self.fetch_page("projects/testproject/admin.html?" + add_args)
@@ -148,7 +148,7 @@ class ServerTester:
 		content_type, upload_contents = postMultipart.encode_multipart_formdata(fields, files)
 		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
 		response = self.post_request("zxx/testproject/", upload_contents, headers)
-		assert '<A href="test_upload.po">PO file</A>' in response
+		assert '<a href="test_upload.po">PO file</a>' in response
 		pofile_storename = os.path.join(podir, "test_upload.po")
 		assert os.path.isfile(pofile_storename)
 		assert open(pofile_storename).read() == pocontents
@@ -172,7 +172,7 @@ class ServerTester:
 		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
 		response = self.post_request("zxx/testproject/", upload_contents, headers)
 		for filename, contents in [("test.po", po1contents), ("frog.po", po2contents)]:
-			assert ('<A href="%s">PO file</A>' % filename) in response
+			assert ('<a href="%s">PO file</a>' % filename) in response
 			pofile_storename = os.path.join(podir, filename)
 			assert os.path.isfile(pofile_storename)
 			assert open(pofile_storename).read() == contents
@@ -197,7 +197,7 @@ class ServerTester:
 		# It may be a good idea to change this
 		mergedcontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n\n#: frog.c\nmsgid "tadpole"\nmsgstr "fish"\n\n#: toad.c\nmsgid "slink"\nmsgstr "stink"\n\n'
 		suggestedcontents = '#: test.c\nmsgid "_: suggested by testuser"\n"test"\nmsgstr "rested"\n\n'
-		assert '<A href="test_existing.po">PO file</A>' in response
+		assert '<a href="test_existing.po">PO file</a>' in response
 		pofile_storename = os.path.join(podir, "test_existing.po")
 		assert os.path.isfile(pofile_storename)
 		assert open(pofile_storename).read() == mergedcontents
