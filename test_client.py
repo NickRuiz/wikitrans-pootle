@@ -68,7 +68,6 @@ class ServerTester:
 		assert "Log In" not in contents
 		# check login is retained on next fetch
 		contents = self.fetch_page("")
-		print contents
 		assert "Log In" not in contents
 
 	def test_non_admin_rights(self):
@@ -120,7 +119,6 @@ class ServerTester:
 		add_language = self.fetch_page("projects/testproject/admin.html?" + add_args)
 		assert "Test Language" in add_language
 		language_page = self.fetch_page("zxx/testproject/")
-		print language_page.replace("\r", "\n")
 		assert "Test Language" in language_page
 		assert "Pootle Unit Tests" in language_page
 		assert "0 files, 0/0 words (0%) translated" in language_page
@@ -148,7 +146,7 @@ class ServerTester:
 		content_type, upload_contents = postMultipart.encode_multipart_formdata(fields, files)
 		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
 		response = self.post_request("zxx/testproject/", upload_contents, headers)
-		assert '<a href="test_upload.po">PO file</a>' in response
+		assert '<a href="test_upload.po?' in response
 		pofile_storename = os.path.join(podir, "test_upload.po")
 		assert os.path.isfile(pofile_storename)
 		assert open(pofile_storename).read() == pocontents
@@ -172,7 +170,7 @@ class ServerTester:
 		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
 		response = self.post_request("zxx/testproject/", upload_contents, headers)
 		for filename, contents in [("test.po", po1contents), ("frog.po", po2contents)]:
-			assert ('<a href="%s">PO file</a>' % filename) in response
+			assert ('<a href="%s?' % filename) in response
 			pofile_storename = os.path.join(podir, filename)
 			assert os.path.isfile(pofile_storename)
 			assert open(pofile_storename).read() == contents
@@ -207,6 +205,23 @@ class ServerTester:
 		pocontents_download = self.fetch_page("zxx/testproject/test_existing.po")
 		assert pocontents_download == mergedcontents
 	test_upload_over_file.userprefs = {"rights.siteadmin": True}
+
+	def test_submit_translation(self):
+		"""tests that we can upload a new file into a project"""
+		self.login()
+		podir = self.setup_testproject_dir()
+		pofile_storename = os.path.join(podir, "test_upload.po")
+		pocontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n'
+                open(pofile_storename, "w").write(pocontents)
+		expected_pocontents = '#: test.c\nmsgid "test"\nmsgstr "restrain"\n'
+                fields = {"orig-pure0.0": "test", "trans0": "restrain", "submit0": "submit", "pofilename": "test_upload.po"}
+		content_type, post_contents = postMultipart.encode_multipart_formdata(fields.items(), [])
+		headers = {"Content-Type": content_type, "Content-Length": len(post_contents)}
+		translatepage = self.post_request("zxx/testproject/test_upload.po?translate=1&editing=1", post_contents, headers)
+		tree = potree.POTree(self.prefs.Pootle)
+		project = projects.TranslationProject("zxx", "testproject", tree)
+                pofile = project.getpofile("test_upload.po")
+		assert str(pofile.units[1]) == expected_pocontents
 
 def MakeServerTester(baseclass):
 	"""Makes a new Server Tester class using the base class to setup webserver etc"""
