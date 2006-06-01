@@ -208,6 +208,9 @@ class POTree:
         for potentialcode in subdirs:
           if not self.languagematch(None, potentialcode):
             continue
+          if potentialcode in alllanguagecodes:
+            languagecodes.append(potentialcode)
+            continue
           if "-" in potentialcode:
             potentialcode = potentialcode[:potentialcode.find("-")]
           elif "_" in potentialcode:
