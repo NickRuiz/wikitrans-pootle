@@ -17,6 +17,9 @@ from Pootle import projects
 from Pootle import potree
 from Pootle import users
 from Pootle import filelocations
+from Pootle import __version__ as pootleversion
+from translate import __version__ as toolkitversion
+from jToolkit import __version__ as jtoolkitversion
 import sys
 import os
 import random
@@ -34,7 +37,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
 
   def loadurl(self, filename, context):
     """loads a url internally for overlay code"""
-    print "call to load %s with context:\n%s" % (filename, pprint.pformat(context))
+    # print "call to load %s with context:\n%s" % (filename, pprint.pformat(context))
     filename = os.path.join(self.templatedir, filename+os.extsep+"html")
     if os.path.exists(filename):
       return open(filename, "r").read()
@@ -390,7 +393,8 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
 
 class PootleOptionParser(simplewebserver.WebOptionParser):
   def __init__(self):
-    simplewebserver.WebOptionParser.__init__(self)
+    versionstring = "%%prog %s\njToolkit %s\nTranslate Toolkit %s" % (pootleversion.ver, jtoolkitversion.ver, toolkitversion.ver)
+    simplewebserver.WebOptionParser.__init__(self, version=versionstring)
     self.set_default('prefsfile', filelocations.prefsfile)
     self.set_default('instance', 'Pootle')
     self.set_default('htmldir', filelocations.htmldir)
