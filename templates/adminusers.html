@@ -23,15 +23,15 @@
   </div>
   <div id="content" py:if="session.issiteadmin">
     <div class="intro">
-      <a href="../home/">Home page</a>
+      <a href="../home/" py:content="text.home">Home page</a>
     </div>
 
     <div class="intro">
-      <a href="index.html">Admin page</a>
+      <a href="index.html" py:content="text.admin">Admin page</a>
     </div>
 
     <div class="contents">
-      <h3 class="title">Users</h3>
+      <h3 class="title" py:content="text.users">Users</h3>
 
       <form action="" method="post" name="users" id="users">
         <table cellpadding="1" cellspacing="1">
@@ -57,7 +57,7 @@
                <span py:if="option.label" py:content="option.label"/>
             </td>
           </tr>
-        </table><input type="submit" name="changeusers" value="Save changes" />
+        </table><input type="submit" name="changeusers" value="${text.savechanges}" />
       </form>
     </div>
   </div>

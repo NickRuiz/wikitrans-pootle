@@ -23,15 +23,15 @@
   </div>
   <div id="content" py:if="session.issiteadmin">
     <div class="intro">
-      <a href="../home/">Home page</a>
+      <a href="../home/" py:content="text.home">Home page</a>
     </div>
 
     <div class="intro">
-      <a href="index.html">Main Admin page</a>
+      <a href="index.html" py:content="text.admin">Main Admin page</a>
     </div>
 
     <div class="contents">
-      <h3 class="title">Languages</h3>
+      <h3 class="title" py:content="text.languages">Languages</h3>
 
       <form action="" method="post" name="languages" id="languages">
         <table cellpadding="1" cellspacing="1">
@@ -55,7 +55,7 @@
               <input type="text" py:if="option.newname" name="${option.newname}" value="${option.newvalue}" size="${option.size}"/>
             </td>
           </tr>
-        </table><input type="submit" name="changelanguages" value="Save changes" />
+        </table><input type="submit" name="changelanguages" value="${text.savechanges}" />
       </form>
     </div>
   </div>
