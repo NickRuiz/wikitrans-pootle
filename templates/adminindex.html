@@ -23,33 +23,33 @@
   </div>
   <div id="content" py:if="session.issiteadmin">
     <div class="intro">
-      <a href="../home/">Home page</a>
+      <a href="../home/" py:content="text.home">Home</a>
     </div>
 
     <div class="intro">
-      <a href="users.html">Users</a>
+      <a href="users.html" py:content="text.users">Users</a>
     </div>
 
     <div class="intro">
-      <a href="languages.html">Languages</a>
+      <a href="languages.html" py:content="text.languages">Languages</a>
     </div>
 
     <div class="intro">
-      <a href="projects.html">Projects</a>
+      <a href="projects.html" py:content="text.projects">Projects</a>
     </div>
 
     <div class="contents">
-      <h3 class="title">General Options</h3>
+      <h3 class="title" py:content="text.generaloptions">General Options</h3>
 
       <form action="" method="post" name="general" id="general">
         <table cellpadding="1" cellspacing="1">
           <tr>
             <td colspan="1" rowspan="1" type="td">
-              <h3 class="title">Option</h3>
+              <h3 class="title" py:content="text.option">Option</h3>
             </td>
 
             <td colspan="1" rowspan="1" type="td">
-              <h3 class="title">Current value</h3>
+              <h3 class="title" py:content="text.currentvalue">Current value</h3>
             </td>
           </tr>
 
@@ -59,7 +59,7 @@
             <td colspan="1" rowspan="1" type="td"><input type="text" name="${option.name}" value="${option.value}"/></td>
           </tr>
 
-        </table><input type="submit" name="changegeneral" value="Save changes" />
+        </table><input type="submit" name="changegeneral" value="${text.savechanges}" />
       </form>
     </div>
   </div>
