@@ -1,2 +1,2 @@
 #!/bin/sh
-xgettext --add-comments=l10n --language=Python --keyword=localize --keyword=nlocalize:1,2 --default-domain=pootle --msgid-bugs-address=translate-pootle@lists.sourceforge.net --copyright-holder="Zuza Software Foundation"  `find .  -name "*.py"`
+xgettext --add-comments=l10n --language=Python --keyword=localize --keyword=nlocalize:1,2 --default-domain=pootle --msgid-bugs-address=translate-pootle@lists.sourceforge.net --copyright-holder="Zuza Software Foundation" -o pootle.pot `find .  -name "*.py"`
