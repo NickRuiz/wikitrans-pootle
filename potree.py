@@ -46,6 +46,7 @@ class POTree:
         languagecode = key.replace("languagespecialchars-", "", 1)
         if self.haslanguage(languagecode):
           languagespecialchars = self.getlanguagespecialchars(languagecode)
+          languagespecialchars = languagespecialchars.encode('utf-8')
           if isinstance(value, unicode):
             value = value.encode('utf8')
           if languagespecialchars != value:
