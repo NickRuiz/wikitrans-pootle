@@ -170,7 +170,8 @@ class PootleNavPage(PootlePage):
     else:
       filestats = self.nlocalize("%d file", "%d files", numfiles, numfiles) + ", "
     wordstats = self.localize("%d/%d words (%d%%) translated", translatedwords, totalwords, percentfinished)
-    stringstats = ' <span cls="string-statistics">[%d/%d strings]</span>' % (translated, total)
+    stringstatstext = self.localize("%d/%d strings", translated, total)
+    stringstats = ' <span cls="string-statistics">[%s]</span>' % stringstatstext
     return filestats + wordstats + stringstats
 
   def getstatsheadings(self):
