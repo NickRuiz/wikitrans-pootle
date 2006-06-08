@@ -116,12 +116,12 @@
                   </span>
                   <span py:strip="True" py:for="buttons in [item.trans.buttons]">
                     <input py:if="'skip' in buttons.desired" type="submit" name="skip${buttons.item}" accesskey="k" value="${buttons.skip}"/>
-                    <button py:if="'copy' in buttons.desired" accesskey="c"
-                      onclick="document.forms.translate.trans${buttons.item}.value = document.getElementById('orig-pure${buttons.item}.0').value ; document.forms.translate.trans${buttons.item}.focus()"
-                      py:content="buttons.copy_text">Copy</button>
+                    <input type="button" py:if="'copy' in buttons.desired" accesskey="c"
+                      onclick="document.forms.translate.trans${buttons.item}.value = document.getElementById('orig-pure${buttons.item}.0').value ; document.forms.translate.trans${buttons.item}.focus(); return false"
+                      value="${buttons.copy_text}" /> 
                     <input py:if="'suggest' in buttons.desired" type="submit" name="submitsuggest${buttons.item}" accesskey="e" value="${buttons.suggest}"/>
                     <input py:if="'translate' in buttons.desired" type="submit" name="submit${buttons.item}" accesskey="s" value="${buttons.submit}"/>
-                    <span py:if="'specialchars' in buttons.desired" py:replace="specialchars">Special Chars for Language</span>
+                    <span py:if="'specialchars' in buttons" py:replace="buttons.specialchars">Special Chars for Language</span>
                     <span py:if="'resize' in buttons.desired">
                       <a href='#' onclick="return expandtextarea(this)" accesskey="=" py:content="buttons.grow">Grow</a>
                       <a href='#' onclick="return contracttextarea(this)" accesskey="-" py:content="buttons.shrink">Shrink</a>
