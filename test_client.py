@@ -193,9 +193,10 @@ class ServerTester:
 		response = self.post_request("zxx/testproject/", upload_contents, headers)
 		# NOTE: this is what we do currently, any altered strings become suggestions.
 		# It may be a good idea to change this
-		mergedcontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n\n#: frog.c\nmsgid "tadpole"\nmsgstr "fish"\n\n#: toad.c\nmsgid "slink"\nmsgstr "stink"\n\n'
-		suggestedcontents = '#: test.c\nmsgid "_: suggested by testuser"\n"test"\nmsgstr "rested"\n\n'
+		mergedcontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n\n#: frog.c\nmsgid "tadpole"\nmsgstr "fish"\n\n#: toad.c\nmsgid "slink"\nmsgstr "stink"\n'
+		suggestedcontents = '#: test.c\nmsgid "_: suggested by testuser"\n"test"\nmsgstr "rested"\n'
 		assert '<a href="test_existing.po">PO file</a>' in response
+		assert '<a href="test_upload.po?' in response
 		pofile_storename = os.path.join(podir, "test_existing.po")
 		assert os.path.isfile(pofile_storename)
 		assert open(pofile_storename).read().find(mergedcontents) >= 0
