@@ -190,13 +190,12 @@ class ServerTester:
 		files = [("uploadfile", "test_existing.po", po2contents)]
 		content_type, upload_contents = postMultipart.encode_multipart_formdata(fields, files)
 		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
-		response = self.post_request("zxx/testproject/", upload_contents, headers)
+		response = self.post_request("zxx/testproject/?editing=1", upload_contents, headers)
 		# NOTE: this is what we do currently, any altered strings become suggestions.
 		# It may be a good idea to change this
 		mergedcontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n\n#: frog.c\nmsgid "tadpole"\nmsgstr "fish"\n\n#: toad.c\nmsgid "slink"\nmsgstr "stink"\n'
 		suggestedcontents = '#: test.c\nmsgid "_: suggested by testuser"\n"test"\nmsgstr "rested"\n'
-		assert '<a href="test_existing.po">PO file</a>' in response
-		assert '<a href="test_upload.po?' in response
+		assert '<a href="test_existing.po?' in response
 		pofile_storename = os.path.join(podir, "test_existing.po")
 		assert os.path.isfile(pofile_storename)
 		assert open(pofile_storename).read().find(mergedcontents) >= 0
