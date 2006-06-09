@@ -198,12 +198,12 @@ class ServerTester:
 		assert '<a href="test_existing.po">PO file</a>' in response
 		pofile_storename = os.path.join(podir, "test_existing.po")
 		assert os.path.isfile(pofile_storename)
-		assert open(pofile_storename).read() == mergedcontents
+		assert open(pofile_storename).read().find(mergedcontents) >= 0
 		pendingfile_storename = os.path.join(podir, "test_existing.po.pending")
 		assert os.path.isfile(pendingfile_storename)
-		assert open(pendingfile_storename).read() == suggestedcontents
+		assert open(pendingfile_storename).read().find(suggestedcontents) >= 0
 		pocontents_download = self.fetch_page("zxx/testproject/test_existing.po")
-		assert pocontents_download == mergedcontents
+		assert pocontents_download.find(mergedcontents) >= 0
 	test_upload_over_file.userprefs = {"rights.siteadmin": True}
 
 	def test_submit_translation(self):
