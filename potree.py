@@ -339,6 +339,8 @@ class POTree:
 
   def hasgnufiles(self, podir, languagecode=None, depth=0, maxdepth=3, poext="po"):
     """returns whether this directory contains gnu-style PO filenames for the given language"""
+    #Let's check to see if we specifically find the correct gnu file
+    foundgnufile = False
     if not os.path.isdir(podir):
       return False
     fnames = os.listdir(podir)
@@ -349,15 +351,27 @@ class POTree:
         # if we have a language subdirectory, we're probably not GNU-style
         if self.languagematch(languagecode, fn):
           return False
+        #ignore hidden directories (like index directories)
+        if fn[0] == '.':
+          continue
         subdirs.append(os.path.join(podir, fn))
       elif fn.endswith(poext):
         if self.languagematch(languagecode, fn[:-len(poext)]):
-          return True
+          foundgnufile = True
+        elif not self.languagematch(None, fn[:-len(poext)]):
+          return "nongnu"
     if depth < maxdepth:
       for subdir in subdirs:
-        if self.hasgnufiles(subdir, languagecode, depth+1, maxdepth):
-          return True
-    return False
+        style = self.hasgnufiles(subdir, languagecode, depth+1, maxdepth)
+        if style == "nongnu":
+          return "nongnu"
+        if style == "gnu":
+          foundgnufile = True
+
+    if foundgnufile:
+      return "gnu"
+    else:
+      return ""
 
   def getcodesfordir(self, dirname):
     """returns projectcode and languagecode if dirname is a project directory"""
@@ -392,7 +406,7 @@ class POTree:
       languagedirs = [languagedir for languagedir in os.listdir(projectdir) if self.languagematch(languagecode, languagedir)]
       if not languagedirs:
         # if no matching directories can be found, check if it is a GNU-style project
-        if self.hasgnufiles(projectdir, languagecode):
+        if self.hasgnufiles(projectdir, languagecode) == "gnu":
           return projectdir
         raise IndexError("directory not found for language %s, project %s" % (languagecode, projectcode))
       # TODO: handle multiple regions
@@ -427,7 +441,7 @@ class POTree:
       pofilenames.extend([os.path.join(basedirname, poname) for poname in ponames])
     pofilenames = []
     podir = self.getpodir(languagecode, projectcode)
-    if self.hasgnufiles(podir, languagecode):
+    if self.hasgnufiles(podir, languagecode) == "gnu":
       os.path.walk(podir, addgnufiles, podir)
     else:
       os.path.walk(podir, addfiles, podir)

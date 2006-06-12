@@ -81,7 +81,7 @@ class TranslationProject(object):
       self.quickstats = {}
       self.converttemplates(InternalAdminSession())
     self.podir = potree.getpodir(languagecode, projectcode)
-    if self.potree.hasgnufiles(self.podir, self.languagecode):
+    if self.potree.hasgnufiles(self.podir, self.languagecode) == "gnu":
       self.filestyle = "gnu"
     else:
       self.filestyle = "std"
