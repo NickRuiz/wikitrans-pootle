@@ -50,13 +50,13 @@
       <form py:if="not notice" action="${actionurl}" method="post" name="translate" id="translate">
         <table cellpadding="10" cellspacing="1" class="translate-table">
           <tr>
-            <td colspan="1" rowspan="1" type="td" class="translate-table-title" py:content="original_title">original</td>
+            <td colspan="1" rowspan="1" class="translate-table-title" py:content="original_title">original</td>
 
-            <td colspan="1" rowspan="1" type="td" class="translate-table-title" py:content="translation_title">translation</td>
+            <td colspan="1" rowspan="1" class="translate-table-title" py:content="translation_title">translation</td>
           </tr>
 
           <tr py:for="item in items">
-            <td colspan="1" rowspan="1" type="td" class="translate-original translate-original-${item.polarity} ${item.focus_class}">
+            <td colspan="1" rowspan="1" class="translate-original translate-original-${item.polarity} ${item.focus_class}">
               <div id="${item.orig.itemid}" class="translate-original ${item.orig.focus_class}">
                 <input py:for="field in item.orig.pure" type="hidden" name="${field.pureid}" value="${field.value}" id="${field.pureid}"/>
                 <span py:if="not item.orig.isplural" py:replace="XML(item.orig.text)">
@@ -70,7 +70,7 @@
               </div>
             </td>
 
-            <td colspan="1" rowspan="1" type="td" class="translate-translation translate-translation-${item.polarity} ${item.focus_class}">
+            <td colspan="1" rowspan="1" class="translate-translation translate-translation-${item.polarity} ${item.focus_class}">
               <div id="${item.trans.itemid}" class="translate-translation ${item.orig.focus_class}">
                 <span py:if="item.editable and reviewmode" class="translation-text">
                   <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>

@@ -36,15 +36,15 @@
       <form action="" method="post" name="projects" id="projects">
         <table cellpadding="1" cellspacing="1">
           <tr>
-            <td colspan="1" rowspan="1" type="td" py:for="option in options">
+            <td colspan="1" rowspan="1" py:for="option in options">
               <h3 class="title" py:content="option.title">Project Code</h3>
             </td>
           </tr>
 
           <tr py:for="project in projects">
-            <td colspan="1" rowspan="1" type="td"><a href="${project.adminlink}" py:content="project.code">code</a></td>
+            <td colspan="1" rowspan="1"><a href="${project.adminlink}" py:content="project.code">code</a></td>
 
-            <td colspan="1" rowspan="1" type="td" py:for="option in project.options">
+            <td colspan="1" rowspan="1" py:for="option in project.options">
               <input type="${option.type}" name="${option.name}" value="${option.value}" checked="${option.checked}" py:if="not option.selectoptions"/>
                <select name="${option.name}" value="${option.value}" py:if="'selectoptions' in option">
                   <span py:for="o in option.selectoptions" py:strip="True">
@@ -57,7 +57,7 @@
           </tr>
 
           <tr>
-            <td colspan="1" rowspan="1" type="td" py:for="option in options">
+            <td colspan="1" rowspan="1" py:for="option in options">
               <span py:if="'newname' in option">
                 <input type="${option.type}" py:if="not option.selectoptions" value="${option.newvalue}" name="${option.newname}" size="${option.size}"/>
                 <select name="${option.newname}" value="${option.newvalue}" py:if="'selectoptions' in option">

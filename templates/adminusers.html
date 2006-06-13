@@ -36,15 +36,15 @@
       <form action="" method="post" name="users" id="users">
         <table cellpadding="1" cellspacing="1">
           <tr>
-            <td colspan="1" rowspan="1" type="td" py:for="option in options">
+            <td colspan="1" rowspan="1" py:for="option in options">
               <h3 class="title" py:content="option.title">Login</h3>
             </td>
           </tr>
 
           <tr py:for="user in users">
-            <td colspan="1" rowspan="1" type="td" py:content="user.code">davidfraser</td>
+            <td colspan="1" rowspan="1" py:content="user.code">davidfraser</td>
 
-            <td colspan="1" rowspan="1" type="td" py:for="option in user.options">
+            <td colspan="1" rowspan="1" py:for="option in user.options">
                <input name="${option.name}" type="${option.type}" value="${option.value}"/>
                <span py:if="option.label" py:content="option.label"/>
             </td>
@@ -52,7 +52,7 @@
           </tr>
 
           <tr>
-            <td colspan="1" rowspan="1" type="td" py:for="option in options">
+            <td colspan="1" rowspan="1" py:for="option in options">
                <input py:if="option.newname" name="${option.newname}" type="${option.type}" value="${option.newvalue}" size="${option.size}" checked="${option.checked}"/>
                <span py:if="option.label" py:content="option.label"/>
             </td>

@@ -36,22 +36,22 @@
       <form action="" method="post" name="languages" id="languages">
         <table cellpadding="1" cellspacing="1">
           <tr>
-            <td colspan="1" rowspan="1" type="td" py:for="option in options">
+            <td colspan="1" rowspan="1" py:for="option in options">
               <h3 class="title" py:content="option.title">ISO Code</h3>
             </td>
           </tr>
 
           <tr py:for="language in languages">
-            <td colspan="1" rowspan="1" type="td" py:content="language.code">code</td>
+            <td colspan="1" rowspan="1" py:content="language.code">code</td>
 
-            <td colspan="1" rowspan="1" type="td" py:for="option in language.options">
+            <td colspan="1" rowspan="1" py:for="option in language.options">
                <input name="${option.name}" type="${option.type}" value="${option.value}"/>
                <span py:if="option.label" py:content="option.label"/>
             </td>
           </tr>
 
           <tr>
-            <td colspan="1" rowspan="1" type="td" py:for="option in options">
+            <td colspan="1" rowspan="1" py:for="option in options">
               <input type="text" py:if="option.newname" name="${option.newname}" value="${option.newvalue}" size="${option.size}"/>
             </td>
           </tr>
