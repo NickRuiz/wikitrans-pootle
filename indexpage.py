@@ -741,7 +741,9 @@ class ProjectIndex(pagelayout.PootleNavPage):
       filegoals = self.project.getfilegoals(goalfile)
       if self.showgoals:
         if len(filegoals) > 1:
-          actionlinks.append(self.localize("All Goals: %s", (", ".join(filegoals))))
+          #TODO: This is not making sense. For now make it an unclickable link
+          allgoalslink = {"href": "", "text": self.localize("All Goals: %s", (", ".join(filegoals)))}
+          actionlinks.append(allgoalslink)
       if "editgoal" in linksrequired and "admin" in self.rights:
         actions["goalform"] = self.getgoalform(basename, goalfile, filegoals)
     if "mine" in linksrequired and self.session.isopen:
