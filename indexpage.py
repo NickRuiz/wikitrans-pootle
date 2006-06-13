@@ -571,7 +571,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
     if goalname:
       goal["title"] = goalname
     else:
-      goal["title"] = self.localize("No goal")
+      goal["title"] = self.localize("Not in a goal")
     goal["href"] = self.makelink("index.html", goal=goalname)
     if pofilenames:
       actionlinks = self.getactionlinks("", projectstats, linksrequired=["mine", "review", "translate", "zip"], goal=goalname)
