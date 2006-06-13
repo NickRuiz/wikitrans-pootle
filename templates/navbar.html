@@ -48,13 +48,13 @@
       2/2 words (100%) translated <span class="string-statistics">[2/2 strings]</span>
     </span>
     <span py:for="check in item.stats.checks" py:strip="True">
-      <br/>
+      <br />
       <a href="${check.href}" py:content="check.text">checkname</a>
       <span py:content="check.stats" py:strip="True">3 strings (20%) failed</span>
     </span>
-    <span py:for="track in item.stats.tracks" py:strip="True"><br/>${track}</span>
+    <span py:for="track in item.stats.tracks" py:strip="True"><br />${track}</span>
     <span py:for="astats in item.stats.assigns" py:strip="True">
-    <br/><a href="${astats.assign.href}">${astats.assign.text}</a>: ${astats.stats}
+    <br /><a href="${astats.assign.href}">${astats.assign.text}</a>: ${astats.stats}
       <span cls='string-statistics'>${astats.stringstats}</span> -
       ${astats.completestats} <span cls='string-statistics'>${astats.completestringstats}</span>
       <a py:if="astats.remove" href="${astats.remove.href}">${astats.remove.text}</a>

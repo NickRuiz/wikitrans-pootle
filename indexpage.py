@@ -30,7 +30,7 @@ class AboutPage(pagelayout.PootlePage):
     hosttext = self.localize('The Pootle project itself is hosted at <a href="http://translate.sourceforge.net/">translate.sourceforge.net</a> where you can find the details about source code, mailing lists etc.')
     nametext = self.localize('The name stands for <b>PO</b>-based <b>O</b>nline <b>T</b>ranslation / <b>L</b>ocalization <b>E</b>ngine, but you may need to read <a href="http://www.thechestnut.com/flumps.htm">this</a>.')
     versiontitle = self.localize("Versions")
-    versiontext = self.localize("This site is running:<br/>Pootle %s<br/>Translate Toolkit %s<br/>jToolkit %s<br/>Python %s (on %s/%s)", pootleversion.ver, toolkitversion.ver, jtoolkitversion.ver, sys.version, sys.platform, os.name)
+    versiontext = self.localize("This site is running:<br />Pootle %s<br />Translate Toolkit %s<br />jToolkit %s<br />Python %s (on %s/%s)", pootleversion.ver, toolkitversion.ver, jtoolkitversion.ver, sys.version, sys.platform, os.name)
     templatename = "about"
     instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
@@ -107,7 +107,7 @@ class UserIndex(pagelayout.PootlePage):
         if self.potree.hasproject(languagecode, projectcode):
           projectname = self.potree.getprojectname(projectcode)
           projecttitle = self.localize("%s %s", languagename, projectname)
-          langlinks.append({"code": projectcode, "name": projecttitle, "sep": "<br/>"})
+          langlinks.append({"code": projectcode, "name": projecttitle, "sep": "<br />"})
       if langlinks:
         langlinks[-1]["sep"] = ""
       quicklinks.append({"code": languagecode, "name": languagename, "projects": langlinks})

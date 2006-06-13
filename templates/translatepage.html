@@ -62,10 +62,10 @@
                 <span py:if="not item.orig.isplural" py:replace="XML(item.orig.text)">
                 </span>
                 <span py:if="item.orig.isplural" py:strip="True">
-                  <span class="translation-text-headers" py:content="item.orig.singular_title">Singular</span><br/>
-                  <span py:content="XML(item.orig.singular_text)">singular text</span><br/>
-                  <span class="translation-text-headers" py:content="item.orig.plural_title">Plural</span><br/>
-                  <span py:content="XML(item.orig.plural_text)">plural text</span><br/>
+                  <span class="translation-text-headers" py:content="item.orig.singular_title">Singular</span><br />
+                  <span py:content="XML(item.orig.singular_text)">singular text</span><br />
+                  <span class="translation-text-headers" py:content="item.orig.plural_title">Plural</span><br />
+                  <span py:content="XML(item.orig.plural_text)">plural text</span><br />
                 </span>
               </div>
             </td>
@@ -77,15 +77,15 @@
                   <b py:content="item.trans.current_title">Current Translation:</b><br />
                   <span py:for="form in item.trans.forms" py:strip="True">
                     <span class="translation-text-headers" py:if="form.title" py:content="form.title">Plural Form ${form.n}</span>
-                    <br py:if="form.title"/>
-                    <span py:replace="XML(form.diff)">Text with diffs</span><br/>
+                    <br py:if="form.title" />
+                    <span py:replace="XML(form.diff)">Text with diffs</span><br />
                   </span>
                   <span py:for="sugg in item.trans.suggestions" py:strip="True">
                     <b py:content="sugg.title">Suggestion by testuser:</b><br />
                     <span py:for="form in sugg.forms" py:strip="True">
                       <span class="translation-text-headers" py:if="form.title" py:content="form.title">Plural Form ${form.n}</span>
-                      <br py:if="form.title"/>
-                      <span py:replace="XML(form.diff)">Text with diffs</span><br/>
+                      <br py:if="form.title" />
+                      <span py:replace="XML(form.diff)">Text with diffs</span><br />
                       <input type="hidden" name="${form.suggid}" value="${form.value}" />
                       <br />
                     </span>
@@ -107,7 +107,7 @@
                   </span>
                   <span py:if="item.trans.isplural" py:strip="True">
                     <span py:for="form in item.trans.forms" py:strip="True">
-                      <span class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</span><br/>
+                      <span class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</span><br />
                       <!--! TODO: spell checking -->
                       <textarea name="${form.name}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(form.text)">
                         translatable text for plural form
@@ -143,8 +143,8 @@
                   </span>
                   <span py:if="item.trans.isplural" class="translation-text">
                     <span py:for="form in item.trans.forms" py:strip="True">
-                      <span class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</span><br/>
-                      <span py:replace="XML(form.text)">Text</span><br/>
+                      <span class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</span><br />
+                      <span py:replace="XML(form.text)">Text</span><br />
                     </span>
                   </span>
                 </span>
