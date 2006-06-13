@@ -614,7 +614,7 @@ class TranslatePage(pagelayout.PootleNavPage):
                   "skip": None,
                  }
       suggitems.append(suggdict)
-    skipbutton = {"item": item, "text": self.localize("skip")}
+    skipbutton = {"item": item, "text": self.localize("Skip")}
     if suggitems:
       suggitems[-1]["skip"] = skipbutton
     else:
