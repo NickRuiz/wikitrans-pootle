@@ -32,23 +32,23 @@
 
       <table cellpadding="1" cellspacing="1">
         <tr>
-          <td colspan="1" rowspan="1" type="td">
+          <td colspan="1" rowspan="1">
             <h3 class="title" py:content="username_title">Username</h3>
           </td>
 
-          <td colspan="1" rowspan="1" type="td">
+          <td colspan="1" rowspan="1">
             <h3 class="title" py:content="rights_title">Rights</h3>
           </td>
 
-          <td colspan="1" rowspan="1" type="td">
+          <td colspan="1" rowspan="1">
             <h3 class="title" py:content="remove_title">Remove</h3>
           </td>
         </tr>
 
         <tr py:for="username in users_with_rights">
-          <td colspan="1" rowspan="1" type="td" py:content="username">username</td>
+          <td colspan="1" rowspan="1" py:content="username">username</td>
 
-          <td colspan="1" rowspan="1" type="td">
+          <td colspan="1" rowspan="1">
             <select multiple="multiple" name="rights-${username}">
               <option py:for="rightcode, rightname in rightnames" py:attrs="value=rightcode, selected=rightcode in rights[username] or None" py:content="rightname">
                 Right
@@ -57,7 +57,7 @@
             <input type="hidden" name="allowmultikey" value="rights-${username}"/>
           </td>
 
-          <td colspan="1" rowspan="1" type="td">
+          <td colspan="1" rowspan="1">
             <span py:if="user_details[username].delete" py:strip="True">
               <input type="checkbox" name="rightsremove-${username}"/>
               <span py:content="user_details[username].remove_text">Remove username</span>
@@ -66,14 +66,14 @@
         </tr>
 
         <tr>
-          <td colspan="1" rowspan="1" type="td">
+          <td colspan="1" rowspan="1">
             <select name="rightsnew-username">
               <option value="" selected="selected" py:content="adduser_text">(select to add user)</option>
               <option py:for="username in users_without_rights" py:attrs="value=username" py:content="user_details[username].fullname"/>
             </select>
           </td>
 
-          <td colspan="1" rowspan="1" type="td">
+          <td colspan="1" rowspan="1">
             <select multiple="multiple" name="rightsnew">
               <option py:for="rightcode, rightname in rightnames" py:attrs="value=rightcode, selected=rightcode in rights.default or None" py:content="rightname">
                 Right
@@ -82,7 +82,7 @@
             <input type="hidden" name="allowmultikey" value="rightsnew"/>
           </td>
 
-          <td colspan="1" rowspan="1" type="td"/>
+          <td colspan="1" rowspan="1" />
         </tr>
 
       </table>
