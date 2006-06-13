@@ -52,11 +52,11 @@
 
     <div class="side">
       <img src="/images/person.png" type="button" class="icon" alt="" />
-      <span py:content="XML(session.status)">logged in as <b>somebody</b></span>
     </div>
 
     <div class="side" py:if="session.isopen">
       <a href="/?islogout=1" py:content="links.logout">Log Out</a>
+      <span py:content="XML(session.status)">logged in as <b>somebody</b></span>
     </div>
     <div class="side" py:if="not session.isopen">
       <a href="/login.html" py:content="links.login">Log In</a> | 
