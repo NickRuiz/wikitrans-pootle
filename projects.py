@@ -179,10 +179,18 @@ class TranslationProject(object):
     goals = getattr(self.prefs, "goals", {})
     goallist = []
     for goalname, goalnode in goals.iteritems():
-      goallist.append(goalname)
+      goallist.append(goalname.decode("utf-8"))
     goallist.sort()
     return goallist
 
+  def getgoals(self):
+    """gets the goal, goalnode tuples"""
+    goals = getattr(self.prefs, "goals", {})
+    newgoals = {}
+    for goalname, goalnode in goals.iteritems():
+      newgoals[goalname.decode("utf-8")] = goalnode
+    return newgoals
+    
   def getgoalfiles(self, goalname, dirfilter=None, maxdepth=None, includedirs=True, expanddirs=False, includepartial=False):
     """gets the files for the given goal, with many options!
     dirfilter limits to files in a certain subdirectory
@@ -194,7 +202,7 @@ class TranslationProject(object):
     poext = os.extsep + self.fileext
     pathsep = os.path.sep
     unique = lambda filelist: dict.fromkeys(filelist).keys()
-    for testgoalname, goalnode in goals.iteritems():
+    for testgoalname, goalnode in self.getgoals().iteritems():
       if goalname != testgoalname: continue
       goalmembers = getattr(goalnode, "files", "")
       goalmembers = [goalfile.strip() for goalfile in goalmembers.split(",") if goalfile.strip()]
@@ -241,7 +249,7 @@ class TranslationProject(object):
 
   def getfilegoals(self, filename):
     """gets the goals the given file is part of"""
-    goals = getattr(self.prefs, "goals", {})
+    goals = self.getgoals()
     filegoals = []
     ancestry = self.getancestry(filename)
     for goalname, goalnode in goals.iteritems():
@@ -306,7 +314,9 @@ class TranslationProject(object):
       goalfiles = ", ".join(goalfiles)
     if not hasattr(self.prefs, "goals"):
       self.prefs.goals = prefs.PrefNode(self.prefs, "goals")
-    if not hasattr(self.prefs.goals, goalname):
+    goals = self.getgoals()
+    goalname = goalname.encode("utf-8")
+    if not goalname in goals:
       # TODO: check that its a valid goalname (alphanumeric etc)
       self.prefs.goals.__setattr__(goalname, prefs.PrefNode(self.prefs.goals, goalname))
     goalnode = self.prefs.goals.__getattr__(goalname)
@@ -315,7 +325,7 @@ class TranslationProject(object):
 
   def getgoalusers(self, goalname):
     """gets the users for the given goal"""
-    goals = getattr(self.prefs, "goals", {})
+    goals = self.getgoals()
     for testgoalname, goalnode in goals.iteritems():
       if goalname != testgoalname: continue
       goalusers = getattr(goalnode, "users", "")
