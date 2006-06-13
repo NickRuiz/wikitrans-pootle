@@ -55,8 +55,8 @@
     <span py:for="track in item.stats.tracks" py:strip="True"><br />${track}</span>
     <span py:for="astats in item.stats.assigns" py:strip="True">
     <br /><a href="${astats.assign.href}">${astats.assign.text}</a>: ${astats.stats}
-      <span cls='string-statistics'>${astats.stringstats}</span> -
-      ${astats.completestats} <span cls='string-statistics'>${astats.completestringstats}</span>
+      <span class='string-statistics'>${astats.stringstats}</span> -
+      ${astats.completestats} <span class='string-statistics'>${astats.completestringstats}</span>
       <a py:if="astats.remove" href="${astats.remove.href}">${astats.remove.text}</a>
     </span>
   </div>
