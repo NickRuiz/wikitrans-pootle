@@ -21,21 +21,21 @@
       <form action="" method="post" name="loginform" id="loginform">
         <table cellpadding="1" cellspacing="1">
           <tr>
-            <td colspan="1" rowspan="1" type="td" py:content="username_title">Username:</td>
+            <td colspan="1" rowspan="1" py:content="username_title">Username:</td>
 
-            <td colspan="1" rowspan="1" type="td"><input type="text" name="username" value="${username}" /></td>
+            <td colspan="1" rowspan="1"><input type="text" name="username" value="${username}" /></td>
           </tr>
 
           <tr>
-            <td colspan="1" rowspan="1" type="td" py:content="password_title">Password:</td>
+            <td colspan="1" rowspan="1" py:content="password_title">Password:</td>
 
-            <td colspan="1" rowspan="1" type="td"><input type="password" name="password" value="" /></td>
+            <td colspan="1" rowspan="1"><input type="password" name="password" value="" /></td>
           </tr>
 
           <tr>
-            <td colspan="1" rowspan="1" type="td" py:content="language_title">Language:</td>
+            <td colspan="1" rowspan="1" py:content="language_title">Language:</td>
 
-            <td colspan="1" rowspan="1" type="td">
+            <td colspan="1" rowspan="1">
               <select name="language">
                 <option py:for="l in languages" py:attrs="selected=l.selected" value="${l.code}" py:content="l.name">
                   Language Name
