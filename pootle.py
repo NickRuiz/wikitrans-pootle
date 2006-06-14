@@ -8,6 +8,7 @@ from jToolkit import prefs
 from jToolkit import localize
 from jToolkit.widgets import widgets
 from jToolkit.widgets import spellui
+from jToolkit.widgets import thumbgallery
 from jToolkit.web import simplewebserver
 from Pootle import indexpage
 from Pootle import adminpages
@@ -160,7 +161,26 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
       jspage = widgets.PlainContents(None)
       jspage.content_type = "application/x-javascript"
       jspage.sendfile_path = jsfile
+      jspage.allowcaching = True
       return jspage
+    elif pathwords and pathwords[-1].endswith(".css"):
+      cssfile = os.path.join(filelocations.htmldir, *pathwords)
+      if not os.path.exists(cssfile):
+        cssfile = os.path.join(filelocations.jtoolkitdir, *pathwords)
+        if not os.path.exists(cssfile):
+          return None
+      csspage = widgets.PlainContents(None)
+      csspage.content_type = "text/css"
+      csspage.sendfile_path = cssfile
+      csspage.allowcaching = True
+      return csspage
+    elif top == 'images':
+      pathwords = pathwords[1:]
+      picturefile = os.path.join(filelocations.htmldir, 'images', *pathwords)
+      picture = widgets.SendFile(picturefile)
+      picture.content_type = thumbgallery.getcontenttype(pathwords[-1])
+      picture.allowcaching = True
+      return picture
     elif top == "testtemplates.html":
       return templateserver.TemplateServer.getpage(self, pathwords, session, argdict)
     elif not top or top == "index.html":
