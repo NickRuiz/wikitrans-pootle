@@ -45,7 +45,7 @@
             <td colspan="1" rowspan="1" py:content="user.code">davidfraser</td>
 
             <td colspan="1" rowspan="1" py:for="option in user.options">
-               <input name="${option.name}" type="${option.type}" value="${option.value}"/>
+               <input name="${option.name}" type="${option.type}" value="${option.value}" checked="${option.checked}"/>
                <span py:if="option.label" py:content="option.label"/>
             </td>
 

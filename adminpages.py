@@ -209,7 +209,7 @@ class UsersAdminPage(pagelayout.PootlePage):
       useroptions = [{"name": "username-%s" % usercode, "value": fullname, "type": "text"},
                      {"name": "useremail-%s" % usercode, "value": email, "type": "text"},
                      {"name": "userpassword-%s" % usercode, "value": None, "type": "text"},
-                     {"name": "useractivated-%s" % usercode, "value": activated, "type": "checkbox", activatedattr: ""},
+                     {"name": "useractivated-%s" % usercode, "type": "checkbox", activatedattr: activatedattr},
                      {"name": "userremove-%s" % usercode, "value": None, "type": "checkbox", "label": removelabel}]
       users.append({"code": usercode, "options": useroptions})
     return users
