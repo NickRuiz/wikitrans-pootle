@@ -40,7 +40,7 @@
       <input type="hidden" name="allowmultikey" value="updatelanguage"/>
     </form>
     <form action="" method="post" name="newlangform">
-      <select name="newlanguage" value="">
+      <select name="newlanguage">
         <option py:for="l in new_languages" value="${l.code}" py:content="l.name">Language</option>
       </select>
       <input type="submit" name="doaddlanguage" value="${add_button}"/>
