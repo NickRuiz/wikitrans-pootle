@@ -421,8 +421,14 @@ class PootleOptionParser(simplewebserver.WebOptionParser):
     self.add_option('', "--refreshstats", dest="action", action="store_const", const="refreshstats",
         default="runwebserver", help="refresh the stats files instead of running the webserver")
 
+def checkversions():
+  """Checks that version dependencies are met"""
+  if not hasattr(toolkitversion, "build") or toolkitversion.build < 9000:
+    raise RuntimeError("requires Translate Toolkit version >= 0.9.  Current installed version is: %s" % toolkitversion.ver)
+
 def main():
   # run the web server
+  checkversions()
   parser = PootleOptionParser()
   options, args = parser.parse_args()
   if options.action != "runwebserver":
