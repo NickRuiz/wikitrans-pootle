@@ -72,7 +72,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     givenpofilename = self.pofilename
     formaction = self.makelink("")
     title = self.localize("Pootle: translating %s into %s: %s", self.project.projectname, self.project.languagename, self.pofilename)
-    mainstats = []
+    mainstats = ""
     if self.pofilename is not None:
       postats = self.project.getpostats(self.pofilename)
       blank, fuzzy = postats["blank"], postats["fuzzy"]
