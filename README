@@ -64,7 +64,7 @@ Running
 To run, edit pootle.prefs and specify your languages and projects. The key detail 
 here is the podir for each project.  Then from the Pootle directory run:
 
-	python pootle.py
+	PootleServer
 
 Use --help to see the other options.  You can tell it which prefs file to use, 
 what HTML file and what port to run on (the default is 8080). The defaults will 
