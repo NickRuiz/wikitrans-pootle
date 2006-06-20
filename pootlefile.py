@@ -103,7 +103,7 @@ class pootlefile(po.pofile):
   """this represents a pootle-managed .po file and its associated files"""
   x_generator = "Pootle %s" % __version__.ver
   def __init__(self, project=None, pofilename=None, stats=True):
-    po.pofile.__init__(self, elementclass=pootleelement)
+    po.pofile.__init__(self, unitclass=pootleelement)
     self.pofilename = pofilename
     if project is None:
       from Pootle import projects
@@ -172,11 +172,11 @@ class pootlefile(po.pofile):
       if pendingmtime == getattr(self, "pendingmtime", None):
         return
       inputfile = open(self.pendingfilename, "r")
-      self.pendingmtime, self.pendingfile = pendingmtime, po.pofile(inputfile, elementclass=self.elementclass)
+      self.pendingmtime, self.pendingfile = pendingmtime, po.pofile(inputfile, unitclass=self.UnitClass)
       if self.pomtime:
         self.reclassifysuggestions()
     else:
-      self.pendingfile = po.pofile(elementclass=self.elementclass)
+      self.pendingfile = po.pofile(unitclass=self.UnitClass)
       self.savependingfile()
 
   def savependingfile(self):
@@ -665,7 +665,7 @@ class pootlefile(po.pofile):
     header = self.header()
     newheader = newpofile.header()
     if header is None and not newheader is None:
-      header = self.elementclass("", encoding=self.encoding)
+      header = self.UnitClass("", encoding=self.encoding)
       header.target = ""
     if header:  
       header.initallcomments(blankall=True)
