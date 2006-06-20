@@ -1,3 +1,533 @@
+2006-06-20 08:45  dwaynebailey
+
+	* README: [Forwardport] update dependencies
+
+2006-06-19 09:06  friedelwolff
+
+	* translatepage.py: Fix traceback when searching for nonexisting
+	  text
+
+2006-06-19 08:59  friedelwolff
+
+	* templates/pootlepage.html: Add link tags (stylesheet, favicon),
+	  Add Content-Type
+
+2006-06-15 16:32  dwaynebailey
+
+	* PootleServer, __init__.py, adminpages.py, benchmark.py,
+	  conflict2suggest.py, filelocations.py, indexpage.py,
+	  pagelayout.py, pootle.py, pootlefile.py, potree.py, projects.py,
+	  translatepage.py, users.py, versioncontrol.py: [Forwardport]
+	  Update copyright dates and add missing copyright headers to
+	  files.
+
+2006-06-15 16:11  dwaynebailey
+
+	* pootle.py: Makre sure that you have the correct version of
+	  Translate Toolkit before you can run PootleServer.  Bump the
+	  toolkit build number up.
+
+2006-06-15 09:52  dwaynebailey
+
+	* createpootlepot: Make it clear the Zuza is Translate.org.za
+
+2006-06-15 01:18  dwaynebailey
+
+	* templates/projectadmin.html: [Forwardport] Remove proprietary
+	  attribute from select tag
+
+2006-06-15 00:55  dwaynebailey
+
+	* templates/: fileindex.html, language.html, project.html: <script>
+	  tags must have a type= attribute
+
+2006-06-14 18:05  friedelwolff
+
+	* adminpages.py, templates/adminusers.html: Fix editing of user
+	  admin interface
+
+2006-06-14 15:52  friedelwolff
+
+	* pootle.py: Enable caching for CSS, JS, and images
+
+2006-06-14 00:44  friedelwolff
+
+	* translatepage.py: Another capitalisation fix skip->Skip
+
+2006-06-13 14:49  friedelwolff
+
+	* indexpage.py: Temporary fix for link at multigoal file
+
+2006-06-13 14:21  friedelwolff
+
+	* indexpage.py: Reword "No Goal" -> "Not in a goal"
+
+2006-06-13 13:39  dwaynebailey
+
+	* templates/: fileindex.html, options.html, projectlangadmin.html:
+	  [FOrwardport] Remove type= attributes from tags (img, td, etc)
+
+2006-06-13 13:27  dwaynebailey
+
+	* templates/: adminindex.html, adminlanguages.html,
+	  adminprojects.html, adminusers.html, language.html, navbar.html,
+	  project.html, translatepage.html: [Forwardport] Remove type=
+	  attributes from tags (img, td, etc)
+
+2006-06-13 13:06  dwaynebailey
+
+	* templates/login.html: [Forwardport] Remove type= attributes from
+	  tags (img, td, etc)
+
+2006-06-13 13:00  dwaynebailey
+
+	* templates/activate.html: [Forwardport] Remove type= attributes
+	  from tags (img, td, etc)
+
+2006-06-13 12:56  dwaynebailey
+
+	* templates/register.html: [Forwardport] Remove type= attributes
+	  from tags (img, td, etc)
+
+2006-06-13 12:27  dwaynebailey
+
+	* templates/pootlepage.html: [Forwardport] Remove type= attributes
+	  from tags (img, td, etc)
+
+2006-06-13 12:15  friedelwolff
+
+	* translatepage.py: Make capitalisation consitent
+
+2006-06-13 11:07  dwaynebailey
+
+	* pagelayout.py, templates/navbar.html: [Forwardport] Change cls ->
+	  class
+
+2006-06-13 10:55  dwaynebailey
+
+	* templates/pootlepage.html: [Forwardport] Height is not a valid
+	  attribute, change it to a style attribute.
+
+2006-06-13 10:41  dwaynebailey
+
+	* templates/pootlepage.html: [Forwardport] Only show 'logged in
+	  as...' if a session is actually open.
+
+2006-06-13 10:14  dwaynebailey
+
+	* indexpage.py, templates/fileindex.html, templates/navbar.html,
+	  templates/translatepage.html: [Forwardport] Make all empty tags
+	  ie <br>, <img>, etc end in [space]/> remove lonely </img> if not
+	  needed.
+
+2006-06-13 08:43  friedelwolff
+
+	* projects.py: Support for non-ascii goalnames
+
+2006-06-12 10:54  friedelwolff
+
+	* potree.py, projects.py: Detect gnu style projects differently
+
+2006-06-09 21:59  friedelwolff
+
+	* test_client.py: Fix unit url passed and expected
+
+2006-06-09 21:57  friedelwolff
+
+	* test_client.py: Adapt tests to new pofile output without the
+	  unnecessary newline at the end
+
+2006-06-09 20:02  friedelwolff
+
+	* test_client.py: Fix unit test (a PO header ofsets the part that
+	  is tested for)
+
+2006-06-08 14:26  friedelwolff
+
+	* templates/translatepage.html: Don't use HTML comment for
+	  JavaScript, lest kid ignores it
+
+2006-06-08 14:16  friedelwolff
+
+	* templates/translatepage.html: Make resizing javascript work again
+
+2006-06-08 12:42  friedelwolff
+
+	* translatepage.py: Decode special characters if necessary
+
+2006-06-08 12:21  friedelwolff
+
+	* templates/translatepage.html: [Forwardport] Show special
+	  characters again, make copy button work again
+
+2006-06-05 07:16  friedelwolff
+
+	* pagelayout.py: Internationalise string-statistics
+
+2006-06-05 07:07  friedelwolff
+
+	* templates/register.html: Internationalise one last string
+
+2006-06-02 16:03  friedelwolff
+
+	* createpootlepot: Specify outputfile
+
+2006-06-02 14:18  friedelwolff
+
+	* adminpages.py, templates/adminlanguages.html,
+	  templates/adminprojects.html, templates/adminusers.html,
+	  templates/projectlangadmin.html: Internationalise admin pages
+
+2006-06-02 13:21  friedelwolff
+
+	* adminpages.py, templates/adminindex.html: Internationalise main
+	  admin page
+
+2006-06-02 11:32  friedelwolff
+
+	* pagelayout.py, templates/pootlepage.html: Internationalise side
+	  links
+
+2006-06-02 11:20  friedelwolff
+
+	* templates/languages.html: Use localised aboutlink
+
+2006-06-02 10:08  friedelwolff
+
+	* createpootlepot: Create pot file with "l10n" as automatic comment
+	  keyword
+
+2006-06-02 09:40  friedelwolff
+
+	* templates/pootlepage.html, pagelayout.py: Resolve banner vs. logo
+	  confusion
+
+2006-06-02 09:18  friedelwolff
+
+	* potree.py: Encode special characters before comparison
+
+2006-06-01 20:11  friedelwolff
+
+	* potree.py: Format new language code correctly as la_CO, allow
+	  user to enter with dash instead of underscore
+
+2006-06-01 19:13  friedelwolff
+
+	* potree.py: Prefer regional dialect over generic language
+
+2006-06-01 18:45  dwaynebailey
+
+	* pootle.py: [Forwardport] pass through Pootle, jToolkit and
+	  Translate Toolkit versions disable logging every internal url
+	  load which outputs loads of stuff... [David Fraser]
+
+2006-06-01 17:14  dwaynebailey
+
+	* test_client.py: [Forwardport] from Pootle-loacking branch, fixes
+	  for expestec content on Pootle pages.
+
+2006-06-01 17:05  dwaynebailey
+
+	* test_client.py: [Forwardport] Use lowercase HTML tags jsut as KID
+	  does.
+
+2006-05-31 16:52  friedelwolff
+
+	* html/pootle.css: make default sizes biger to make a basic line
+	  display even if collapsed
+
+2006-05-31 16:19  friedelwolff
+
+	* translatepage.py: Bring back resize buttons
+
+2006-05-31 12:16  friedelwolff
+
+	* translatepage.py: Do proper escaping and unescaping for view and
+	  edit mode
+
+2006-05-29 11:15  friedelwolff
+
+	* translatepage.py, templates/translatepage.html: Remove dead code
+	  for number of plurals (caused traceback with plurals in view
+	  mode)
+
+2006-05-25 16:51  friedelwolff
+
+	* potree.py: Fix not being able to disable MO files
+
+2006-05-25 10:41  friedelwolff
+
+	* adminpages.py, templates/adminprojects.html: Fix display of MO
+	  checkbox
+
+2006-05-25 08:33  friedelwolff
+
+	* projects.py: Rename variable correctly to fix version control
+
+2006-05-24 09:48  friedelwolff
+
+	* templates/adminprojects.html: Fix double display of checker
+	  styles
+
+2006-05-24 00:36  friedelwolff
+
+	* templates/adminprojects.html: Display selected checkerstyle
+	  correctly
+
+2006-05-23 14:11  friedelwolff
+
+	* templates/pootlepage.html: Reorder links
+
+2006-05-23 14:05  friedelwolff
+
+	* templates/pootlepage.html: Change Home->My account Add real home
+	  (root of server) Seperate Log In | Register | Activate
+
+2006-05-23 13:14  friedelwolff
+
+	* html/js/correctpng.js, templates/about.html,
+	  templates/activate.html, templates/adminindex.html,
+	  templates/adminlanguages.html, templates/adminprojects.html,
+	  templates/adminusers.html, templates/fileindex.html,
+	  templates/home.html, templates/index.html,
+	  templates/language.html, templates/languages.html,
+	  templates/login.html, templates/navbar.html,
+	  templates/options.html, templates/pootlepage.html,
+	  templates/project.html, templates/projectadmin.html,
+	  templates/projectlangadmin.html, templates/projects.html,
+	  templates/redirect.html, templates/register.html,
+	  templates/translatepage.html: Fix IE PNG transparency deficiency
+	  by including conditional JavaScript only with IE
+
+2006-05-23 12:38  friedelwolff
+
+	* templates/navbar.html: Fix layout bug in Konqueror with
+	  untranslated and fuzzy graphs showing even if zero
+
+2006-05-23 12:30  friedelwolff
+
+	* html/: images/down.png, images/none.png, images/up.png,
+	  js/sorttable.js: New images for table sorting Use new images in
+	  javascript
+
+2006-05-23 12:24  friedelwolff
+
+	* html/pootle.css, templates/fileindex.html,
+	  templates/language.html, templates/navbar.html,
+	  templates/project.html: Split percentages into seperate columns
+	  Implement sorting for the statistics tables CSS styling necessary
+	  for the sorting Cleanup some code
+
+2006-05-23 12:09  friedelwolff
+
+	* html/js/sorttable.js: Javascript to sort html tables
+
+2006-05-23 09:46  friedelwolff
+
+	* html/pootle.css: Add styling information for statistics table
+
+2006-05-23 09:44  friedelwolff
+
+	* indexpage.py, templates/project.html: Stats in the project page
+
+2006-05-23 09:38  friedelwolff
+
+	* templates/language.html: remove use of debugging overlay
+
+2006-05-22 15:02  friedelwolff
+
+	* indexpage.py, templates/fileindex.html: Updates to show
+	  statistics
+
+2006-05-22 14:31  friedelwolff
+
+	* templates/pootlepage.html: New banner and logo
+
+2006-05-22 14:13  friedelwolff
+
+	* pagelayout.py: Code for new banner and logo
+
+2006-05-22 14:08  friedelwolff
+
+	* html/doc/: howto.html, index.html, resources.html: New formatting
+	  to static pages
+
+2006-05-22 14:06  friedelwolff
+
+	* html/pootle.css: Forward port new style
+
+2006-05-22 13:48  friedelwolff
+
+	* html/: favicon.ico, images/language.png: Changed branding
+
+2006-05-22 13:45  friedelwolff
+
+	* html/images/: WordForge-blue.png, WordForge-white.png,
+	  pootle-medium.png, pootle.png: Commit new branding on HEAD
+	  (binary)
+
+2006-05-22 13:31  friedelwolff
+
+	* templates/translatepage.html: Restore original formatting of
+	  notices
+
+2006-05-19 16:30  friedelwolff
+
+	* templates/translatepage.html: Restore pre-kid edit link behaviour
+	  in view mode
+
+2006-05-18 13:56  friedelwolff
+
+	* indexpage.py: Fix traceback with all goals view
+
+2006-05-18 11:14  friedelwolff
+
+	* templates/project.html: Fix accidental commit of yesterday
+
+2006-05-18 10:38  friedelwolff
+
+	* translatepage.py: Fix traceback when clicking "end" in view mode
+
+2006-05-18 09:31  friedelwolff
+
+	* templates/translatepage.html: Display notice correctly and hide
+	  table if notice is present
+
+2006-05-18 09:16  friedelwolff
+
+	* translatepage.py: add missing parameter to dictionary for
+	  templatevars (notice)
+
+2006-05-17 18:01  friedelwolff
+
+	* templates/: adminprojects.html, language.html, navbar.html,
+	  project.html: itemdata element: a row in a statistics table
+
+2006-05-17 10:39  friedelwolff
+
+	* pagelayout.py: Accessor methods for statistics and statistics
+	  headings
+
+2006-05-16 13:40  friedelwolff
+
+	* adminpages.py: [Forward port] Insert input type in dictionary
+
+2006-05-16 11:20  friedelwolff
+
+	* translatepage.py: [Forward port] String keys for dictionary
+
+2006-05-16 07:54  friedelwolff
+
+	* users.py, templates/adminusers.html: [Forward port] Fix adding
+	  users as admin
+
+2006-05-15 12:35  friedelwolff
+
+	* indexpage.py: [Forward port] fix checks
+
+2006-05-15 12:24  friedelwolff
+
+	* templates/redirect.html: Need raw xml to make link in message
+
+2006-05-15 11:58  friedelwolff
+
+	* users.py: templatevars is dictionary, not list
+
+2006-05-04 17:16  friedelwolff
+
+	* indexpage.py: Display file icon for files
+
+2006-05-03 20:02  dwaynebailey
+
+	* pagelayout.py, templates/pootlepage.html: Add alt tags to images
+	  as we move towards XHTML Strict conformance.
+
+2006-05-03 17:51  dwaynebailey
+
+	* templates/: about.html, activate.html, fileindex.html, home.html,
+	  index.html, language.html, languages.html, login.html,
+	  options.html, project.html, projectlangadmin.html, projects.html,
+	  redirect.html, register.html, translatepage.html: Make all
+	  template pages UTF-8
+
+2006-05-03 16:13  friedelwolff
+
+	* translatepage.py: Correct </br>  ->  <br />
+
+2006-05-03 13:20  dwaynebailey
+
+	* benchmark.py: Comment so we know what each of the
+	  sample_file_size tuple values are used for.
+
+2006-05-03 12:38  davidfraser
+
+	* benchmark.py: moved setup_server and get_session to top of class
+	  added benchmark for submitting translation change
+
+2006-05-03 12:24  davidfraser
+
+	* benchmark.py: update to put po files in the right proejct
+	  directory, use a normal project and potree rather than dummies
+	  fix up arguments so prefsfile is picked up correctly make server
+	  a member, add get_session helper print out variables for page so
+	  a visual check can be done
+
+2006-05-03 12:04  dwaynebailey
+
+	* benchmark.py: Actually write to users.prefs not pootle.prefs
+	  Remember the current directory (seems Pootle changes the
+	  directory when the server starts, then this messes with writing
+	  stats files as your now in a non-writable part of the filesystem)
+
+2006-05-03 11:01  davidfraser
+
+	* benchmark.py: added benchmarking for generating pages note that
+	  this creates a PootleServer object and gets that to create the
+	  pages, so no HTTP transfer is actually done this includes code to
+	  set up a server with a test prefs page etc
+
+2006-05-03 07:46  friedelwolff
+
+	* projects.py: [Forward port from wordforge-0-9-branch] Reorder and
+	  fix traceback with unassigned "rights"
+
+2006-04-28 17:21  friedelwolff
+
+	* pootlefile.py, projects.py, test_pootlefile.py: Rename:  *
+	  po.sourceindex -> locationindex (and related uses)  *
+	  po.msgidindex -> sourceindex	* pounit.getids() -> getlocations()
+	  (and related uses)
+
+2006-04-28 12:22  davidfraser
+
+	* benchmark.py, potree.py: move DummyPoTree into potree module
+	  adjusted default sample sizes for quicker testing
+
+2006-04-28 12:14  davidfraser
+
+	* benchmark.py: added ability to measure stats creation and index
+	  creation this uses a Dummy PO Tree (need to move into potree)
+	  index testing should be more robust in particular also would be
+	  nice to be able to measure stats creation and index creation
+	  without reparsing etc this may require a refactor
+
+2006-04-28 11:32  davidfraser
+
+	* benchmark.py: added start of benchmarking tool
+
+2006-04-26 14:53  davidfraser
+
+	* test_client.py: fixed test for template style code
+
+2006-04-26 14:37  davidfraser
+
+	* ChangeLog: Up-to-date ChangeLog that includes branch
+
+2006-04-26 14:31  davidfraser
+
+	* __version__.py: bump version up (need to resolve this better
+	  soon)
+
 2006-04-26 14:26  davidfraser
 
 	* adminpages.py, indexpage.py, pagelayout.py, pootle.py, potree.py,
