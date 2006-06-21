@@ -84,6 +84,22 @@ def cvsupdatefile(path, revision=None):
   pipe(basecommand + "rm %s.bak" % filename)
   return output
 
+def cvscommitfile(path, message=None):
+  """Commits the file and supplies the given commit message if present"""
+  dirname = shellescape(os.path.dirname(path))
+  filename = shellescape(os.path.basename(path))
+  basecommand = ""
+  if dirname:
+    basecommand = "cd %s ; " % dirname
+  if message:
+    message = ' -m "%s" ' % message
+  elif message is None:
+    message = ""
+  command = basecommand + "cvs -Q commit %s %s" % (message, filename)
+  output, error = pipe(command)
+  if error:
+    raise IOError("Error running CVS command '%s': %s" % (command, error))
+
 def getcvsrevision(cvsentries, filename):
   """returns the revision number the file was checked out with by looking in the lines of cvsentries"""
   for cvsentry in cvsentries:
@@ -130,6 +146,22 @@ def svnupdatefile(path, revision=None):
     raise IOError("Subversion error running '%s': %s" % (command, error))
   return output
 
+def svncommitfile(path, message=None):
+  """Commits the file and supplies the given commit message if present"""
+  dirname = shellescape(os.path.dirname(path))
+  filename = shellescape(os.path.basename(path))
+  basecommand = ""
+  if dirname:
+    basecommand = "cd %s ; " % dirname
+  if message:
+    message = ' -m "%s" ' % message
+  elif message is None:
+    message = ""
+  command = basecommand + "svn -q --non-interactive commit %s %s" % (message, filename)
+  output, error = pipe(command)
+  if error:
+    raise IOError("Error running SVN command '%s': %s" % (command, error))
+
 def hascvs(parentdir):
   cvsdir = os.path.join(parentdir, "CVS")
   return os.path.isdir(cvsdir)
@@ -168,6 +200,14 @@ def updatefile(filename, revision=None):
     return svnupdatefile(filename, revision)
   raise IOError("Could not find version control information")
 
+def commitfile(filename, message=None):
+  parentdir = os.path.dirname(filename)
+  if hascvs(parentdir):
+    return cvscommitfile(filename, message)
+  if hassvn(parentdir):
+    return svncommitfile(filename, message)
+  raise IOError("Could not find version control information")
+  
 if __name__ == "__main__":
   import sys
   filenames = sys.argv[1:]
