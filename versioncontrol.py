@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # 
-# Copyright 2004-2005 Zuza Software Foundation
+# Copyright 2004-2006 Zuza Software Foundation
 # 
 # This file is part of translate.
 #
@@ -85,7 +85,7 @@ def cvsupdatefile(path, revision=None):
   return output
 
 def getcvsrevision(cvsentries, filename):
-  """returns the sticky tag the file was checked out with by looking in the lines of cvsentries"""
+  """returns the revision number the file was checked out with by looking in the lines of cvsentries"""
   for cvsentry in cvsentries:
     cvsentryparts = cvsentry.split("/")
     if len(cvsentryparts) < 6:
@@ -106,7 +106,7 @@ def getcvstag(cvsentries, filename):
   return None
 
 def svnreadfile(path, revision=None):
-  """Get a clean version of a file from the CVS repository"""
+  """Get a clean version of a file from the SVN repository"""
   path = shellescape(path)
   if revision:
     command = "svn cat -r %s %s" % (revision, path)
