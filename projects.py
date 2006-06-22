@@ -522,7 +522,8 @@ class TranslationProject(object):
     if "commit" not in self.getrights(session):
       raise RightsError(session.localize("You do not have rights to commit files here"))
     pathname = self.getuploadpath(dirname, pofilename)
-    versioncontrol.commitfile(pathname)
+    versioncontrol.commitfile(pathname, message="Commit from %s by user %s" % 
+        (session.server.instance.title, session.username))
 
   def converttemplates(self, session):
     """creates PO files from the templates"""
