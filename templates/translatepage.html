@@ -87,8 +87,8 @@
                   
                   <span py:for="sugg in item.trans.suggestions" py:strip="True">
                     <br />
-                    <div class="translate-suggestion">
                     <b py:content="sugg.title">Suggestion by testuser:</b><br />
+                    <div class="translate-suggestion">
                     <span py:for="form in sugg.forms" py:strip="True">
                       <span class="translation-text-headers" py:if="form.title" py:content="form.title">Plural Form ${form.n}</span>
                       <br py:if="form.title" />
