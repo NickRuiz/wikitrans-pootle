@@ -388,10 +388,10 @@ class ProjectIndex(pagelayout.PootleNavPage):
       del self.argdict["doupdate"]
     if "docommit" in self.argdict:
       commitfile = self.argdict.pop("commitfile", None)
-      if not updatefile:
+      if not commitfile:
         raise ValueError("cannot commit file, no file specified")
-      if updatefile.endswith(".po"):
-        self.project.updatepofile(self.session, self.dirname, updatefile)
+      if commitfile.endswith(".po"):
+        self.project.commitpofile(self.session, self.dirname, commitfile)
       else:
         raise ValueError("can only commit PO files")
       del self.argdict["docommit"]
@@ -679,11 +679,11 @@ class ProjectIndex(pagelayout.PootleNavPage):
         actionlinks.append(molink)
     if "update" in linksrequired and "admin" in self.rights:
       if versioncontrol.hasversioning(os.path.join(self.project.podir, self.dirname)):
-        updatelink = {"href": "index.html?doupdate=1&updatefile=%s" % basename, "text": self.localize('Update')}
+        updatelink = {"href": "index.html?editing=1&doupdate=1&updatefile=%s" % (basename), "text": self.localize('Update')}
         actionlinks.append(updatelink)
     if "commit" in linksrequired and "commit" in self.rights:
       if versioncontrol.hasversioning(os.path.join(self.project.podir, self.dirname)):
-        commitlink = {"href": "index.html?docommit=1&commitfile=%s" % basename, "text": self.localize('Commit')}
+        commitlink = {"href": "index.html?editing=1&docommit=1&commitfile=%s" % (basename), "text": self.localize('Commit')}
         actionlinks.append(commitlink)
     # update the separators
     for n, actionlink in enumerate(actionlinks):
