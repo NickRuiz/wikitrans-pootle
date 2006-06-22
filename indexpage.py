@@ -308,7 +308,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
       mainstats = self.getitemstats("", projectstats, len(pofilenames))
       maindata = self.getstats(self.project, projectstats, len(pofilenames))
       mainicon = "folder"
-    navbarpath_dict = self.makenavbarpath_dict(project=self.project, session=self.session, currentfolder=dirfilter, goal=self.currentgoal)
+    navbarpath_dict = self.makenavbarpath_dict(project=self.project, session=self.session, currentfolder=dirfilter, goal=self.currentgoal, editing=self.editing)
     if self.showgoals:
       childitems = self.getgoalitems(dirfilter)
     else:

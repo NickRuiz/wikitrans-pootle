@@ -88,9 +88,12 @@ class PootlePage:
     return itemlist
 
 class PootleNavPage(PootlePage):
-  def makenavbarpath_dict(self, project=None, session=None, currentfolder=None, language=None, goal=None):
+  def makenavbarpath_dict(self, project=None, session=None, currentfolder=None, language=None, goal=None, editing=False):
     """create the navbar location line"""
     rootlink = ""
+    paramstring = ""
+    if editing:
+      paramstring += "?editing=1"
     links = {"admin": None, "project": [], "language": [], "goal": [], "pathlinks": []}
     if currentfolder:
       pathlinks = []
@@ -117,11 +120,11 @@ class PootleNavPage(PootlePage):
     if project:
       if isinstance(project, tuple):
         projectcode, projectname = project
-        links["project"] = {"href": "/projects/%s/" % projectcode, "text": projectname}
+        links["project"] = {"href": "/projects/%s/%s" % (projectcode, paramstring), "text": projectname}
       else:
         links["language"] = {"href": rootlink + "../index.html", "text": project.languagename}
         # don't getbrowseurl on the project link, so sticky options won't apply here
-        links["project"] = {"href": rootlink or "index.html", "text": project.projectname}
+        links["project"] = {"href": (rootlink or "index.html") + paramstring, "text": project.projectname}
         if session:
           if "admin" in project.getrights(session) or session.issiteadmin():
             links["admin"] = {"href": rootlink + "admin.html", "text": self.localize("Admin")}
