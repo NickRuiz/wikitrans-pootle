@@ -124,6 +124,10 @@ td.translate-translation
 {
 	background-color: #f4f4f4;
 }
+.translate-suggestion
+{
+	background-color: #EEE;
+}
 .translate-diff-replace
 {
 	background-color: #ffff00;
@@ -242,7 +246,7 @@ div.intro {
 {
 	float: left;
 	text-align: left;
-    font-weight: bold;
+	font-weight: bold;
 	color: #006699;
 }
 .translation-action
