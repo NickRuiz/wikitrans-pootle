@@ -386,6 +386,15 @@ class ProjectIndex(pagelayout.PootleNavPage):
       else:
         raise ValueError("can only update PO files")
       del self.argdict["doupdate"]
+    if "docommit" in self.argdict:
+      commitfile = self.argdict.pop("commitfile", None)
+      if not updatefile:
+        raise ValueError("cannot commit file, no file specified")
+      if updatefile.endswith(".po"):
+        self.project.updatepofile(self.session, self.dirname, updatefile)
+      else:
+        raise ValueError("can only commit PO files")
+      del self.argdict["docommit"]
     if "doaddgoal" in self.argdict:
       goalname = self.argdict.pop("newgoal", None)
       if not goalname:
@@ -445,9 +454,10 @@ class ProjectIndex(pagelayout.PootleNavPage):
         self.project.reassignpoitems(self.session, search, goalusers, action)
       del self.argdict["doedituser"]
     # pop arguments we don't want to propogate through inadvertently...
-    for argname in ("assignto", "action", "assignedto", "removefilter", "uploadfile",
-        "updatefile", "newgoal", "editgoal", "editgoalfile", "editgoalname",
-        "newgoaluser", "editfileuser", "editgoalfile", "edituserwhich"):
+    for argname in ("assignto", "action", "assignedto", "removefilter", 
+		    "uploadfile", "updatefile", "commitfile", 
+		    "newgoal", "editgoal", "editgoalfile", "editgoalname",
+		    "newgoaluser", "editfileuser", "edituserwhich"):
       self.argdict.pop(argname, "")
 
   def getboolarg(self, argname, default=False):
@@ -640,7 +650,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
   def getfileitem(self, fileentry, linksrequired=None, **newargs):
     """returns an item showing a file entry"""
     if linksrequired is None:
-      linksrequired = ["mine", "review", "quick", "all", "po", "xliff", "ts", "csv", "mo", "update"]
+      linksrequired = ["mine", "review", "quick", "all", "po", "xliff", "ts", "csv", "mo", "update", "commit"]
     basename = os.path.basename(fileentry)
     projectstats = self.project.combinestats([fileentry])
     browseurl = self.getbrowseurl(basename, **newargs)
@@ -671,6 +681,10 @@ class ProjectIndex(pagelayout.PootleNavPage):
       if versioncontrol.hasversioning(os.path.join(self.project.podir, self.dirname)):
         updatelink = {"href": "index.html?doupdate=1&updatefile=%s" % basename, "text": self.localize('Update')}
         actionlinks.append(updatelink)
+    if "commit" in linksrequired and "commit" in self.rights:
+      if versioncontrol.hasversioning(os.path.join(self.project.podir, self.dirname)):
+        commitlink = {"href": "index.html?docommit=1&commitfile=%s" % basename, "text": self.localize('Commit')}
+        actionlinks.append(commitlink)
     # update the separators
     for n, actionlink in enumerate(actionlinks):
       if n < len(actionlinks)-1:

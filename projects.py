@@ -133,6 +133,7 @@ class TranslationProject(object):
             ("pocompile", localize("Compile PO files")),
             ("assign", localize("Assign")),
             ("admin", localize("Administrate")),
+            ("commit", localize("Commit")),
            ]
 
   def getrights(self, session=None, username=None, usedefaults=True):
@@ -515,6 +516,13 @@ class TranslationProject(object):
     else:
       versioncontrol.updatefile(pathname)
       self.scanpofiles()
+
+  def commitpofile(self, session, dirname, pofilename):
+    """commits an individual PO file to version control"""
+    if "commit" not in self.getrights(session):
+      raise RightsError(session.localize("You do not have rights to commit files here"))
+    pathname = self.getuploadpath(dirname, pofilename)
+    versioncontrol.commitfile(pathname)
 
   def converttemplates(self, session):
     """creates PO files from the templates"""
