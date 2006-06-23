@@ -124,7 +124,7 @@ class TranslatePage(pagelayout.PootleNavPage):
   def getfinishedtext(self, stoppedby):
     """gets notice to display when the translation is finished"""
     title = self.localize("End of batch")
-    finishedlink = "index.html?" + "&".join(["%s=%s" % (arg, value) for arg, value in self.argdict.iteritems() if arg.startswith("show")])
+    finishedlink = "index.html?" + "&".join(["%s=%s" % (arg, value) for arg, value in self.argdict.iteritems() if arg.startswith("show") or arg == "editing"])
     returnlink = self.localize("Click here to return to the index")
     stoppedbytext = stoppedby.args[0]
     return {"title": title, "stoppedby": stoppedbytext, "finishedlink": finishedlink, "returnlink": returnlink}
