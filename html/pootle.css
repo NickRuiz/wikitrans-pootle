@@ -124,6 +124,10 @@ td.translate-translation
 {
 	background-color: #f4f4f4;
 }
+.translate-translation-fuzzy
+{
+	color: #666;
+}
 .translate-suggestion
 {
 	background-color: #DDD;
