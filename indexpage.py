@@ -306,7 +306,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
       if self.editing:
         actionlinks = self.getactionlinks("", projectstats, ["editing", "mine", "review", "check", "assign", "goal", "quick", "all", "zip", "sdf"], dirfilter)
       else: 
-        actionlinks = self.getactionlinks("", projectstats, ["editing", "check", "goal", "zip", "sdf"])
+        actionlinks = self.getactionlinks("", projectstats, ["editing", "goal", "zip", "sdf"])
       mainstats = self.getitemstats("", projectstats, len(pofilenames))
       maindata = self.getstats(self.project, projectstats, len(pofilenames))
       mainicon = "folder"
