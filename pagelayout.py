@@ -115,7 +115,7 @@ class PootleNavPage(PootlePage):
       if pathlinks:
         pathlinks[-1]["sep"] = ""
       links["pathlinks"] = pathlinks
-    if "goal" in argdict:
+    if argdict and "goal" in argdict:
       # goallink = {"href": self.getbrowseurl("", goal=goal), "text": goal}
       links["goal"] = {"href": self.getbrowseurl(""), "text": self.localize("All goals")}
     if project:
