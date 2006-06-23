@@ -30,7 +30,7 @@ import urllib
 def oddoreven(polarity):
   if polarity % 2 == 0:
     return "even"
-  elif polarity % 2== 1:
+  elif polarity % 2 == 1:
     return "odd"
 
 class TranslatePage(pagelayout.PootleNavPage):
@@ -372,12 +372,17 @@ class TranslatePage(pagelayout.PootleNavPage):
       origdict = self.getorigdict(item, orig, item in self.editable)
       transmerge = {}
       if item in self.editable:
+        comments = thepo.getnotes().replace("\n", "\n<br />")
+        locations = " ".join(thepo.getlocations())
+        
         if self.reviewmode:
           itemsuggestions = [suggestion.unquotedmsgstr for suggestion in suggestions[item]]
           transmerge = self.gettransreview(item, trans, itemsuggestions)
         else:
           transmerge = self.gettransedit(item, trans)
       else:
+        comments = ""
+        locations = ""
         transmerge = self.gettransview(item, trans)
       transdict = {"itemid": "trans%d" % item,
                    "focus_class": origdict["focus_class"],
@@ -398,6 +403,8 @@ class TranslatePage(pagelayout.PootleNavPage):
                  "polarity": polarity,
                  "focus_class": focus_class,
                  "editable": item in self.editable,
+		 "comments": comments,
+		 "locations": locations,
                  }
       items.append(itemdict)
     return items

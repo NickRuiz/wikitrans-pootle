@@ -60,14 +60,21 @@
             <td colspan="1" rowspan="1" class="translate-original translate-original-${item.polarity} ${item.focus_class}">
               <div id="${item.orig.itemid}" class="translate-original ${item.orig.focus_class}">
                 <input py:for="field in item.orig.pure" type="hidden" name="${field.pureid}" value="${field.value}" id="${field.pureid}"/>
-                <span py:if="not item.orig.isplural" py:replace="XML(item.orig.text)">
-                </span>
+                <div py:if="not item.orig.isplural" py:content="XML(item.orig.text)">
+                </div>
                 <span py:if="item.orig.isplural" py:strip="True">
                   <span class="translation-text-headers" py:content="item.orig.singular_title">Singular</span><br />
                   <span py:content="XML(item.orig.singular_text)">singular text</span><br />
                   <span class="translation-text-headers" py:content="item.orig.plural_title">Plural</span><br />
                   <span py:content="XML(item.orig.plural_text)">plural text</span><br />
                 </span>
+                <br />
+                <div py:if="item.editable and item.comments" class="translate-comments" py:content="XML(item.comments)">
+                   Comments
+                </div>
+                <div py:if="item.editable and item.locations" class="translate-locations" py:content="item.locations">
+                   Comments
+                </div>
               </div>
             </td>
 
