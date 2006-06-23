@@ -85,7 +85,7 @@
                 <span py:if="item.editable and reviewmode" class="translation-text">
                   <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
                   
-                  <b py:content="item.trans.current_title">Current Translation:</b><br />
+                  <b class="${item.state_class}" py:content="item.trans.current_title">Current Translation:</b><br />
                   <span py:for="form in item.trans.forms" py:strip="True">
                     <span class="translation-text-headers" py:if="form.title" py:content="form.title">Plural Form ${form.n}</span>
                     <br py:if="form.title" />
@@ -120,7 +120,7 @@
                   <span py:if="not item.trans.isplural" py:strip="True">
                     <!--! TODO: spell checking -->
                     <div>
-                      <textarea name="${item.trans.itemid}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(item.trans.text)">
+                      <textarea class="${item.state_class}" name="${item.trans.itemid}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(item.trans.text)">
                         translatable text
                       </textarea>
                     </div>
@@ -131,7 +131,7 @@
                       <div class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</div><br />
                       <!--! TODO: spell checking -->
                       <div>
-                        <textarea name="${form.name}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(form.text)">
+                        <textarea class="${item.state_class}" name="${form.name}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(form.text)">
                           translatable text for plural form
                         </textarea>
                       </div>
@@ -163,7 +163,7 @@
                 </span>
 
                 <!-- Normal view mode -->
-                <span py:if="not item.editable" py:strip="True">
+                <span py:if="not item.editable" class="${item.state_class}">
                   <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
                   <span py:if="not item.trans.isplural" py:strip="True" py:content="XML(item.trans.text)">
                     text

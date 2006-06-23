@@ -396,6 +396,11 @@ class TranslatePage(pagelayout.PootleNavPage):
         focus_class = "translate-focus"
       else:
         focus_class = ""
+      
+      state_class = ""
+      if thepo.isfuzzy():
+        state_class += "translate-translation-fuzzy"
+
       itemdict = {
                  "itemid": item,
                  "orig": origdict,
@@ -403,6 +408,7 @@ class TranslatePage(pagelayout.PootleNavPage):
                  "polarity": polarity,
                  "focus_class": focus_class,
                  "editable": item in self.editable,
+                 "state_class": state_class,
 		 "comments": comments,
 		 "locations": locations,
                  }
