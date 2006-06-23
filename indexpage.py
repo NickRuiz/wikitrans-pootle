@@ -288,6 +288,8 @@ class ProjectIndex(pagelayout.PootleNavPage):
     self.argdict = argdict
     # handle actions before generating URLs, so we strip unneccessary parameters out of argdict
     self.handleactions()
+    # generate the navigation bar maintaining state
+    navbarpath_dict = self.makenavbarpath_dict(project=self.project, session=self.session, currentfolder=dirfilter, argdict=self.argdict)
     self.showtracks = self.getboolarg("showtracks")
     self.showchecks = self.getboolarg("showchecks")
     self.showassigns = self.getboolarg("showassigns")
@@ -308,7 +310,6 @@ class ProjectIndex(pagelayout.PootleNavPage):
       mainstats = self.getitemstats("", projectstats, len(pofilenames))
       maindata = self.getstats(self.project, projectstats, len(pofilenames))
       mainicon = "folder"
-    navbarpath_dict = self.makenavbarpath_dict(project=self.project, session=self.session, currentfolder=dirfilter, goal=self.currentgoal, editing=self.editing)
     if self.showgoals:
       childitems = self.getgoalitems(dirfilter)
     else:

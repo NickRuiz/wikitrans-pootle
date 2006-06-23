@@ -88,12 +88,13 @@ class PootlePage:
     return itemlist
 
 class PootleNavPage(PootlePage):
-  def makenavbarpath_dict(self, project=None, session=None, currentfolder=None, language=None, goal=None, editing=False):
+  def makenavbarpath_dict(self, project=None, session=None, currentfolder=None, language=None, argdict=None):
     """create the navbar location line"""
     rootlink = ""
     paramstring = ""
-    if editing:
-      paramstring += "?editing=1"
+    if argdict:
+      paramstring = "?" + "&".join(["%s=%s" % (arg, value) for arg, value in argdict.iteritems() if arg.startswith("show") or arg == "editing"])
+
     links = {"admin": None, "project": [], "language": [], "goal": [], "pathlinks": []}
     if currentfolder:
       pathlinks = []
@@ -114,7 +115,7 @@ class PootleNavPage(PootlePage):
       if pathlinks:
         pathlinks[-1]["sep"] = ""
       links["pathlinks"] = pathlinks
-    if goal is not None:
+    if "goal" in argdict:
       # goallink = {"href": self.getbrowseurl("", goal=goal), "text": goal}
       links["goal"] = {"href": self.getbrowseurl(""), "text": self.localize("All goals")}
     if project:
