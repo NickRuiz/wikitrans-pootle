@@ -60,7 +60,7 @@
             <td colspan="1" rowspan="1" class="translate-original translate-original-${item.polarity} ${item.focus_class}">
               <div id="${item.orig.itemid}" class="translate-original ${item.orig.focus_class}">
                 <input py:for="field in item.orig.pure" type="hidden" name="${field.pureid}" value="${field.value}" id="${field.pureid}"/>
-                <div py:if="not item.orig.isplural" py:content="XML(item.orig.text)">
+                <div py:if="not item.orig.isplural" py:replace="XML(item.orig.text)">
                 </div>
                 <span py:if="item.orig.isplural" py:strip="True">
                   <span class="translation-text-headers" py:content="item.orig.singular_title">Singular</span><br />
