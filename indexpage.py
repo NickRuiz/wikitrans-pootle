@@ -55,7 +55,7 @@ class AboutPage(pagelayout.PootlePage):
     templatevars = {"pagetitle": pagetitle, "description": description,
         "abouttitle": abouttitle, "introtext": introtext,
         "hosttext": hosttext, "nametext": nametext, "versiontitle": versiontitle, "versiontext": versiontext,
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": instancetitle}
     pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
 class PootleIndex(pagelayout.PootlePage):
@@ -64,12 +64,12 @@ class PootleIndex(pagelayout.PootlePage):
     self.potree = potree
     self.localize = session.localize
     self.nlocalize = session.nlocalize
-    pagetitle = self.localize("Pootle")
     templatename = "index"
     aboutlink = self.localize("About this Pootle server")
     languagelink = self.localize('Languages')
     projectlink = self.localize('Projects')
     instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
+    pagetitle = instancetitle
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
     languages = [{"code": code, "name": name, "sep": ", "} for code, name in self.potree.getlanguages()]
     if languages:
@@ -77,7 +77,7 @@ class PootleIndex(pagelayout.PootlePage):
     templatevars = {"pagetitle": pagetitle, "aboutlink": aboutlink,
         "languagelink": languagelink, "languages": languages,
         "projectlink": projectlink, "projects": self.getprojects(),
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": instancetitle}
     pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
   def getprojects(self):
@@ -110,7 +110,7 @@ class UserIndex(pagelayout.PootlePage):
     templatevars = {"pagetitle": pagetitle, "optionslink": optionslink,
         "adminlink": adminlink, "quicklinkstitle": quicklinkstitle,
         "quicklinks": quicklinks, "setoptionstext": setoptionstext,
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": instancetitle}
     pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
   def getquicklinks(self):
@@ -157,16 +157,19 @@ class LanguageIndex(pagelayout.PootleNavPage):
     average = self.getpagestats()
     languagestats = self.nlocalize("%d project, average %d%% translated", "%d projects, average %d%% translated", self.projectcount, self.projectcount, average)
     languageinfo = self.getlanguageinfo()
-    pagetitle =  self.localize("Pootle: %s", self.languagename)
+    instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
+    # l10n: The first parameter is the name of the installation
+    # l10n: The second parameter is the name of the project/language
+    # l10n: This is used as a page title. Most languages won't need to change this
+    pagetitle =  self.localize("%s: %s", instancetitle, self.languagename)
     templatename = "language"
     adminlink = self.localize("Admin")
-    instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
     templatevars = {"pagetitle": pagetitle,
         "language": {"code": languagecode, "name": self.languagename, "stats": languagestats, "info": languageinfo},
         "projects": languageprojects, 
         "statsheadings": self.getstatsheadings(),
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": instancetitle}
     pagelayout.PootleNavPage.__init__(self, templatename, templatevars, session, bannerheight=81)
 
   def getlanguageinfo(self):
@@ -220,10 +223,13 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     average = self.getpagestats()
     projectstats = self.nlocalize("%d language, average %d%% translated", "%d languages, average %d%% translated", self.languagecount, self.languagecount, average)
     projectname = self.potree.getprojectname(self.projectcode)
-    pagetitle =  self.localize("Pootle: %s", projectname)
+    instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
+    # l10n: The first parameter is the name of the installation
+    # l10n: The second parameter is the name of the project/language
+    # l10n: This is used as a page title. Most languages won't need to change this
+    pagetitle =  self.localize("%s: %s", instancetitle, projectname)
     templatename = "project"
     adminlink = self.localize("Admin")
-    instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
     statsheadings = self.getstatsheadings()
     statsheadings["name"] = self.localize("Language")
@@ -232,7 +238,7 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     templatevars = {"pagetitle": pagetitle,
         "project": {"code": projectcode, "name": projectname, "stats": projectstats},
         "adminlink": adminlink, "languages": languages,
-        "session": sessionvars, "instancetitle": pagetitle, 
+        "session": sessionvars, "instancetitle": instancetitle, 
         "statsheadings": statsheadings}
     pagelayout.PootleNavPage.__init__(self, templatename, templatevars, session, bannerheight=81)
 
@@ -314,9 +320,10 @@ class ProjectIndex(pagelayout.PootleNavPage):
       childitems = self.getgoalitems(dirfilter)
     else:
       childitems = self.getchilditems(dirfilter)
-    pagetitle = self.localize("Pootle: Project %s, Language %s", self.project.projectname, self.project.languagename)
-    templatename = "fileindex"
     instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
+    # l10n: The first parameter is the name of the installation (like "Pootle")
+    pagetitle = self.localize("%s: Project %s, Language %s", instancetitle, self.project.projectname, self.project.languagename)
+    templatename = "fileindex"
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
     templatevars = {"pagetitle": pagetitle,
         "project": {"code": self.project.projectcode, "name": self.project.projectname},
@@ -333,7 +340,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
         # stats table headings
         "statsheadings": self.getstatsheadings(), 
         # general vars
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": instancetitle}
     pagelayout.PootleNavPage.__init__(self, templatename, templatevars, session, bannerheight=81)
     if self.showassigns and "assign" in self.rights:
       self.templatevars["assign"] = self.getassignbox()

@@ -88,8 +88,12 @@ class TranslatePage(pagelayout.PootleNavPage):
     navbarpath_dict = self.makenavbarpath_dict(self.project, self.session, self.pofilename)
     # templatising
     templatename = "translatepage"
-    pagetitle = self.localize("Pootle: translating %s into %s: %s", self.project.projectname, self.project.languagename, self.pofilename)
     instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
+    # l10n: The first parameter is the name of the installation (like "Pootle")
+    # l10n: The second parameter is the name of the project
+    # l10n: The third parameter is the target language
+    # l10n: The fourth parameter is the filename
+    pagetitle = self.localize("%s: translating %s into %s: %s", instancetitle, self.project.projectname, self.project.languagename, self.pofilename)
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
     stats = {"summary": mainstats, "checks": [], "tracks": [], "assigns": []}
     templatevars = {"pagetitle": pagetitle,
@@ -115,7 +119,7 @@ class TranslatePage(pagelayout.PootleNavPage):
         "searchtext": self.searchtext,
         "pofilename": givenpofilename,
         # general vars
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": instancetitle}
     if self.showassigns and "assign" in self.rights:
       templatevars["assign"] = self.getassignbox()
     pagelayout.PootleNavPage.__init__(self, templatename, templatevars, session, bannerheight=81)
@@ -409,8 +413,8 @@ class TranslatePage(pagelayout.PootleNavPage):
                  "focus_class": focus_class,
                  "editable": item in self.editable,
                  "state_class": state_class,
-		 "comments": comments,
-		 "locations": locations,
+                 "comments": comments,
+                 "locations": locations,
                  }
       items.append(itemdict)
     return items
