@@ -192,6 +192,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     """receive any translations submitted by the user"""
     if self.pofilename is None:
       return
+    backs = []
     skips = []
     submitsuggests = []
     submits = []
@@ -225,6 +226,8 @@ class TranslatePage(pagelayout.PootleNavPage):
       item, pointitem, subpointitem = pointsplit(item)
       if keytype == "skip":
         skips.append(item)
+      elif keytype == "back":
+        backs.append(item)
       elif keytype == "submitsuggest":
         submitsuggests.append(item)
       elif keytype == "submit":
@@ -251,6 +254,8 @@ class TranslatePage(pagelayout.PootleNavPage):
       del self.argdict[key]
     for item in skips:
       self.lastitem = item
+    for item in backs:
+      self.lastitem = item - 2
     for item in submitsuggests:
       if item in skips or item not in translations:
         continue
@@ -493,6 +498,7 @@ class TranslatePage(pagelayout.PootleNavPage):
             "item": item,
             "copy_text": self.localize("Copy"),
             "skip": self.localize("Skip"),
+            "back": self.localize("Back"),
             "suggest": self.localize("Suggest"),
             "submit": self.localize("Submit"),
             "specialchars": specialchars,
@@ -517,7 +523,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       focusbox = ""
       spellargs = {"standby_url": "spellingstandby.html", "js_url": "/js/spellui.js", "target_url": "spellcheck.html"}
       if len(trans) > 1:
-        buttons = self.gettransbuttons(item, ["skip", "suggest", "translate"])
+        buttons = self.gettransbuttons(item, ["back", "skip", "suggest", "translate"])
         forms = []
         for pluralitem, pluraltext in enumerate(trans):
           pluralform = self.localize("Plural Form %d", pluralitem)
@@ -528,7 +534,7 @@ class TranslatePage(pagelayout.PootleNavPage):
             focusbox = textid
         transdict["forms"] = forms
       else:
-        buttons = self.gettransbuttons(item, ["skip", "copy", "suggest", "translate", "resize"])
+        buttons = self.gettransbuttons(item, ["back", "skip", "copy", "suggest", "translate", "resize"])
         transdict["text"] = self.escapefortextarea(trans[0])
         textid = "trans%d" % item
         focusbox = textid
@@ -539,7 +545,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     else:
       # TODO: work out how to handle this (move it up?)
       transdict = self.gettransview(item, trans, textarea=True)
-      buttons = self.gettransbuttons(item, ["skip"])
+      buttons = self.gettransbuttons(item, ["back", "skip"])
     transdict["buttons"] = buttons
     return transdict
 
