@@ -1127,6 +1127,14 @@ class TranslationProject(object):
     pofile.track(item, "suggestion by %s rejected by %s" % (self.getsuggester(pofile, item, suggitem), session.username))
     pofile.deletesuggestion(item, suggitem)
 
+  def gettmsuggestions(self, pofile, item):
+    """find all the suggestions submitted for the given (pofile or pofilename) and item"""
+    if isinstance(pofile, (str, unicode)):
+      pofilename = pofile
+      pofile = self.getpofile(pofilename)
+    tmsuggestpos = pofile.gettmsuggestions(item)
+    return tmsuggestpos
+
   def savepofile(self, pofilename):
     """saves changes to disk..."""
     pofile = self.getpofile(pofilename)
