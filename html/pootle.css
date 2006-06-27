@@ -202,9 +202,11 @@ div.intro {
 	font-size:large;
 	font-weight:normal;
 	text-align:left;
-  	padding:15px;
+	padding-top: 15px;
+	padding-bottom: 15px;
 	border-top:1px dotted #999;
 	border-bottom:1px dotted #999;
+	width: 72%;
 }
 .header
 {
@@ -220,12 +222,14 @@ div.intro {
 
 #links
 {
-	float: right;
+	position: absolute;
+	right: 0px;
+	top: 0px;
 	padding-right:21px;
 	padding-left:15px;
 	margin-left:0px;
 	margin-right:0px;
-	padding-bottom:20px;
+	padding-bottom:10px;
 	border-left: 1px dotted #999;
 	border-bottom:1px dotted #999;
 	width:20%;
