@@ -107,9 +107,11 @@
                       <input type="submit" name="accept${sugg.suggid}" value="${accept_button}"/>
                       <input type="submit" name="reject${sugg.suggid}" value="${reject_button}"/>
                     </span>
+                    <input py:if="sugg.back" type="submit" name="back${sugg.back.item}" accesskey="b" value="${sugg.back.text}"/>
                     <input py:if="sugg.skip" type="submit" name="skip${sugg.skip.item}" accesskey="k" value="${sugg.skip.text}"/>
                     <br />
                   </span>
+                  <input py:if="item.trans.back" type="submit" name="back${item.trans.back.item}" accesskey="b" value="${item.trans.back.text}"/>
                   <input py:if="item.trans.skip" type="submit" name="skip${item.trans.skip.item}" accesskey="k" value="${item.trans.skip.text}"/>
                 </span>
 

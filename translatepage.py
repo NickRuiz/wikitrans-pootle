@@ -659,13 +659,17 @@ class TranslatePage(pagelayout.PootleNavPage):
                   "forms": forms,
                   "suggid": "%d.%d" % (item, suggid),
                   "canreview": "review" in self.rights,
+                  "back": None,
                   "skip": None,
                  }
       suggitems.append(suggdict)
+    backbutton = {"item": item, "text": self.localize("Back")}
     skipbutton = {"item": item, "text": self.localize("Skip")}
     if suggitems:
+      suggitems[-1]["back"] = backbutton
       suggitems[-1]["skip"] = skipbutton
     else:
+      transdict["back"] = backbutton
       transdict["skip"] = skipbutton
     transdict["suggestions"] = suggitems
     return transdict
