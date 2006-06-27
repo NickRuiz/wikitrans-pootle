@@ -117,6 +117,7 @@ class pootlefile(po.pofile):
       self.filename = os.path.join(self.project.podir, self.pofilename)
     self.statsfilename = self.filename + os.extsep + "stats"
     self.pendingfilename = self.filename + os.extsep + "pending"
+    self.tmfilename = self.filename + os.extsep + "tm"
     self.assignsfilename = self.filename + os.extsep + "assigns"
     self.pendingfile = None
     # we delay parsing until it is required
@@ -184,6 +185,17 @@ class pootlefile(po.pofile):
     output = str(self.pendingfile)
     open(self.pendingfilename, "w").write(output)
     self.pendingmtime = getmodtime(self.pendingfilename)
+
+  def readtmfile(self):
+    """reads and parses the tm file corresponding to this po file"""
+    if os.path.exists(self.tmfilename):
+      tmmtime = getmodtime(self.tmfilename)
+      if tmmtime == getattr(self, "tmmtime", None):
+        return
+      inputfile = open(self.tmfilename, "r")
+      self.tmmtime, self.tmfile = tmmtime, po.pofile(inputfile, unitclass=self.UnitClass)
+    else:
+      self.tmfile = po.pofile(unitclass=self.UnitClass)
 
   def getstats(self):
     """reads the stats if neccessary or returns them from the cache"""
@@ -513,6 +525,15 @@ class pootlefile(po.pofile):
     del self.pendingfile.units[pendingitem]
     self.savependingfile()
     self.reclassifyelement(item)
+
+  def gettmsuggestions(self, item):
+    """find all the tmsuggestion items submitted for the given (pofile or pofilename) and item"""
+    self.readtmfile()
+    thepo = self.transelements[item]
+    locations = thepo.getlocations()
+    # TODO: review the matching method
+    suggestpos = [suggestpo for suggestpo in self.tmfile.units if suggestpo.getlocations() == locations]
+    return suggestpos
 
   def getitemslen(self):
     """gets the number of items in the file"""
