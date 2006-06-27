@@ -225,14 +225,29 @@ div.intro {
 	position: absolute;
 	right: 0px;
 	top: 0px;
-	padding-right:21px;
+	padding-right:15px;
 	padding-left:15px;
 	margin-left:0px;
 	margin-right:0px;
 	padding-bottom:10px;
 	border-left: 1px dotted #999;
 	border-bottom:1px dotted #999;
-	width:20%;
+	width:22%;
+}
+#tm
+{
+	position: absolute;
+	right: 0px;
+	padding-right:15px;
+	padding-left:15px;
+	margin-left:0px;
+	margin-right:0px;
+	padding-bottom:5px;
+	border-top: 1px dotted #999;
+	border-left: 1px dotted #999;
+	border-bottom:1px dotted #999;
+	width: 22%;
+	/* IE and Opera versions before 9.0 calculates 20% of wrong value :-( */
 }
 .sidetitle
 {
@@ -255,6 +270,23 @@ div.intro {
 	font-weight:normal;
 	line-height:150%;
 	padding:2px;
+}
+.tm-unit
+{
+	margin: 5px 0px 5px 2px;
+	padding: 0px 2px 0px 2px;
+	background-color: #F7F7F7;
+	position: relative;
+	left: -10px;
+	width: 104%;
+}
+.tm-original
+{
+	font-weight: bold;
+}
+.tm-translation
+{
+	font-style: italic
 }
 .translation-text
 {
