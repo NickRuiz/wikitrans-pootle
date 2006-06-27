@@ -61,6 +61,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     # TODO: clean up modes to be one variable
     self.viewmode = self.argdict.get("view", 0) and "view" in self.rights
     self.reviewmode = self.argdict.get("review", 0)
+    self.translatemode = self.argdict.get("translate", 0)
     notice = {}
     try:
       self.finditem()
@@ -371,9 +372,12 @@ class TranslatePage(pagelayout.PootleNavPage):
 
   def maketable(self):
     self.translations = self.gettranslations()
+    items = []
+    tmsuggestions = []
     if self.reviewmode and self.item is not None:
       suggestions = {self.item: self.project.getsuggestions(self.pofilename, self.item)}
-    items = []
+    if self.translatemode and self.item is not None:
+      tmsuggestions = self.project.gettmsuggestions(self.pofilename, self.item)
     for row, thepo in enumerate(self.translations):
       orig = thepo.unquotedmsgid
       trans = thepo.unquotedmsgstr
@@ -383,6 +387,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       if item in self.editable:
         comments = thepo.getnotes().replace("\n", "\n<br />")
         locations = " ".join(thepo.getlocations())
+        tm = tmsuggestions
         
         if self.reviewmode:
           itemsuggestions = [suggestion.unquotedmsgstr for suggestion in suggestions[item]]
@@ -392,6 +397,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       else:
         comments = ""
         locations = ""
+        tm = []
         transmerge = self.gettransview(item, trans)
       transdict = {"itemid": "trans%d" % item,
                    "focus_class": origdict["focus_class"],
@@ -420,6 +426,7 @@ class TranslatePage(pagelayout.PootleNavPage):
                  "state_class": state_class,
                  "comments": comments,
                  "locations": locations,
+                 "tm": tm,
                  }
       items.append(itemdict)
     return items
