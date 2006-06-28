@@ -40,10 +40,26 @@
   </div>
 
   <div id="links">
+    <!-- Account information -->
+    <div class="account">
+    <div class="side">
+      <img src="/images/person.png" class="icon" alt="" />
+    </div>
+    <div class="side" py:if="session.isopen">
+      <span py:content="XML(session.status)">logged in as <b>somebody</b></span> |
+      <a href="/?islogout=1" py:content="links.logout">Log Out</a>
+    </div>
+    <div class="side" py:if="not session.isopen">
+      <a href="/login.html" py:content="links.login">Log In</a> | 
+      <a href="/register.html" py:content="links.register">Register</a> | 
+      <a href="/activate.html" py:content="links.activate">Activate</a>
+    </div>
+    </div>
+    <br clear="all" />
+    
     <div class="sidetitle" py:content="instancetitle">
       Pootle
     </div>
-
     <div class="side">
       <a href="/" py:content="links.home">Home</a> 
       | <a href="/projects/" py:content="links.projects">All Projects</a> 
@@ -51,20 +67,6 @@
       <span py:if="session.isopen"> | <a href="/home/" py:content="links.account">My account</a> </span> 
       <span py:if="session.issiteadmin"> | <a href="/admin/" py:content="links.admin">Admin</a> </span>
       | <a href="/doc/index.html" py:content="links.doc">Docs &amp; Help</a>
-    </div>
-
-    <div class="side">
-      <img src="/images/person.png" class="icon" alt="" />
-    </div>
-
-    <div class="side" py:if="session.isopen">
-      <a href="/?islogout=1" py:content="links.logout">Log Out</a>
-      <span py:content="XML(session.status)">logged in as <b>somebody</b></span>
-    </div>
-    <div class="side" py:if="not session.isopen">
-      <a href="/login.html" py:content="links.login">Log In</a> | 
-      <a href="/register.html" py:content="links.register">Register</a> | 
-      <a href="/activate.html" py:content="links.activate">Activate</a>
     </div>
 
   </div>

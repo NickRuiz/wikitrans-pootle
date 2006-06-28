@@ -275,6 +275,11 @@ div.intro {
 	line-height:150%;
 	padding:2px;
 }
+.account
+{
+	float: right;
+	text-align: right;
+}
 .tm-unit
 {
 	margin: 5px 0px 5px 2px;
