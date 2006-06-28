@@ -15,7 +15,7 @@ class TestPootleUnit(test_po.TestPOUnit):
     def poparse(self, posource):
         """helper that parses po source without requiring files"""
         dummyfile = wStringIO.StringIO(posource)
-        pofile = po.pofile(dummyfile, elementclass=self.UnitClass)
+        pofile = po.pofile(dummyfile, unitclass=self.UnitClass)
         return pofile
 
     def test_unquoting(self):
