@@ -128,7 +128,7 @@
                   <!-- Translation memory -->
                   <div py:if="item.tm" id="tm">
                     <div class="sidetitle">Translation memory</div>
-                    <div py:for ="unit in item.tm" class="tm-unit" onclick="alert('blabla'); return false;">
+                    <div py:for ="unit in item.tm" class="tm-unit">
                       <span class="tm-original">${unit.source}</span>
                       <span class="tm-translation">${unit.target}</span>
                     </div>
