@@ -44,6 +44,10 @@ div.navbar
 	background-color: #cfd1d3;
 	padding: 5px;
 }
+div.searchform
+{
+	float: right;
+}
 div.goalitem 
 {
 	margin-bottom:6px;
