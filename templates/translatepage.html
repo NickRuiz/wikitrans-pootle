@@ -156,7 +156,7 @@
                   <!-- Buttons, resize links, special characters -->
                   <span py:strip="True" py:for="buttons in [item.trans.buttons]">
                     <div>
-                      <input py:if="'back' in buttons.desired" type="submit" name="back${buttons.item}" accesskey="b" value="${buttons.back}"/>
+                      <input py:if="'back' in buttons.desired" type="button" name="back${buttons.item}" accesskey="b" value="${buttons.back}" onclick="history.back(); return false;" />
                       <input py:if="'skip' in buttons.desired" type="submit" name="skip${buttons.item}" accesskey="k" value="${buttons.skip}"/>
                       <input type="button" py:if="'copy' in buttons.desired" accesskey="c"
                         onclick="document.forms.translate.trans${buttons.item}.value = document.getElementById('orig-pure${buttons.item}.0').value ; document.forms.translate.trans${buttons.item}.focus(); return false"
