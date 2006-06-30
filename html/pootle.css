@@ -1,8 +1,8 @@
 a 		{ color: #7090B7; text-decoration: none; }
 a:link		{ color: #004077; text-decoration: none; }
 a:visited	{ color: #004077; text-decoration: none; }
-a:active	{ color: #004077; text-decoration: underline; }
-a:hover		{ color: #004077; text-decoration: underline; }
+a:hover[href]	{ color: #004077; text-decoration: underline; }
+a:active[href]	{ color: #004077; text-decoration: underline; }
 h1, h2, h3
 {
 	margin: 0px;
@@ -295,7 +295,7 @@ div.intro {
 }
 .tm-translation
 {
-	font-style: italic
+	font-style: italic;
 }
 .translation-text
 {
