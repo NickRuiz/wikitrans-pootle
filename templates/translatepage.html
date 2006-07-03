@@ -128,7 +128,7 @@
                   <!-- Translation memory -->
                   <div py:if="item.tm" id="tm">
                     <div class="sidetitle">Translation memory</div>
-                    <div py:for ="unit in item.tm" class="tm-unit">
+                    <div py:for ="unit in item.tm" class="tm-unit" title="${unit.getnotes()}">
                       <span class="tm-original">${unit.source}</span>
                       <span class="tm-translation">${unit.target}</span>
                     </div>
@@ -181,9 +181,9 @@
                 </span>
 
                 <!-- Normal view mode -->
-                <span py:if="not item.editable" class="${item.state_class}">
+                <div py:if="not item.editable" class="${item.state_class}" style="min-height: 1.5em;" ondblclick="document.location='${item.trans.editlink.href}';">
                   <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
-                  <span py:if="not item.trans.isplural" py:strip="True" py:content="XML(item.trans.text)">
+                  <span py:if="not item.trans.isplural" py:content="XML(item.trans.text)">
                     text
                   </span>
                   <span py:if="item.trans.isplural" class="translation-text">
@@ -192,7 +192,7 @@
                       <span py:replace="XML(form.text)">Text</span><br />
                     </span>
                   </span>
-                </span>
+                </div>
               </div>
             </td>
           </tr>
