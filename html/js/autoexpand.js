@@ -117,7 +117,7 @@ function mouseGoesOut()
 	if (this.partner)
 		if (this.partner.timeevent)
 			clearTimeout(this.partner.timeevent);
-	this.timeevent = setTimeout('timedcontraction("'+this.id+'")', 300);
+	this.timeevent = setTimeout('timedcontraction("'+this.id+'")', 1000);
 }
 
 function mouseClick()
