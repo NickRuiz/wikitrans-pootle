@@ -68,13 +68,13 @@
             <td colspan="1" rowspan="1" class="translate-original translate-original-${item.polarity} ${item.focus_class}">
               <div id="${item.orig.itemid}" class="translate-original ${item.orig.focus_class}">
                 <input py:for="field in item.orig.pure" type="hidden" name="${field.pureid}" value="${field.value}" id="${field.pureid}"/>
-                <div py:if="not item.orig.isplural" py:replace="XML(item.orig.text)">
+                <div py:if="not item.orig.isplural" class="translation-text" py:content="XML(item.orig.text)">
                 </div>
                 <span py:if="item.orig.isplural" py:strip="True">
                   <span class="translation-text-headers" py:content="item.orig.singular_title">Singular</span><br />
-                  <span py:content="XML(item.orig.singular_text)">singular text</span><br />
+                  <span class="translation-text" py:content="XML(item.orig.singular_text)">singular text</span><br />
                   <span class="translation-text-headers" py:content="item.orig.plural_title">Plural</span><br />
-                  <span py:content="XML(item.orig.plural_text)">plural text</span><br />
+                  <span class="translation-text" py:content="XML(item.orig.plural_text)">plural text</span><br />
                 </span>
                 <div py:if="item.editable and item.comments" class="translate-comments" py:content="XML(item.comments)">
                    Comments
@@ -136,7 +136,7 @@
                   <!-- No plurals -->
                   <span py:if="not item.trans.isplural" py:strip="True">
                     <!--! TODO: spell checking -->
-                    <textarea class="${item.state_class}" name="${item.trans.itemid}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(item.trans.text)">
+                    <textarea class="translation ${item.state_class}" name="${item.trans.itemid}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(item.trans.text)">
                       translatable text
                     </textarea>
                   </span>
@@ -146,7 +146,7 @@
                       <div class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</div><br />
                       <!--! TODO: spell checking -->
                       <div>
-                        <textarea class="${item.state_class}" name="${form.name}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(form.text)">
+                        <textarea class="translation ${item.state_class}" name="${form.name}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(form.text)">
                           translatable text for plural form
                         </textarea>
                       </div>
@@ -183,9 +183,9 @@
                 <!-- Normal view mode -->
                 <div py:if="not item.editable" class="${item.state_class}" style="min-height: 1.5em;" ondblclick="document.location='${item.trans.editlink.href}';">
                   <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
-                  <span py:if="not item.trans.isplural" py:content="XML(item.trans.text)">
+                  <div py:if="not item.trans.isplural" class="translation-text" py:content="XML(item.trans.text)">
                     text
-                  </span>
+                  </div>
                   <span py:if="item.trans.isplural" class="translation-text">
                     <span py:for="form in item.trans.forms" py:strip="True">
                       <span class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</span><br />

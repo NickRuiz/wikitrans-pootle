@@ -85,7 +85,6 @@ div.translate-form
 table.translate-table
 {
 	width:100%;
-	padding:10px;
 	border-spacing:1px;
 	border:0;
 }
@@ -297,10 +296,15 @@ div.intro {
 {
 	font-style: italic;
 }
+textarea.translation
+{
+	max-width: 100%;
+}
 .translation-text
 {
-	float: left;
+	max-width: 100%;
 	text-align: left;
+	overflow: auto;
 }
 .translation-text-headers
 {
