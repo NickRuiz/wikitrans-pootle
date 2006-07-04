@@ -43,6 +43,7 @@ div.navbar
 	margin-bottom:10px;
 	background-color: #cfd1d3;
 	padding: 5px;
+	min-height: 1.8em;
 }
 div.searchform
 {
