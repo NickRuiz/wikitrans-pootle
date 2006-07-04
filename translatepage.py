@@ -489,7 +489,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       translateurl = "?translate=1&item=%d&pofilename=%s" % (item, urllib.quote(self.pofilename, '/'))
       return {"href": translateurl, "text": self.localize("Edit"), "linkid": "editlink%d" % item}
     else:
-      return None
+      return {}
 
   def gettransbuttons(self, item, desiredbuttons):
     """gets buttons for actions on translation"""
