@@ -367,7 +367,6 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
             pofile = project.getpofile(pofilename, freshen=False)
             page = widgets.SendFile(pofile.filename)
             page.etag = str(pofile.pomtime)
-            page.allowcaching = True
             encoding = pofile.encoding or "UTF-8"
             page.content_type = "text/plain; charset=%s" % encoding
             return page
@@ -385,7 +384,6 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
             page.etag = str(etag)
           else:
             page = widgets.PlainContents(filepath_or_contents)
-          page.allowcaching = True
           if extension == "csv":
             page.content_type = "text/plain; charset=UTF-8"
           elif extension == "xlf" or extension == "ts":
