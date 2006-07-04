@@ -279,6 +279,10 @@ div.intro {
 	float: right;
 	text-align: right;
 }
+.upload
+{
+	width: 100%;
+}
 .tm-unit
 {
 	margin: 5px 0px 5px 2px;

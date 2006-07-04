@@ -127,7 +127,9 @@
     </div>
 
     <form py:if="upload" action="" method="post" name="uploadform" enctype="multipart/form-data">
-      <input type="file" name="uploadfile" title="${upload.file_title}" />
+      <div>
+        <input type="file" name="uploadfile" size="15" class="upload" title="${upload.file_title}" />
+      </div>
       <input type="submit" name="doupload" value="${upload.button}" />
     </form>
 
