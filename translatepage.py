@@ -381,6 +381,17 @@ class TranslatePage(pagelayout.PootleNavPage):
     for row, thepo in enumerate(self.translations):
       orig = thepo.unquotedmsgid
       trans = thepo.unquotedmsgstr
+      nplurals, plurals = self.project.getpofile(self.pofilename).getheaderplural()
+      if len(orig) > 1:
+        if not (nplurals and nplurals.isdigit()):
+          # The file doesn't have plural information declared. Let's get it from
+          # the language
+          nplurals = getattr(getattr(self.session.instance.languages, self.project.languagecode, None), "nplurals", "")
+        nplurals = int(nplurals)
+        if len(trans) != nplurals:
+          # Chop if in case it is too long
+          trans = trans[:nplurals]
+          trans.extend([u""]* (nplurals-len(trans)))
       item = self.firstitem + row
       origdict = self.getorigdict(item, orig, item in self.editable)
       transmerge = {}
