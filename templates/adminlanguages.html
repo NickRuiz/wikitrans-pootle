@@ -51,8 +51,11 @@
           </tr>
 
           <tr>
-            <td colspan="1" rowspan="1" py:for="option in options">
+            <td colspan="1" rowspan="1" style="min-width: 6em;" py:for="option in options">
               <input type="text" py:if="option.newname" name="${option.newname}" value="${option.newvalue}" size="${option.size}"/>
+              <span style="visibility: hidden;" py:if="'newname' not in option">
+                ------------------------------              
+              </span>
             </td>
           </tr>
         </table><input type="submit" name="changelanguages" value="${text.savechanges}" />

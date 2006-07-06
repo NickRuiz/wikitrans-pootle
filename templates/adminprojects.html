@@ -57,7 +57,7 @@
           </tr>
 
           <tr>
-            <td colspan="1" rowspan="1" py:for="option in options">
+            <td colspan="1" rowspan="1" style="min-width: 6em;" py:for="option in options">
               <span py:if="'newname' in option">
                 <input type="${option.type}" py:if="not option.selectoptions" value="${option.newvalue}" name="${option.newname}" size="${option.size}"/>
                 <select name="${option.newname}" value="${option.newvalue}" py:if="'selectoptions' in option">
