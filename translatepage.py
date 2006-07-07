@@ -444,9 +444,6 @@ class TranslatePage(pagelayout.PootleNavPage):
 
   def fancyspaces(self, string):
     """Returns the fancy spaces that are easily visible."""
-    #Kid unfortunately inserts extra spaces if we don't put the tags next to
-    #each other. This means that copy/paste doesn't work. Hopefully fixed in
-    #future versions.
     spaces = string.group()
     while spaces[0] in "\t\n\r":
       spaces = spaces[1:]
