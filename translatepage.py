@@ -442,15 +442,35 @@ class TranslatePage(pagelayout.PootleNavPage):
       items.append(itemdict)
     return items
 
+  def fancyspaces(self, string):
+    """Returns the fancy spaces that are easily visible."""
+    #Kid unfortunately inserts extra spaces if we don't put the tags next to
+    #each other. This means that copy/paste doesn't work. Hopefully fixed in
+    #future versions.
+    spaces = string.group()
+    while spaces[0] in "\t\n\r":
+      spaces = spaces[1:]
+    return '<span class="translation-space"> </span>\n' * len(spaces)
+
   def escapetext(self, text):
     """Replace special characters &, <, >, add and handle quotes if asked"""
     text = text.replace("&", "&amp;") # Must be done first!
     text = text.replace("<", "&lt;").replace(">", "&gt;")
-    #TODO:Show fancy spaces
+    
     text = text.replace("\r\n", '\\r\\n<br />\n')
     text = text.replace("\n", '\\n<br />\n')
     text = text.replace("\r", '\\r<br />\n')
     text = text.replace("\t", '\\t')
+
+    #Show fancy spaces
+    #More than two consecutive:
+    text = sre.sub("[ ]{2,}", self.fancyspaces, text)
+    #At start of string
+    text = sre.sub("^[ ]+", self.fancyspaces, text)
+    #After newline
+    text = sre.sub("\\n([ ]+)", self.fancyspaces, text)
+    #At end of string
+    text = sre.sub("[ ]+$", self.fancyspaces, text)
     return text
 
   def escapefortextarea(self, text):

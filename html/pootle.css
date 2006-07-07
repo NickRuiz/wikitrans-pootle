@@ -310,6 +310,15 @@ textarea.translation
 	max-width: 100%;
 	text-align: left;
 	overflow: auto;
+/*        white-space: pre-wrap;*/
+}
+.translation-space
+{
+	border-bottom: 1px solid #BBB;
+	margin: 0em 0.2em 0em 0.2em;
+	padding: 0em 0.2em 0em 0.2em;
+	width: 0px;
+	letter-spacing: -0.5em;
 }
 .translation-text-headers
 {
