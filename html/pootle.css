@@ -131,6 +131,14 @@ td.translate-translation
 .translate-translation-fuzzy
 {
 	color: #666;
+	border-left: 4px solid #AAA;
+	padding-left: 3px;
+}
+textarea.translate-translation-fuzzy
+{
+	color: black;
+	border-left: 6px groove gray;
+	padding-left: 3px;
 }
 .translate-suggestion
 {
