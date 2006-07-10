@@ -91,7 +91,6 @@
                 <!-- Review suggestions -->
                 <span py:if="item.editable and reviewmode" class="translation-text">
                   <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
-                  
                   <b class="${item.state_class}" py:content="item.trans.current_title">Current Translation:</b><br />
                   <span py:for="form in item.trans.forms" py:strip="True">
                     <span class="translation-text-headers" py:if="form.title" py:content="form.title">Plural Form ${form.n}</span>
@@ -185,7 +184,9 @@
                   action = "document.location='%s';"
                 ?>
                 <div py:if="not item.editable" class="${item.state_class}" style="min-height: 1.5em;" ondblclick="${not item.trans.editlink or action % item.trans.editlink.href}">
-                  <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
+                  <div class="translation-action">
+                    <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
+                  </div>
                   <div py:if="not item.trans.isplural" class="translation-text" py:content="XML(item.trans.text)">
                     text
                   </div>

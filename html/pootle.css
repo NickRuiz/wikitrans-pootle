@@ -327,11 +327,22 @@ textarea.translation
 	font-weight: bold;
 	color: #006699;
 }
-.translation-action
+a.translation-action
+{
+/*        text-align: right;*/
+	display: none;
+	position: absolute;
+	background: white;
+	border: 1px dotted gray;
+	margin: 2px;
+	padding: 2px;
+	z-index: 2;
+}
+div.translation-action
 {
 	float: right;
-	text-align: right;
-	display: none;
+	width: 0px;
+	height: 0px;
 }
 .translation-highlight-space
 {
