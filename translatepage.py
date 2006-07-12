@@ -382,16 +382,20 @@ class TranslatePage(pagelayout.PootleNavPage):
       orig = thepo.unquotedmsgid
       trans = thepo.unquotedmsgstr
       nplurals, plurals = self.project.getpofile(self.pofilename).getheaderplural()
-      if len(orig) > 1:
-        if not (nplurals and nplurals.isdigit()):
-          # The file doesn't have plural information declared. Let's get it from
-          # the language
-          nplurals = getattr(getattr(self.session.instance.languages, self.project.languagecode, None), "nplurals", "")
-        nplurals = int(nplurals)
-        if len(trans) != nplurals:
-          # Chop if in case it is too long
-          trans = trans[:nplurals]
-          trans.extend([u""]* (nplurals-len(trans)))
+      try:
+        if len(orig) > 1:
+          if not (nplurals and nplurals.isdigit()):
+            # The file doesn't have plural information declared. Let's get it from
+            # the language
+            nplurals = getattr(getattr(self.session.instance.languages, self.project.languagecode, None), "nplurals", "")
+          nplurals = int(nplurals)
+          if len(trans) != nplurals:
+            # Chop if in case it is too long
+            trans = trans[:nplurals]
+            trans.extend([u""]* (nplurals-len(trans)))
+      except Exception:
+        # Something went wrong, lets just give nothing
+        trans = []
       item = self.firstitem + row
       origdict = self.getorigdict(item, orig, item in self.editable)
       transmerge = {}
@@ -568,11 +572,18 @@ class TranslatePage(pagelayout.PootleNavPage):
           if not focusbox:
             focusbox = textid
         transdict["forms"] = forms
-      else:
+      elif trans:
         buttons = self.gettransbuttons(item, ["back", "skip", "copy", "suggest", "translate", "resize"])
         transdict["text"] = self.escapefortextarea(trans[0])
         textid = "trans%d" % item
         focusbox = textid
+      else:
+        # Perhaps there is no plural information available
+        buttons = self.gettransbuttons(item, ["back", "skip"])
+        transdict["text"] = self.escapefortextarea(self.localize("Translation not possible because plural information for your language is not available. Please contact the site administrator."))
+        textid = "trans%d" % item
+        focusbox = textid
+        
       transdict["can_spell"] = spellcheck.can_check_lang(self.project.languagecode)
       transdict["spell_args"] = spellargs
       transdict["buttons"] = buttons
@@ -716,7 +727,10 @@ class TranslatePage(pagelayout.PootleNavPage):
         form = {"title": self.localize("Plural Form %d", pluralitem), "n": pluralitem, "text": escapefunction(pluraltext)}
         forms.append(form)
       transdict["forms"] = forms
-    else:
+    elif trans:
       transdict["text"] = escapefunction(trans[0])
+    else:
+      # Error, problem with plurals perhaps?
+      transdict["text"] = ""
     return transdict
 
