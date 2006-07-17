@@ -793,7 +793,6 @@ class TranslationProject(object):
     if indexer.HAVE_INDEXER and search.searchtext:
       # TODO: move this up a level, use index to manage whole search, so we don't do this twice
       hits = self.indexsearch(search, "pofilename")
-      print "ran search %s, got %d hits" % (search.searchtext, len(hits))
       searchpofilenames = dict.fromkeys([hit["pofilename"] for hit in hits])
     else:
       searchpofilenames = None
