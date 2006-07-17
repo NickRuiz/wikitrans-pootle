@@ -20,7 +20,7 @@
 <body bgcolor="#FFFFFF">
   <div id="banner" over:include="pootlepage#banner"/>
 
-  <div id="content">
+  <div id="content" dir="$uidir" lang="$uilanguage">
     <div class="navbar" py:for="item in navitems">
       <!-- search form -->
       <div py:if="search" class="searchform">
@@ -49,13 +49,14 @@
       </div>
     </div>
 
-    <div class="translate-form">
-      <span py:if="notice">
+    <div class="translate-form" dir="ltr">
+      <div py:if="notice" dir="$uidir">
         <h3 class="title">${notice.title}</h3>
         <div class="intro">${notice.stoppedby}</div>
         <a href="${notice.finishedlink}">${notice.returnlink}</a>
-      </span>
+      </div>
       <form py:if="not notice" action="${actionurl}" method="post" name="translate" id="translate">
+        <br clear="left" style="height: 0px;" />
         <table cellpadding="10" cellspacing="1" class="translate-table">
           <tr>
             <td colspan="1" rowspan="1" class="translate-table-title" py:content="original_title">original</td>
@@ -66,7 +67,7 @@
           <tr py:for="item in items">
             <!-- Cell with original -->
             <td colspan="1" rowspan="1" class="translate-original translate-original-${item.polarity} ${item.focus_class}">
-              <div id="${item.orig.itemid}" class="translate-original ${item.orig.focus_class}">
+              <div id="${item.orig.itemid}" class="translate-original ${item.orig.focus_class}" lang="en">
                 <input py:for="field in item.orig.pure" type="hidden" name="${field.pureid}" value="${field.value}" id="${field.pureid}"/>
                 <div py:if="not item.orig.isplural" class="translation-text" py:content="XML(item.orig.text)">
                 </div>
@@ -86,7 +87,7 @@
             </td>
 
             <!-- Cell with translation (view/suggest/review/edit) -->
-            <td colspan="1" rowspan="1" class="translate-translation translate-translation-${item.polarity} ${item.focus_class}">
+	    <td lang="$uilanguage" dir="$uidir" colspan="1" rowspan="1" class="translate-translation translate-translation-${item.polarity} ${item.focus_class}">
               <div id="${item.trans.itemid}" class="translate-translation ${item.orig.focus_class}">
                 <!-- Review suggestions -->
                 <span py:if="item.editable and reviewmode" class="translation-text">
@@ -127,15 +128,15 @@
                   <!-- Translation memory -->
                   <div py:if="item.tm" id="tm">
                     <div class="sidetitle">Translation memory</div>
-                    <div py:for ="unit in item.tm" class="tm-unit" title="${unit.getnotes()}">
+                    <div py:for ="unit in item.tm" class="tm-unit" title="${unit.getnotes()}" dir="ltr" lang="en">
                       <span class="tm-original">${unit.source}</span>
-                      <span class="tm-translation">${unit.target}</span>
+                      <span class="tm-translation" dir="$language.dir" lang="$language.code">${unit.target}</span>
                     </div>
                   </div>
                   <!-- No plurals -->
                   <span py:if="not item.trans.isplural" py:strip="True">
                     <!--! TODO: spell checking -->
-                    <textarea class="translation ${item.state_class}" name="${item.trans.itemid}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(item.trans.text)">
+                    <textarea dir="$language.dir" lang="$language.code" class="translation ${item.state_class}" name="${item.trans.itemid}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(item.trans.text)">
                       translatable text
                     </textarea>
                   </span>
@@ -145,7 +146,7 @@
                       <div class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</div><br />
                       <!--! TODO: spell checking -->
                       <div>
-                        <textarea class="translation ${item.state_class}" name="${form.name}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(form.text)">
+                        <textarea dir="$language.dir" lang="$language.code" class="translation ${item.state_class}" name="${form.name}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(form.text)">
                           translatable text for plural form
                         </textarea>
                       </div>
@@ -184,10 +185,10 @@
                   action = "document.location='%s';"
                 ?>
                 <div py:if="not item.editable" class="${item.state_class}" style="min-height: 1.5em;" ondblclick="${not item.trans.editlink or action % item.trans.editlink.href}">
-                  <div class="translation-action">
-                    <a py:if="item.trans.editlink" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
+                  <div dir="$language.dir" lang="$language.code" class="translation-action">
+                    <a py:if="item.trans.editlink" lang="$uilanguage" dir="$uidir" href="${item.trans.editlink.href}" class="translation-action" py:content="item.trans.editlink.text" id="${item.trans.editlink.linkid}">Edit</a>
                   </div>
-                  <div py:if="not item.trans.isplural" class="translation-text" py:content="XML(item.trans.text)">
+                  <div dir="$language.dir" lang="$language.code" py:if="not item.trans.isplural" class="translation-text" py:content="XML(item.trans.text)">
                     text
                   </div>
                   <span py:if="item.trans.isplural" class="translation-text">
@@ -207,7 +208,7 @@
         <input type="hidden" name="pofilename" value="${pofilename}" />
       </form>
 
-      <div class="item-statistics" py:if="pagelinks">
+      <div class="item-statistics" py:if="pagelinks" dir="$uidir" lang="$uilanguage">
         <span py:strip="True" py:for="pagelink in pagelinks">
           <a href="${pagelink.href}">${pagelink.text}</a>${pagelink.sep}
         </span>

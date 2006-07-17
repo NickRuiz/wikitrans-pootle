@@ -16,7 +16,7 @@
 <body bgcolor="#FFFFFF">
   <div id="banner" over:include="pootlepage#banner"/>
 
-  <div id="content">
+  <div id="content" dir="$uidir" lang="$uilanguage">
     <div class="contents"><h3 class="title" py:content="quicklinkstitle">Quick Links</h3>
       <div py:for="language in quicklinks" py:strip="True">
         <h3 class="title" py:for="language in quicklinks">
@@ -33,7 +33,7 @@
         Please click on 'Change options' and select some languages and projects
       </div>
     </div>
-
+    
     <div class="intro">
       <a href="options.html" py:content="optionslink">Change options</a>
     </div>

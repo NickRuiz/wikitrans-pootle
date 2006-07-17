@@ -16,12 +16,12 @@
 <body bgcolor="#FFFFFF">
   <div id="banner" over:include="pootlepage#banner"/>
 
-  <div id="content" py:if="not session.issiteadmin">
+  <div id="content" py:if="not session.issiteadmin" dir="$uidir" lang="$uilanguage">
     <div class="intro">
       You do not have the rights to administer Pootle
     </div>
   </div>
-  <div id="content" py:if="session.issiteadmin">
+  <div id="content" py:if="session.issiteadmin" dir="$uidir" lang="$uilanguage">
     <div class="intro">
       <a href="../home/" py:content="text.home">Home</a>
     </div>
