@@ -46,6 +46,13 @@ def localize_links(session):
   links["activate"] = session.localize("Activate")
   return links
 
+def languagedir(language):
+  """Returns whether the language is right to left"""
+  for code in ["ar", "fa", "he", "ks", "ps", "ur"]:
+    if language.startswith(code):
+      return "rtl"
+  return "ltr"
+    
 def completetemplatevars(templatevars, session, bannerheight=135):
   """fill out default values for template variables"""
   if not "instancetitle" in templatevars:
@@ -56,6 +63,8 @@ def completetemplatevars(templatevars, session, bannerheight=135):
   banner_layout["logo_alttext"] = session.localize("Pootle Logo")
   banner_layout["banner_alttext"] = session.localize("WordForge Translation Project")
   templatevars.update(banner_layout)
+  templatevars["uilanguage"] = session.language
+  templatevars["uidir"] = languagedir(session.language)
   templatevars["links"] = localize_links(session)
   if "search" not in templatevars:
     templatevars["search"] = None
@@ -190,6 +199,7 @@ class PootleNavPage(PootlePage):
     elif isinstance(numfiles, tuple):
       filestats = self.localize("%d/%d files", numfiles) + ", "
     else:
+      #TODO: Perhaps do better?
       filestats = self.nlocalize("%d file", "%d files", numfiles, numfiles) + ", "
     wordstats = self.localize("%d/%d words (%d%%) translated", translatedwords, totalwords, percentfinished)
     stringstatstext = self.localize("%d/%d strings", translated, total)
