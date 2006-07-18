@@ -24,6 +24,11 @@
  *             ordered by. This, in turn, allows us to correctly
  *             Javascript-sort them later. (kiko)
  *
+ * 2006-07-14: Added ability to honour odd/even row colouring.  It is hackish
+ *             as the styles are hardcoded and you get some screen jitter.
+ *             Should most probably be part of the actual sort code to prevent
+ *             the jittering. (dwayne)
+ *
  */
 
 addEvent(window, "load", sortables_init);
@@ -199,6 +204,14 @@ function ts_resortTable(lnk) {
         if (newRows[i].className && 
             (newRows[i].className.indexOf('sortbottom') != -1)) 
                 table.tBodies[0].appendChild(newRows[i]);
+    }
+
+    for (i=0;i<newRows.length;i++) { 
+        if (i % 2 == 0) {
+                  table.tBodies[0].rows[i].className = ('item item-even')
+        } else {
+                  table.tBodies[0].rows[i].className = ('item item-odd')
+        }
     }
 
     // Delete any other arrows there may be showing
