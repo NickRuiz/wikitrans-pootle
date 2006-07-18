@@ -48,7 +48,7 @@ def localize_links(session):
 
 def languagedir(language):
   """Returns whether the language is right to left"""
-  for code in ["ar", "fa", "he", "ks", "ps", "ur"]:
+  for code in ["ar", "fa", "he", "ks", "ps", "ur", "yi"]:
     if language.startswith(code):
       return "rtl"
   return "ltr"
