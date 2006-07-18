@@ -301,6 +301,7 @@ class TranslationProjectAdminPage(pagelayout.PootlePage):
     self.session = session
     self.localize = session.localize
     self.rightnames = self.project.getrightnames(session)
+    # l10n: This is the page title. The first parameter is the language name, the second parameter is the project name
     pagetitle = self.localize("Pootle Admin: %s %s", self.project.languagename, self.project.projectname)
     main_link = self.localize("Project home page")
     if "admin" in self.project.getrights(self.session):
