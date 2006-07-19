@@ -1,3 +1,18 @@
+/* Language codes that are styled with right-to-left (rtl) layout:
+   ar (Arabic)
+   fa (Persian)
+   he (Hebrew)
+   ks (Kashmir)
+   ps (Pashto)
+   ur (Urdu)
+   yi (Yiddish)
+   also see pagelayout.py::languagedir()
+*/
+/* Doesn't work: [dir="rtl"]*/
+*:lang(ar), *:lang(fa), *:lang(he), *:lang(ks), *:lang(ps), *:lang(ur), *:lang(yi)
+{
+	unicode-bidi: embed;
+}
 a 		{ color: #7090B7; text-decoration: none; }
 a:link		{ color: #004077; text-decoration: none; }
 a:visited	{ color: #004077; text-decoration: none; }
@@ -17,6 +32,10 @@ h1, h2, h3
 .icon
 {
 	float: left;
+}
+.icon[dir="rtl"]
+{
+	float: right;
 }
 div.autoexpand
 {
@@ -48,6 +67,11 @@ div.navbar
 div.searchform
 {
 	float: right;
+	max-width: 30%;
+}
+div.searchform[dir="rtl"]
+{
+	float: left;
 }
 div.goalitem 
 {
@@ -82,9 +106,11 @@ div.translate-form
 	font-family:verdana, arial, sans-serif; 
 	font-size: x-small; 
   	line-height:150%;
+	direction: ltr;
 }
 table.translate-table
 {
+	font-size: x-small;
 	width:100%;
 	border-spacing:1px;
 	border:0;
@@ -190,7 +216,6 @@ td.stats
 }
 td.stats-name
 {
-	text-align: left;
 	border: 1px dotted #999;
 }
 td.stats-graph
@@ -206,6 +231,7 @@ div.intro {
 	line-height:140%;
 	margin-bottom:15px;
 	margin-left:15px;
+	margin-right: 15px;
 }
 #banner
 {
@@ -219,6 +245,7 @@ div.intro {
 	border-top:1px dotted #999;
 	border-bottom:1px dotted #999;
 	width: 72%;
+	direction: ltr;
 }
 .header
 {
@@ -309,6 +336,10 @@ div.intro {
 {
 	font-style: italic;
 }
+.tm-translation[dir="rtl"]
+{
+	text-align: right;
+}
 textarea.translation
 {
 	max-width: 100%;
@@ -316,7 +347,6 @@ textarea.translation
 .translation-text
 {
 	max-width: 100%;
-	text-align: left;
 	overflow: auto;
 /*        white-space: pre-wrap;*/
 }
@@ -330,14 +360,11 @@ textarea.translation
 }
 .translation-text-headers
 {
-	float: left;
-	text-align: left;
 	font-weight: bold;
 	color: #006699;
 }
 a.translation-action
 {
-/*        text-align: right;*/
 	display: none;
 	position: absolute;
 	background: white;
@@ -351,6 +378,10 @@ div.translation-action
 	float: right;
 	width: 0px;
 	height: 0px;
+}
+div.translation-action[dir="rtl"]
+{
+	float: left;
 }
 .translation-highlight-space
 {
