@@ -17,7 +17,9 @@
   <div id="banner" over:include="pootlepage#banner"/>
 
   <div id="content" dir="$uidir" lang="$uilanguage">
-    <div class="intro">
+    <div class="intro" py:content="introtext">
+      Login failed
+    </div>
       <form action="" method="post" name="loginform" id="loginform">
         <table cellpadding="1" cellspacing="1">
           <tr>
@@ -47,7 +49,6 @@
         <input type="submit" name="Login" value="${login_text}" />
         <input type="hidden" name="islogin" value="true" />
       </form>
-    </div>
   </div>
 
   <div id="links" over:include="pootlepage#links"/>

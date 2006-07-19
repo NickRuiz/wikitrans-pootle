@@ -30,14 +30,14 @@ class RegistrationError(ValueError):
 
 class LoginPage(pagelayout.PootlePage):
   """wraps the normal login page in a PootlePage layout"""
-  def __init__(self, session, languagenames=None):
+  def __init__(self, session, languagenames=None, message=None):
     self.localize = session.localize
     self.languagenames = languagenames
     pagetitle = self.localize("Login to Pootle")
     templatename = "login"
     instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
-    templatevars = {"pagetitle": pagetitle,
+    templatevars = {"pagetitle": pagetitle, "introtext": message,
         "username_title": self.localize("Username:"),
         "username": getattr(session, 'username', ''),
         "password_title": self.localize("Password:"),
@@ -59,9 +59,12 @@ class LoginPage(pagelayout.PootlePage):
 
 class RegisterPage(pagelayout.PootlePage):
   """page for new registrations"""
-  def __init__(self, session, argdict):
+  def __init__(self, session, argdict, message=None):
     self.localize = session.localize
-    introtext = self.localize("Please enter your registration details")
+    if not message:
+      introtext = self.localize("Please enter your registration details")
+    else:
+      introtext = message
     pagetitle = self.localize("Pootle Registration")
     self.argdict = argdict
     templatename = "register"
@@ -357,9 +360,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
       try:
         displaymessage, redirecturl = self.handleregistration(session, argdict)
       except RegistrationError, message:
-        session.status = str(message)
-        displaymessage = session.status
-        return RegisterPage(session, argdict)
+        return RegisterPage(session, argdict, message)
       redirectpage = pagelayout.PootlePage("Redirecting...", {}, session)
       redirectpage.templatename = "redirect"
       redirectpage.templatevars = {

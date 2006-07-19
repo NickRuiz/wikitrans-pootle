@@ -214,9 +214,11 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
       if session.isopen:
         returnurl = argdict.get('returnurl', None) or getattr(self.instance, 'homepage', 'home/')
         return server.Redirect(returnurl)
+      message = None
       if 'username' in argdict:
         session.username = argdict["username"]
-      return users.LoginPage(session, languagenames=self.languagenames)
+	message = self.localize("Login failed")
+      return users.LoginPage(session, languagenames=self.languagenames, message=message)
     elif top == "register.html":
       return self.registerpage(session, argdict)
     elif top == "activate.html":
