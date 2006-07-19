@@ -53,10 +53,13 @@ def buildmatches(inputfile, outputfile, matcher):
             if not unit.source:
                 continue
             candidates = matcher.matches(unit.source)
-            for (score, source, target) in candidates:
+            for candidate in candidates:
+                score = float(candidate.getnotes())
+                source = candidate.source
+                target = candidate.target
                 newunit = outputfile.addsourceunit(source)
                 newunit.target = target
-                newunit.addnote("(TM-suggestion) %d%%" % score)
+                newunit.addnote("%d%%" % score)
                 newunit.addlocations(unit.getlocations())
     except exceptions.KeyboardInterrupt:
         # Let's write what we have so far
