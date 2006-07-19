@@ -9,7 +9,7 @@
 </head>
 <body>
   <div id="item" class="contentsitem">
-    <img src="/images/${item.icon}.png" class="icon" />
+    <img src="/images/${item.icon}.png" class="icon" dir="$uidir" lang="$uilanguage" />
     <h3 id="itemtitle" class="title"><a href="${item.href}">${item.title}</a></h3>
     <div id="actionlinks" class="item-description" py:if="item.actions">
       <span py:for="link in item.actions.basic" py:strip="True">
@@ -62,7 +62,7 @@
   </div>
   <div id="itemdata" class="item-statistics">
     <td class="stats-name">
-      <img src="/images/${item.icon}.png" type="button" class="icon" />
+      <img src="/images/${item.icon}.png" type="button" class="icon" dir="$uidir" lang="$uilanguage" />
       <h3 id="itemtitle" class="title"><a href="${item.href}">${item.title}</a></h3>
     </td>
     <span py:if="item.data" py:strip="True">

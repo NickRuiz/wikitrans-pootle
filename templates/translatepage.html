@@ -23,7 +23,7 @@
   <div id="content" dir="$uidir" lang="$uilanguage">
     <div class="navbar" py:for="item in navitems">
       <!-- search form -->
-      <div py:if="search" class="searchform">
+      <div py:if="search" class="searchform" dir="$uidir" lang="$uilanguage">
         <form action="translate.html" method="post" name="searchform" id="searchform">
           ${search.title}
           <input type="text" name="searchtext" value="" />
