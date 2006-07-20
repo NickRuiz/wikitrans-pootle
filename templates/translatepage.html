@@ -27,6 +27,7 @@
         <form action="translate.html" method="post" name="searchform" id="searchform">
           ${search.title}
           <input type="text" name="searchtext" value="" />
+          <input type="hidden" name="pofilename" value="${pofilename}" />
         </form>
       </div>
       <!-- Navigation bar -->
@@ -87,7 +88,7 @@
             </td>
 
             <!-- Cell with translation (view/suggest/review/edit) -->
-	    <td lang="$uilanguage" dir="$uidir" colspan="1" rowspan="1" class="translate-translation translate-translation-${item.polarity} ${item.focus_class}">
+            <td lang="$uilanguage" dir="$uidir" colspan="1" rowspan="1" class="translate-translation translate-translation-${item.polarity} ${item.focus_class}">
               <div id="${item.trans.itemid}" class="translate-translation ${item.orig.focus_class}">
                 <!-- Review suggestions -->
                 <span py:if="item.editable and reviewmode" class="translation-text">
@@ -217,10 +218,6 @@
   </div>
 
   <div id="links" over:include="pootlepage#links">
-    <form id="searchform">
-      <input type="hidden" name="pofilename" value="${pofilename}" />
-    </form>
-
     <div py:if="defined('assigns')" class="sidetitle" py:content="assigns.title">Assign Strings</div>
     <form py:if="defined('assigns')" action="?index=1" name="assignform">
       <select name="assignto" title="${assigns.user_title}">
