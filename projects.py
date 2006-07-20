@@ -31,6 +31,7 @@ from translate.convert import pot2po
 from translate.convert import po2oo
 from translate.tools import pocompile
 from translate.tools import pogrep
+from translate.search import match
 from Pootle import pootlefile
 from Pootle import versioncontrol
 from jToolkit import timecache
@@ -1127,12 +1128,38 @@ class TranslationProject(object):
     pofile.deletesuggestion(item, suggitem)
 
   def gettmsuggestions(self, pofile, item):
-    """find all the suggestions submitted for the given (pofile or pofilename) and item"""
+    """find all the TM suggestions for the given (pofile or pofilename) and item"""
     if isinstance(pofile, (str, unicode)):
       pofilename = pofile
       pofile = self.getpofile(pofilename)
     tmsuggestpos = pofile.gettmsuggestions(item)
     return tmsuggestpos
+
+  def gettermbase(self):
+    """returns the terminology store to be used for this project"""
+    termfilename = "pootle-terminology.po"
+    if termfilename in self.pofiles:
+      return self.pofiles[termfilename]
+    if not termfilename in self.pofiles and self.potree.hasproject(self.languagecode, "pootle"):
+      pootleproject = self.potree.getproject(self.languagecode, "pootle")
+      if termfilename in pootleproject.pofiles:
+        return pootleproject.pofiles[termfilename]
+    return None
+
+  def getterminology(self, pofile, item):
+    """find all the terminology for the given (pofile or pofilename) and item"""
+    if isinstance(pofile, (str, unicode)):
+      pofilename = pofile
+      pofile = self.getpofile(pofilename)
+    termbase = self.gettermbase()
+    if not termbase:
+      return []
+    try:
+      termbase.readpofile()
+      matcher = match.terminologymatcher(termbase)
+      return matcher.matches(pofile.transelements[item].source)
+    except Exception:
+      return []
 
   def savepofile(self, pofilename):
     """saves changes to disk..."""
