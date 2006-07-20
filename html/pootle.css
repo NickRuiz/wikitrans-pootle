@@ -42,7 +42,7 @@ div.autoexpand
 	max-height: 50px;
 	min-height: 1.5em;
 	overflow: hidden;
-	border-bottom: "";
+	border-bottom: none;
 }
 div.contents
 {
@@ -226,7 +226,6 @@ td.stats-graph
 div.intro {
 	font-family: verdana, arial, sans-serif;
 	color:#000;
-	font-size: normal;
 	font-weight:normal;
 	line-height:140%;
 	margin-bottom:15px;
@@ -385,16 +384,16 @@ div.translation-action[dir="rtl"]
 }
 .translation-highlight-space
 {
-	background-color: lightgray;
+	background-color: #d3d3d3;
 }
 .translation-highlight-accelerator
 {
-	color: darkyellow;
-	background-color: lightblue;
+	color: #8b8b00;
+	background-color: #add8e6;
 }
 .translation-highlight-variable
 {
-	color: darkred;
+	color: #8b0000;
 }
 .translation-highlight-escape
 {
