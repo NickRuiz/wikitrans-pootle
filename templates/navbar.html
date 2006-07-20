@@ -60,10 +60,10 @@
       <a py:if="astats.remove" href="${astats.remove.href}">${astats.remove.text}</a>
     </span>
   </div>
-  <div id="itemdata" class="item-statistics">
+  <div id="itemdata" class="item-statistics" py:strip="True">
     <td class="stats-name">
-      <img src="/images/${item.icon}.png" type="button" class="icon" alt="" dir="$uidir" lang="$uilanguage" />
-      <h3 id="itemtitle" class="title"><a href="${item.href}">${item.title}</a></h3>
+      <img src="/images/${item.icon}.png" class="icon" alt="" dir="$uidir" lang="$uilanguage" />
+      <h3 class="title"><a href="${item.href}">${item.title}</a></h3>
     </td>
     <span py:if="item.data" py:strip="True">
       <td class="stats">${item.data.translatedwords}</td><td class="stats">${item.data.translatedpercentage}%</td>
