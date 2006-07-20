@@ -74,7 +74,7 @@
       <div py:if="'isgoal' in item" class="goalitem">
         <div over:include="navbar#item">
           <div py:if="item.goal.users or item.goal.show_adduser">
-            <img src="/images/person.png" class="icon" alt="" />
+            <img src="/images/person.png" class="icon" alt="" dir="$uidir" lang="$uilanguage" />
             <span py:for="user in item.goal.users" py:strip="True">${user.name}${user.sep}</span>
             <form py:if="item.goal.show_adduser" action="" method="post" name="goaluserform">
               <input type="hidden" name="editgoalname" value="${item.goal.name}"/>
