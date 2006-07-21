@@ -343,7 +343,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       raise ValueError("getdisplayrows has no mode '%s'" % mode)
     usernode = self.getusernode()
     rowsdesired = getattr(usernode, prefsfield, default)
-    if isinstance(rowsdesired, str):
+    if isinstance(rowsdesired, basestring):
       if rowsdesired == "":
         rowsdesired = default
       else:
