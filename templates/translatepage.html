@@ -128,7 +128,7 @@
                 <span py:if="item.editable and not reviewmode" py:strip="True">
                   <!-- Translation memory -->
                   <div py:if="item.tm" id="tm">
-                    <div class="sidetitle">Translation memory</div>
+                    <div class="sidetitle" py:content="related_title">Related</div>
                     <div py:for ="unit in item.tm" class="tm-unit" title="${unit.getnotes()}" dir="ltr" lang="en">
                       <span class="tm-original">${unit.source}</span>
                       <span class="tm-translation" dir="$language.dir" lang="$language.code">${unit.target}</span>

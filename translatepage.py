@@ -114,6 +114,8 @@ class TranslatePage(pagelayout.PootleNavPage):
         "reviewmode": self.reviewmode,
         "accept_button": self.localize("Accept"),
         "reject_button": self.localize("Reject"),
+        # l10n: This heading refers to related translations and terminology
+        "related_title": self.localize("Related"),
         # optional sections, will appear if these values are replaced
         "assign": None,
         "search": {"title": self.localize("Search")},
