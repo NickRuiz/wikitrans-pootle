@@ -1,13 +1,10 @@
 current tasks:
-  upload submissions as po file / zip
   assigning stuff to people (package + email too)
   - upload completed work (by maintainer)
   - what has been returned, what hasn't
   - ability to send work to people
   - let maintainer add people manually
-  localize pootle
-  - create po files
-  - detect languages from browser
+  detect languages from browser accept-language
   priorities (directory/file order)
   process (administrators/translators/reviewers)
   locking
@@ -24,7 +21,6 @@ requirements for translatathon:
     - comment in suggestion
   translation review cycle
     - comment to explain rejection
-  highlight spaces in original so you can see what is a space
 
 other:
   add ability to mark/unmark things as fuzzy
@@ -33,14 +29,13 @@ other:
   store a history file
   maybe have a separate file to track who translated each string
   display results of checks for each string on submission
-  handle language subtypes (regions)
   handle project versions
   have clickable characters to add for a language (mostly useful for diacritics)
   a reviewer can mark as string as fuzzy but not provide a translation (in
     order to browse and fixup things like af KDE.
   integrate with KBabel/POEdit
   allow XLIFF version of files to be uploaded
-  show KDE and other PO comments in some uncluttered but accesible way
+  show KDE comment (_:...\n)
   create .qm (compiled Qt .ts files).  See lrelease which is GPL'd for Qt .qm files
   create XPI files automatically when updates are made
   Add X-Poedit style tags in the header when you download so that people using
@@ -59,8 +54,6 @@ other:
 bugs:
   currently project codes cannot have a dash "-" in them eg kde-i18n.  Either
     we should allow or warn when starting pootle. (check, should be fixed)
-  header entries get jumbled when we update them.  Technically not an issue but
-    creates quite a lot of CVS noise
   "no group" entry shows 0 stats
   items inside the current group should have "group=" in link so clicking "remove" on assignment doesn't jump out of group
 
