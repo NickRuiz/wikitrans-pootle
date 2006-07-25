@@ -443,17 +443,46 @@ class PootleOptionParser(simplewebserver.WebOptionParser):
     self.set_default('htmldir', filelocations.htmldir)
     self.add_option('', "--refreshstats", dest="action", action="store_const", const="refreshstats",
         default="runwebserver", help="refresh the stats files instead of running the webserver")
+    psycomodes=["none", "full", "profile"]
+    try:
+      import psyco
+      self.add_option('', "--psyco", dest="psyco", default=None, choices=psycomodes, metavar="MODE",
+                      help="use psyco to speed up the operation, modes: %s" % (", ".join(psycomodes)))
+    except:
+      return
 
 def checkversions():
   """Checks that version dependencies are met"""
   if not hasattr(toolkitversion, "build") or toolkitversion.build < 9000:
     raise RuntimeError("requires Translate Toolkit version >= 0.9.  Current installed version is: %s" % toolkitversion.ver)
 
+def usepsyco(options):
+  # options.psyco == None means the default, which is "full", but don't give a warning...
+  # options.psyco == "none" means don't use psyco at all...
+  if options.psyco == "none":
+    return
+  try:
+    import psyco
+  except Exception:
+    if options.psyco is not None:
+      self.warning("psyco unavailable", options, sys.exc_info())
+    return
+  if options.psyco is None:
+    options.psyco = "full"
+  if options.psyco == "full":
+    psyco.full()
+  elif options.psyco == "profile":
+    psyco.profile()
+  # tell psyco the functions it cannot compile, to prevent warnings
+  import encodings
+  psyco.cannotcompile(encodings.search_function)
+
 def main():
   # run the web server
   checkversions()
   parser = PootleOptionParser()
   options, args = parser.parse_args()
+  usepsyco(options)
   if options.action != "runwebserver":
     options.servertype = "dummy"
   server = parser.getserver(options)
