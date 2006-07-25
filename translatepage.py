@@ -462,10 +462,11 @@ class TranslatePage(pagelayout.PootleNavPage):
     text = text.replace("&", "&amp;") # Must be done first!
     text = text.replace("<", "&lt;").replace(">", "&gt;")
     
-    text = text.replace("\r\n", '\\r\\n<br />\n')
-    text = text.replace("\n", '\\n<br />\n')
-    text = text.replace("\r", '\\r<br />\n')
+    text = text.replace("\r\n", '\\r\\n<br />')
+    text = text.replace("\n", '\\n<br />')
+    text = text.replace("\r", '\\r<br />')
     text = text.replace("\t", '\\t')
+    text = text.replace("<br />", '<br />\n')
 
     #Show fancy spaces
     #More than two consecutive:
@@ -481,8 +482,9 @@ class TranslatePage(pagelayout.PootleNavPage):
   def escapefortextarea(self, text):
     text = text.replace("&", "&amp;") # Must be done first!
     text = text.replace("<", "&lt;").replace(">", "&gt;")
-    text = text.replace("\r\n", '\\r\\n\n')
-    text = text.replace("\n", '\\n\n')
+    text = text.replace("\r\n", '\\r\\n')
+    text = text.replace("\n", '\\n')
+    text = text.replace("\\n", '\\n\n')
     text = text.replace("\t", '\\t')
     return text
 
