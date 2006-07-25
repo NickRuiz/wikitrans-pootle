@@ -67,6 +67,7 @@ div.navbar
 div.searchform
 {
 	float: right;
+	font-family: verdana, arial, sans-serif;
 	max-width: 30%;
 }
 div.searchform[dir="rtl"]
@@ -199,6 +200,7 @@ textarea.translate-translation-fuzzy
 
 table.stats
 {
+	font-family: verdana, arial, sans-serif;
 	width: 100%;
 	border-spacing: 0;
 	padding: 0;
