@@ -527,11 +527,12 @@ class pootlefile(po.pofile):
     self.reclassifyelement(item)
 
   def gettmsuggestions(self, item):
-    """find all the tmsuggestion items submitted for the given (pofile or pofilename) and item"""
+    """find all the tmsuggestion items submitted for the given item"""
     self.readtmfile()
     thepo = self.transelements[item]
     locations = thepo.getlocations()
     # TODO: review the matching method
+    # Can't simply use the location index, because we want multiple matches
     suggestpos = [suggestpo for suggestpo in self.tmfile.units if suggestpo.getlocations() == locations]
     return suggestpos
 
