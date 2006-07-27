@@ -22,6 +22,7 @@
 """manages projects and files and translations"""
 
 from translate.storage import po
+from translate.storage import factory
 from translate.filters import checks
 from translate.filters import pofilter
 from translate.convert import po2csv
@@ -426,24 +427,32 @@ class TranslationProject(object):
         os.mkdir(dircheck)
     return os.path.join(self.podir, dirname, pofilename)
 
-  def uploadpofile(self, session, dirname, pofilename, contents):
-    """uploads an individual PO files"""
-    pathname = self.getuploadpath(dirname, pofilename)
-    if os.path.exists(pathname):
+  def uploadfile(self, session, dirname, filename, contents):
+    """uploads an individual file"""
+    pathname = self.getuploadpath(dirname, filename)
+    for extention in ["xliff", "xlf"]:
+      if filename.endswith(extention):
+        pofilename = filename[:-len(os.extsep+extention)] + os.extsep + "po"
+        popathname = self.getuploadpath(dirname, pofilename)
+        break
+    else:
+      pofilename = filename
+      popathname = pathname
+    if os.path.exists(popathname):
       origpofile = self.getpofile(os.path.join(dirname, pofilename))
-      newpofile = po.pofile(unitclass=pootlefile.pootleelement)
+      newfileclass = factory.getclass(pathname)
       infile = cStringIO.StringIO(contents)
-      newpofile.parse(infile)
+      newfile = newfileclass.parsefile(infile)
       if "admin" in self.getrights(session):
-        origpofile.mergefile(newpofile, session.username)
+        origpofile.mergefile(newfile, session.username)
       elif "translate" in self.getrights(session):
-        origpofile.mergefile(newpofile, session.username, allownewstrings=False)
+        origpofile.mergefile(newfile, session.username, allownewstrings=False)
       else:
         raise RightsError(session.localize("You do not have rights to upload files here"))
     else:
       if "admin" not in self.getrights(session):
         raise RightsError(session.localize("You do not have rights to upload new files here"))
-      outfile = open(pathname, "wb")
+      outfile = open(popathname, "wb")
       outfile.write(contents)
       outfile.close()
       self.scanpofiles()
@@ -558,7 +567,7 @@ class TranslationProject(object):
         pofilename = self.languagecode + os.extsep + "po"
       else:
         pofilename = potfilename[:-len(os.extsep+"pot")] + os.extsep + "po"
-      self.uploadpofile(session, dirname, pofilename, outputfile.getvalue())
+      self.uploadfile(session, dirname, pofilename, outputfile.getvalue())
 
   def filtererrorhandler(self, functionname, str1, str2, e):
     print "error in filter %s: %r, %r, %s" % (functionname, str1, str2, e)
@@ -608,7 +617,7 @@ class TranslationProject(object):
       subdirname, pofilename = os.path.dirname(filename), os.path.basename(filename)
       try:
         # TODO: use zipfile info to set the time and date of the file
-        self.uploadpofile(session, os.path.join(dirname, subdirname), pofilename, contents)
+        self.uploadfile(session, os.path.join(dirname, subdirname), pofilename, contents)
       except ValueError, e:
         print "error adding %s" % filename, e
         continue

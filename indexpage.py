@@ -381,8 +381,8 @@ class ProjectIndex(pagelayout.PootleNavPage):
       uploadfile = self.argdict.pop("uploadfile", None)
       if not uploadfile.filename:
         raise ValueError(self.localize("Cannot upload file, no file attached"))
-      if uploadfile.filename.endswith(".po"):
-        self.project.uploadpofile(self.session, self.dirname, uploadfile.filename, uploadfile.contents)
+      if uploadfile.filename.endswith(".po") or uploadfile.filename.endswith(".xlf"):
+        self.project.uploadfile(self.session, self.dirname, uploadfile.filename, uploadfile.contents)
       elif uploadfile.filename.endswith(".zip"):
         self.project.uploadarchive(self.session, self.dirname, uploadfile.contents)
       else:

@@ -68,6 +68,7 @@ class pootleelement(po.pounit, object):
       self.msgstr = quotedtext
     elif isinstance(text, list):
       if self.hasplural():
+        #TODO: Fix case where msgstr is too small
         for i, pluraltext in enumerate(text):
           self.msgstr[i] = po.quoteforpo(pluraltext)
       else:
@@ -601,14 +602,14 @@ class pootlefile(po.pofile):
         if item in self.classify[name]:
           yield item
 
-  def matchitems(self, newpofile, uselocations=False):
-    """matches up corresponding items in this pofile with the given newpofile, and returns tuples of matching poitems (None if no match found)"""
+  def matchitems(self, newfile, uselocations=False):
+    """matches up corresponding items in this pofile with the given newfile, and returns tuples of matching poitems (None if no match found)"""
     if not hasattr(self, "sourceindex"):
       self.makeindex()
-    if not hasattr(newpofile, "sourceindex"):
-      newpofile.makeindex()
+    if not hasattr(newfile, "sourceindex"):
+      newfile.makeindex()
     matches = []
-    for newpo in newpofile.units:
+    for newpo in newfile.units:
       if newpo.isheader():
         continue
       foundid = False
@@ -642,30 +643,43 @@ class pootlefile(po.pofile):
   def mergeitem(self, oldpo, newpo, username):
     """merges any changes from newpo into oldpo"""
     unchanged = oldpo.target == newpo.target
-    if oldpo.isblankmsgstr() or newpo.isblankmsgstr() or oldpo.isheader() or newpo.isheader() or unchanged:
+#    if oldpo.isblankmsgstr() or newpo.isblankmsgstr() or oldpo.isheader() or newpo.isheader() or unchanged:
+    if not oldpo.target or not newpo.target or oldpo.isheader() or newpo.isheader() or unchanged:
       oldpo.merge(newpo)
     else:
       for item, matchpo in enumerate(self.transelements):
         if matchpo == oldpo:
-          self.addsuggestion(item, newpo.unquotedmsgstr, username)
+          strings = getattr(newpo.target, "strings", [newpo.target])
+          self.addsuggestion(item, strings, username)
           return
       raise KeyError("Could not find item for merge")
 
-  def mergefile(self, newpofile, username, allownewstrings=True):
+  def mergefile(self, newfile, username, allownewstrings=True):
     """make sure each msgid is unique ; merge comments etc from duplicates into original"""
     self.makeindex()
-    matches = self.matchitems(newpofile)
+    matches = self.matchitems(newfile)
     for oldpo, newpo in matches:
       if oldpo is None:
         if allownewstrings:
-          self.units.append(newpo)
+          if isinstance(newpo, po.pounit):
+            self.units.append(newpo)
+          else:
+            self.units.append(self.UnitClass.buildfromunit(newpo))
       elif newpo is None:
         # TODO: mark the old one as obsolete
         pass
       else:
         self.mergeitem(oldpo, newpo, username)
         # we invariably want to get the ids (source locations) from the newpo
-        oldpo.sourcecomments = newpo.sourcecomments
+        if hasattr(newpo, "sourcecomments"):
+          oldpo.sourcecomments = newpo.sourcecomments
+
+    if not isinstance(newfile, po.pofile):
+      #TODO: We don't support updating the header yet.
+      self.savepofile()
+      # the easiest way to recalculate everything
+      self.readpofile()
+      return
 
     #Let's update selected header entries. Only the ones listed below, and ones
     #that are empty in self can be updated. The check in header_order is just
@@ -678,14 +692,14 @@ class pootlefile(po.pofile):
                   'Language-Team']
     headerstoaccept = {}
     ownheader = self.parseheader()
-    for (key, value) in newpofile.parseheader().items():
+    for (key, value) in newfile.parseheader().items():
       if key in updatekeys or (not key in ownheader or not ownheader[key]) and key in self.header_order:
         headerstoaccept[key] = value
     self.updateheader(add=True, **headerstoaccept)
     
     #Now update the comments above the header:
     header = self.header()
-    newheader = newpofile.header()
+    newheader = newfile.header()
     if header is None and not newheader is None:
       header = self.UnitClass("", encoding=self.encoding)
       header.target = ""
