@@ -68,9 +68,11 @@ class pootleelement(po.pounit, object):
       self.msgstr = quotedtext
     elif isinstance(text, list):
       if self.hasplural():
-        #TODO: Fix case where msgstr is too small
         for i, pluraltext in enumerate(text):
-          self.msgstr[i] = po.quoteforpo(pluraltext)
+          if i > len(self.msgstr):
+            self.msgstr.append(po.quoteforpo(pluraltext))
+          else:
+            self.msgstr[i] = po.quoteforpo(pluraltext)
       else:
         if len(text) != 1:
           raise ValueError("po element has no plural but msgstr has %d elements (%s)" % (len(text), text))
