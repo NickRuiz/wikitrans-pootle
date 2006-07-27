@@ -153,6 +153,26 @@ class ServerTester:
 		pocontents_download = self.fetch_page("zxx/testproject/test_upload.po")
 		assert pocontents_download == pocontents
 
+	def test_upload_new_xlifffile(self):
+		"""tests that we can upload a new xliff file into a project"""
+		self.login()
+		podir = self.setup_testproject_dir()
+		fields = [("doupload", "Upload File")]
+		xliffcontents = '''<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.1" xmlns="urn:oasis:names:tc:xliff:document:1.1"><file datatype="po" original="test_upload.po" source-language="en-US"><body><trans-unit id="1" xml:space="preserve"><source>test</source><target state="translated">rest</target><context-group name="po-reference" purpose="location"><context context-type="sourcefile">test.c</context></context-group></trans-unit></body></file></xliff>'''
+		pocontents_expected = '#: test.c\nmsgid "test"\nmsgstr "rest"\n'
+		files = [("uploadfile", "test_upload.xlf", xliffcontents)]
+		content_type, upload_contents = postMultipart.encode_multipart_formdata(fields, files)
+		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
+		response = self.post_request("zxx/testproject/", upload_contents, headers)
+		assert '<a href="test_upload.po?' in response
+		pofile_storename = os.path.join(podir, "test_upload.po")
+		assert os.path.isfile(pofile_storename)
+		assert open(pofile_storename).read() == xliffcontents
+		# Well, since it is a new file, it actually now is an xliff file...
+#                pocontents_download = self.fetch_page("zxx/testproject/test_upload.po")
+#                assert pocontents_download == pocontents_expected
+
 	def test_upload_new_archive(self):
 		"""tests that we can upload a new archive of files into a project"""
 		self.login()
@@ -188,6 +208,39 @@ class ServerTester:
 		po2contents = '#: test.c\nmsgid "test"\nmsgstr "rested"\n\n#: toad.c\nmsgid "slink"\nmsgstr "stink"\n'
 		fields = [("doupload", "Upload File")]
 		files = [("uploadfile", "test_existing.po", po2contents)]
+		content_type, upload_contents = postMultipart.encode_multipart_formdata(fields, files)
+		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
+		response = self.post_request("zxx/testproject/?editing=1", upload_contents, headers)
+		# NOTE: this is what we do currently, any altered strings become suggestions.
+		# It may be a good idea to change this
+		mergedcontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n\n#: frog.c\nmsgid "tadpole"\nmsgstr "fish"\n\n#: toad.c\nmsgid "slink"\nmsgstr "stink"\n'
+		suggestedcontents = '#: test.c\nmsgid "_: suggested by testuser"\n"test"\nmsgstr "rested"\n'
+		assert '<a href="test_existing.po?' in response
+		pofile_storename = os.path.join(podir, "test_existing.po")
+		assert os.path.isfile(pofile_storename)
+		assert open(pofile_storename).read().find(mergedcontents) >= 0
+		pendingfile_storename = os.path.join(podir, "test_existing.po.pending")
+		assert os.path.isfile(pendingfile_storename)
+		assert open(pendingfile_storename).read().find(suggestedcontents) >= 0
+		pocontents_download = self.fetch_page("zxx/testproject/test_existing.po")
+		assert pocontents_download.find(mergedcontents) >= 0
+	test_upload_over_file.userprefs = {"rights.siteadmin": True}
+
+	def test_upload_xliff_over_file(self):
+		"""tests that we can upload a new version of a file into a project"""
+		self.login()
+		podir = self.setup_testproject_dir()
+		tree = potree.POTree(self.prefs.Pootle)
+		project = projects.TranslationProject("zxx", "testproject", tree)
+		pocontents = '#: test.c\nmsgid "test"\nmsgstr "rest"\n\n#: frog.c\nmsgid "tadpole"\nmsgstr "fish"\n'
+		open(os.path.join(podir, "test_existing.po"), "w").write(pocontents)
+		xlfcontents = '''<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.1" xmlns="urn:oasis:names:tc:xliff:document:1.1">
+ 
+<file datatype="po" original="test_existing.po" source-language="en-US"><body><trans-unit id="1" xml:space="preserve"><source>test</source><target state="translated">rested</target><context-group name="po-reference" purpose="location"><context context-type="sourcefile">test.c</context></context-group></trans-unit><trans-unit id="2" xml:space="preserve"><source>slink</source><target state="translated">stink</target><context-group name="po-reference" purpose="location"><context context-type="sourcefile">toad.c</context></context-group></trans-unit></body></file></xliff>
+'''
+		fields = [("doupload", "Upload File")]
+		files = [("uploadfile", "test_existing.xlf", xlfcontents)]
 		content_type, upload_contents = postMultipart.encode_multipart_formdata(fields, files)
 		headers = {"Content-Type": content_type, "Content-Length": len(upload_contents)}
 		response = self.post_request("zxx/testproject/?editing=1", upload_contents, headers)
