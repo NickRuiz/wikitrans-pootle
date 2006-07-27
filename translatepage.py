@@ -72,7 +72,6 @@ class TranslatePage(pagelayout.PootleNavPage):
     # self.pofilename can change in search...
     givenpofilename = self.pofilename
     formaction = self.makelink("")
-    title = self.localize("Pootle: translating %s into %s: %s", self.project.projectname, self.project.languagename, self.pofilename)
     mainstats = ""
     if self.pofilename is not None:
       postats = self.project.getpostats(self.pofilename)
@@ -90,10 +89,10 @@ class TranslatePage(pagelayout.PootleNavPage):
     # templatising
     templatename = "translatepage"
     instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
-    # l10n: The first parameter is the name of the installation (like "Pootle")
-    # l10n: The second parameter is the name of the project
-    # l10n: The third parameter is the target language
-    # l10n: The fourth parameter is the filename
+    # l10n: first parameter: name of the installation (like "Pootle")
+    # l10n: second parameter: project name
+    # l10n: third parameter: target language
+    # l10n: fourth parameter: file name
     pagetitle = self.localize("%s: translating %s into %s: %s", instancetitle, self.project.projectname, self.project.languagename, self.pofilename)
     language = {"code": self.project.languagecode, "name": self.project.languagename, "dir": pagelayout.languagedir(self.project.languagecode)}
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
@@ -118,6 +117,7 @@ class TranslatePage(pagelayout.PootleNavPage):
         "related_title": self.localize("Related"),
         # optional sections, will appear if these values are replaced
         "assign": None,
+        # l10n: text next to search field
         "search": {"title": self.localize("Search")},
         # hidden widgets
         "searchtext": self.searchtext,
@@ -131,6 +131,7 @@ class TranslatePage(pagelayout.PootleNavPage):
 
   def getfinishedtext(self, stoppedby):
     """gets notice to display when the translation is finished"""
+    # l10n: "batch" refers to the set of translations that were reviewed
     title = self.localize("End of batch")
     finishedlink = "index.html?" + "&".join(["%s=%s" % (arg, value) for arg, value in self.argdict.iteritems() if arg.startswith("show") or arg == "editing"])
     returnlink = self.localize("Click here to return to the index")
@@ -145,24 +146,33 @@ class TranslatePage(pagelayout.PootleNavPage):
       return pagelinks
     lastitem = min(pofilelen-1, self.firstitem + pagesize - 1)
     if pofilelen > pagesize and not self.firstitem == 0:
+      # l10n: noun (the start)
       pagelinks.append({"href": baselink + "&item=0", "text": self.localize("Start")})
     else:
+      # l10n: noun (the start)
       pagelinks.append({"text": self.localize("Start")})
     if self.firstitem > 0:
       linkitem = max(self.firstitem - pagesize, 0)
+      # l10n: the parameter refers to the number of messages
       pagelinks.append({"href": baselink + "&item=%d" % linkitem, "text": self.localize("Previous %d", (self.firstitem - linkitem))})
     else:
+      # l10n: the parameter refers to the number of messages
       pagelinks.append({"text": self.localize("Previous %d", pagesize)})
+      # l10n: the third parameter refers to the total number of messages in the file
     pagelinks.append({"text": self.localize("Items %d to %d of %d", self.firstitem+1, lastitem+1, pofilelen)})
     if self.firstitem + len(self.translations) < self.project.getpofilelen(self.pofilename):
       linkitem = self.firstitem + pagesize
       itemcount = min(pofilelen - linkitem, pagesize)
+      # l10n: the parameter refers to the number of messages
       pagelinks.append({"href": baselink + "&item=%d" % linkitem, "text": self.localize("Next %d", itemcount)})
     else:
+      # l10n: the parameter refers to the number of messages
       pagelinks.append({"text": self.localize("Next %d", pagesize)})
     if pofilelen > pagesize and (self.item + pagesize) < pofilelen:
+      # l10n: noun (the end)
       pagelinks.append({"href": baselink + "&item=%d" % max(pofilelen - pagesize, 0), "text": self.localize("End")})
     else:
+      # l10n: noun (the end)
       pagelinks.append({"text": self.localize("End")})
     for n, pagelink in enumerate(pagelinks):
       if n < len(pagelinks)-1:
@@ -178,6 +188,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     if self.pofilename is not None:
       if matchnames:
         checknames = [matchname.replace("check-", "", 1) for matchname in matchnames]
+        # l10n: the parameter is the name of one of the quality checks, like "fuzzy"
         self.templatevars["checking_text"] = self.localize("checking %s", ", ".join(checknames))
 
   def getassignbox(self):
@@ -525,6 +536,7 @@ class TranslatePage(pagelayout.PootleNavPage):
     """gets a link to edit the given item, if the user has permission"""
     if "translate" in self.rights or "suggest" in self.rights:
       translateurl = "?translate=1&item=%d&pofilename=%s" % (item, urllib.quote(self.pofilename, '/'))
+      # l10n: verb
       return {"href": translateurl, "text": self.localize("Edit"), "linkid": "editlink%d" % item}
     else:
       return {}
@@ -541,18 +553,25 @@ class TranslatePage(pagelayout.PootleNavPage):
     usernode = self.getusernode()
     return {"desired": desiredbuttons,
             "item": item,
+            # l10n: verb
             "copy_text": self.localize("Copy"),
             "skip": self.localize("Skip"),
+            # l10n: verb
             "back": self.localize("Back"),
             "suggest": self.localize("Suggest"),
             "submit": self.localize("Submit"),
             "specialchars": specialchars,
             "rows": getattr(usernode, "inputheight", 5),
             "cols": getattr(usernode, "inputwidth", 40),
+            # l10n: action that increases the height of the textarea
             "grow": self.localize("Grow"),
+            # l10n: action that decreases the height of the textarea
             "shrink": self.localize("Shrink"),
+            # l10n: action that increases the width of the textarea
             "broaden": self.localize("Broaden"),
+            # l10n: action that decreases the width of the textarea
             "narrow": self.localize("Narrow"),
+            # l10n: action that resets the size of the textarea
             "reset": self.localize("Reset")
            }
 
@@ -708,6 +727,7 @@ class TranslatePage(pagelayout.PootleNavPage):
                   "skip": None,
                  }
       suggitems.append(suggdict)
+    # l10n: verb
     backbutton = {"item": item, "text": self.localize("Back")}
     skipbutton = {"item": item, "text": self.localize("Skip")}
     if suggitems:
