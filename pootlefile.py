@@ -629,7 +629,9 @@ class pootlefile(po.pofile):
               mergedlocations.append(location)
               continue
       if not foundid:
-        msgid = newpo.source
+        # We can't use the multistring, because it might contain more than two
+        # entries in a PO xliff file. Rather use the singular.
+        msgid = unicode(newpo.source)
         if msgid in self.sourceindex:
           oldpo = self.sourceindex[msgid]
           matches.append((oldpo, newpo))
