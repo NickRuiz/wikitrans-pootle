@@ -459,7 +459,7 @@ def checkversions():
 def usepsyco(options):
   # options.psyco == None means the default, which is "full", but don't give a warning...
   # options.psyco == "none" means don't use psyco at all...
-  if options.psyco == "none":
+  if getattr(options, "psyco", "none") == "none":
     return
   try:
     import psyco
