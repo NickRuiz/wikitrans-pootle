@@ -289,9 +289,14 @@ class pootlefile(po.pofile):
   def updatequickstats(self):
     """updates the project's quick stats on this file"""
     translated = self.stats.get("translated")
+    fuzzy = self.stats.get("fuzzy")
     translatedwords = sum([sum(self.msgidwordcounts[item]) for item in translated if 0 <= item < len(self.msgidwordcounts)])
+    fuzzywords = sum([sum(self.msgidwordcounts[item]) for item in fuzzy if 0 <= item < len(self.msgidwordcounts)])
     totalwords = sum([sum(partcounts) for partcounts in self.msgidwordcounts])
-    self.project.updatequickstats(self.pofilename, translatedwords, len(translated), totalwords, len(self.msgidwordcounts))
+    self.project.updatequickstats(self.pofilename, 
+        translatedwords, len(translated), 
+        fuzzywords, len(fuzzy), 
+        totalwords, len(self.msgidwordcounts))
 
   def calcstats(self):
     """calculates translation statistics for the given po file"""

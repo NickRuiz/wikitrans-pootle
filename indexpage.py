@@ -62,7 +62,8 @@ class AboutPage(pagelayout.PootlePage):
     pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
 class PootleIndex(pagelayout.PootlePage):
-  """the main page"""
+  """The main page listing projects and languages. It is also reused for 
+  LanguagesIndex and ProjectsIndex"""
   def __init__(self, potree, session):
     self.potree = potree
     self.localize = session.localize
@@ -147,7 +148,7 @@ class LanguagesIndex(PootleIndex):
     self.templatename = "languages"
 
 class LanguageIndex(pagelayout.PootleNavPage):
-  """the main page"""
+  """The main page for a language, listing all the projects in it"""
   def __init__(self, potree, languagecode, session):
     self.potree = potree
     self.languagecode = languagecode
@@ -202,20 +203,14 @@ class LanguageIndex(pagelayout.PootleNavPage):
     projectname = self.potree.getprojectname(projectcode)
     projectdescription = self.potree.getprojectdescription(projectcode)
     project = self.potree.getproject(self.languagecode, projectcode)
-    numfiles = len(project.pofilenames)
-      
     pofilenames = project.browsefiles()
-    projectstats = project.combinestats(pofilenames)
-
-    #TODO: We cannot currently use the quick stats because we want more stats
-    #than what is stored in there. 
-    #projectstats = project.getquickstats()
+    projectstats = project.getquickstats()
     projectdata = self.getstats(project, projectstats, len(pofilenames))
     self.updatepagestats(projectdata["translatedwords"], projectdata["totalwords"])
     return {"code": projectcode, "href": href, "icon": "folder", "title": projectname, "description": projectdescription, "data": projectdata, "isproject": True}
 
 class ProjectLanguageIndex(pagelayout.PootleNavPage):
-  """list of languages belonging to a project"""
+  """The main page for a project, listing all the languages belonging to it"""
   def __init__(self, potree, projectcode, session):
     self.potree = potree
     self.projectcode = projectcode
@@ -257,29 +252,12 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
   def getlanguageitem(self, languagecode, languagename):
     language = self.potree.getproject(languagecode, self.projectcode)
     href = "../../%s/%s/" % (languagecode, self.projectcode)
-    numfiles = len(language.pofilenames)
-    languagestats = language.combinestats()
-    translated = languagestats.get("translated", [])
-    fuzzy = languagestats.get("fuzzy", [])
-    total = languagestats.get("total", [])
-    translatedwords = language.countwords(translated)
-    fuzzywords = language.countwords(fuzzy)
-    totalwords = language.countwords(total)
-    self.updatepagestats(translatedwords, totalwords)
-    finishedpercentage = (translatedwords*100/max(totalwords, 1))
-    fuzzypercentage = (fuzzywords*100/max(totalwords, 1))
-    data = {}
-    data["translatedwords"] = translatedwords
-    data["translatedpercentage"] = finishedpercentage
-    data["fuzzywords"] = fuzzywords
-    data["fuzzypercentage"] = fuzzypercentage
-    data["untranslatedwords"] = totalwords - translatedwords - fuzzywords
-    data["untranslatedpercentage"] = 100 - finishedpercentage - fuzzypercentage
-    data["totalwords"] = totalwords
+    quickstats = language.getquickstats()
+    data = self.getstats(language, quickstats, len(language.pofilenames))
     return {"code": languagecode, "icon": "language", "href": href, "title": languagename, "data": data}
 
 class ProjectIndex(pagelayout.PootleNavPage):
-  """the main page"""
+  """The main page of a project in a specific language"""
   def __init__(self, project, session, argdict, dirfilter=None):
     self.project = project
     self.session = session
@@ -310,8 +288,12 @@ class ProjectIndex(pagelayout.PootleNavPage):
       mainstats = ""
       mainicon = "file"
     else:
-      pofilenames = self.project.browsefiles(dirfilter)
-      projectstats = self.project.combinestats(pofilenames)
+      if dirfilter:
+        pofilenames = self.project.browsefiles(dirfilter)
+        projectstats = self.project.combinestats(pofilenames)
+      else:
+        pofilenames = self.project.browsefiles()
+        projectstats = self.project.getquickstats()
       if self.editing:
         actionlinks = self.getactionlinks("", projectstats, ["editing", "mine", "review", "check", "assign", "goal", "quick", "all", "zip", "sdf"], dirfilter)
       else: 

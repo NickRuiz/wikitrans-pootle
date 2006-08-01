@@ -226,7 +226,7 @@ class PootleNavPage(PootlePage):
   def getstats(self, project, projectstats, numfiles):
     """returns a list with the data items to fill a statistics table
     Remember to update getstatsheadings() above as needed"""
-    wanted = ["translated", "fuzzy", "check-untranslated", "total"]
+    wanted = ["translated", "fuzzy", "untranslated", "total"]
     gotten = {}
     for key in wanted:
       gotten[key] = projectstats.get(key, [])
@@ -240,6 +240,9 @@ class PootleNavPage(PootlePage):
         #TODO: consider carefully:
         gotten[key] = len(gotten[key])
 
+    gotten["untranslated"] = gotten["total"] - gotten["translated"] - gotten["fuzzy"]
+    gotten["untranslatedwords"] = gotten["totalwords"] - gotten["translatedwords"] - gotten["fuzzywords"]
+
     for key in wanted[:-1]:
       percentkey = key + "percentage"
       wordkey = key + "words"
@@ -249,5 +252,6 @@ class PootleNavPage(PootlePage):
       if key.find("check-") == 0:
         value = gotten.pop(key)
         gotten[key[len("check-"):]] = value
+
     return gotten
 
