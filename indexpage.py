@@ -288,12 +288,15 @@ class ProjectIndex(pagelayout.PootleNavPage):
       mainstats = ""
       mainicon = "file"
     else:
-      if dirfilter:
-        pofilenames = self.project.browsefiles(dirfilter)
-        projectstats = self.project.combinestats(pofilenames)
-      else:
+      if not dirfilter and not self.editing:
+        # the common case: plain stats table
         pofilenames = self.project.browsefiles()
         projectstats = self.project.getquickstats()
+      else:
+        # if we are editing, we need the complete stats to know if there are 
+        # suggestions, for example
+        pofilenames = self.project.browsefiles(dirfilter)
+        projectstats = self.project.combinestats(pofilenames)
       if self.editing:
         actionlinks = self.getactionlinks("", projectstats, ["editing", "mine", "review", "check", "assign", "goal", "quick", "all", "zip", "sdf"], dirfilter)
       else: 
@@ -448,9 +451,9 @@ class ProjectIndex(pagelayout.PootleNavPage):
       del self.argdict["doedituser"]
     # pop arguments we don't want to propogate through inadvertently...
     for argname in ("assignto", "action", "assignedto", "removefilter", 
-		    "uploadfile", "updatefile", "commitfile", 
-		    "newgoal", "editgoal", "editgoalfile", "editgoalname",
-		    "newgoaluser", "editfileuser", "edituserwhich"):
+                    "uploadfile", "updatefile", "commitfile", 
+                    "newgoal", "editgoal", "editgoalfile", "editgoalname",
+                    "newgoaluser", "editfileuser", "edituserwhich"):
       self.argdict.pop(argname, "")
 
   def getboolarg(self, argname, default=False):
