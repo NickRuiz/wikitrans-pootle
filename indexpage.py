@@ -759,6 +759,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
         actionlinks.append(link)
     addoptionlink("editing", None, "editing", self.localize("Show Editing Functions"), self.localize("Show Statistics"))
     addoptionlink("track", None, "showtracks", self.localize("Show Tracks"), self.localize("Hide Tracks"))
+    # l10n: "Checks" are quality checks that Pootle performs on translations to test for common mistakes
     addoptionlink("check", "translate", "showchecks", self.localize("Show Checks"), self.localize("Hide Checks"))
     addoptionlink("goal", None, "showgoals", self.localize("Show Goals"), self.localize("Hide Goals"))
     addoptionlink("assign", "translate", "showassigns", self.localize("Show Assigns"), self.localize("Hide Assigns"))
