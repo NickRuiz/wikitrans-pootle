@@ -49,8 +49,10 @@ class AboutPage(pagelayout.PootlePage):
     abouttitle = self.localize("About Pootle")
     introtext = self.localize("<strong>Pootle</strong> is a simple web portal that should allow you to <strong>translate</strong>! Since Pootle is <strong>Free Software</strong>, you can download it and run your own copy if you like. You can also help participate in the development in many ways (you don't have to be able to program).")
     hosttext = self.localize('The Pootle project itself is hosted at <a href="http://translate.sourceforge.net/">translate.sourceforge.net</a> where you can find the details about source code, mailing lists etc.')
+    # l10n: If your language uses right-to-left layout and you leave the English untranslated, consider enclosing the necessary text with <span dir="ltr">.......</span> to help browsers to display it correctly
     nametext = self.localize('The name stands for <b>PO</b>-based <b>O</b>nline <b>T</b>ranslation / <b>L</b>ocalization <b>E</b>ngine, but you may need to read <a href="http://www.thechestnut.com/flumps.htm">this</a>.')
     versiontitle = self.localize("Versions")
+    # l10n: If your language uses right-to-left layout and you leave the English untranslated, consider enclosing the necessary text with <span dir="ltr">.......</span> to help browsers to display it correctly
     versiontext = self.localize("This site is running:<br />Pootle %s<br />Translate Toolkit %s<br />jToolkit %s<br />Kid %s<br />ElementTree %s<br />Python %s (on %s/%s)", pootleversion.ver, toolkitversion.ver, jtoolkitversion.ver, kidversion, ElementTree.VERSION, sys.version, sys.platform, os.name)
     templatename = "about"
     instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
@@ -128,7 +130,7 @@ class UserIndex(pagelayout.PootlePage):
       for projectcode in self.session.getprojects():
         if self.potree.hasproject(languagecode, projectcode):
           projectname = self.potree.getprojectname(projectcode)
-          projecttitle = self.localize("%s %s", languagename, projectname)
+          projecttitle = projectname
           langlinks.append({"code": projectcode, "name": projecttitle, "sep": "<br />"})
       if langlinks:
         langlinks[-1]["sep"] = ""
@@ -231,8 +233,6 @@ class ProjectLanguageIndex(pagelayout.PootleNavPage):
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
     statsheadings = self.getstatsheadings()
     statsheadings["name"] = self.localize("Language")
-    #XXX the following is unused:
-    setoptionstext = self.localize("Please click on 'Change options' and select some languages and projects")
     templatevars = {"pagetitle": pagetitle,
         "project": {"code": projectcode, "name": projectname, "stats": projectstats},
         "adminlink": adminlink, "languages": languages,
