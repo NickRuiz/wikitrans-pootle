@@ -304,43 +304,43 @@ class OptionalLoginAppServer(server.LoginAppServer):
       email = getattr(usernode, "email", email)
       password = ""
       # TODO: we can't figure out the password as we only store the md5sum. have a password reset mechanism
-      message = "You (or someone else) attempted to register an account with your username.\n"
-      message += "We don't store your actual password but only a hash of it\n"
+      message = self.localize("You (or someone else) attempted to register an account with your username.\n")
+      message += self.localize("We don't store your actual password but only a hash of it\n")
       if supportaddress:
-        message += "If you have a problem with registration, please contact %s\n" % supportaddress
+        message += self.localize("If you have a problem with registration, please contact %s\n", supportaddress)
       else:
-        message += "If you have a problem with registration, please contact the site administrator\n"
-      displaymessage = "That username already exists. An email will be sent to the registered email address...\n"
+        message += self.localize("If you have a problem with registration, please contact the site administrator\n")
+      displaymessage = self.localize("That username already exists. An email will be sent to the registered email address...\n")
       redirecturl = "login.html?username=%s" % username
-      displaymessage += "Proceeding to <a href='%s'>login</a>\n" % redirecturl
+      displaymessage += self.localize("Proceeding to <a href='%s'>login</a>\n", redirecturl)
     else:
       minpasswordlen = 6
       if not password or len(password) < minpasswordlen:
-        raise RegistrationError("You must supply a valid password of at least %d characters" % minpasswordlen)
+        raise RegistrationError(self.localize("You must supply a valid password of at least %d characters", minpasswordlen))
       self.adduser(users, username, fullname, email, password)
       activationcode = self.makeactivationcode(users, username)
       activationlink = ""
-      message = "A Pootle account has been created for you using this email address\n"
+      message = self.localize("A Pootle account has been created for you using this email address\n")
       if session.instance.baseurl.startswith("http://"):
-        message += "To activate your account, follow this link:\n"
+        message += self.localize("To activate your account, follow this link:\n")
         activationlink = session.instance.baseurl
         if not activationlink.endswith("/"):
           activationlink += "/"
         activationlink += "activate.html?username=%s&activationcode=%s" % (username, activationcode)
         message += "  %s  \n" % activationlink
-      message += "Your activation code is:\n%s\n" % activationcode
+      message += self.localize("Your activation code is:\n%s\n", activationcode)
       if activationlink:
-        message += "If you are unable to follow the link, please enter the above code at the activation page\n"
-      message += "This message is sent to verify that the email address is in fact correct. If you did not want to register an account, you may simply ignore the message.\n"
+        message += self.localize("If you are unable to follow the link, please enter the above code at the activation page\n")
+      message += self.localize("This message is sent to verify that the email address is in fact correct. If you did not want to register an account, you may simply ignore the message.\n")
       redirecturl = "activate.html?username=%s" % username
-      displaymessage = "Account created. You will be emailed login details and an activation code. Please enter your activation code on the <a href='%s'>activation page</a>. " % redirecturl
+      displaymessage = self.localize("Account created. You will be emailed login details and an activation code. Please enter your activation code on the <a href='%s'>activation page</a>. ", redirecturl)
       if activationlink:
-        displaymessage += "(Or simply click on the activation link in the email)"
+        displaymessage += self.localize("(Or simply click on the activation link in the email)")
     session.saveprefs()
-    message += "Your user name is: %s\n" % username
+    message += self.localize("Your user name is: %s\n", username)
     if password.strip():
-      message += "Your password is: %s\n" % password
-    message += "Your registered email address is: %s\n" % email
+      message += self.localize("Your password is: %s\n", password)
+    message += self.localize("Your registered email address is: %s\n", email)
     smtpserver = self.instance.registration.smtpserver
     fromaddress = self.instance.registration.fromaddress
     messagedict = {"from": fromaddress, "to": [email], "subject": "Pootle Registration", "body": message}
