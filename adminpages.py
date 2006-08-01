@@ -102,6 +102,7 @@ class LanguagesAdminPage(pagelayout.PootlePage):
       languagepluralequation = self.potree.getlanguagepluralequation(languagecode)
       languageremove = None
       # TODO: make label work like this
+      # l10n: The parameter is a languagecode, projectcode or username
       removelabel = self.localize("Remove %s", languagecode)
       languageoptions = [{"name": "languagename-%s" % languagecode, "value": languagename, "type": "text"},
                          {"name": "languagespecialchars-%s" % languagecode, "value": languagespecialchars, "type": "text"},
@@ -163,6 +164,7 @@ class ProjectsAdminPage(pagelayout.PootlePage):
       else:
         projectcreatemofiles = ""
       projectremove = None
+      # l10n: The parameter is a languagecode, projectcode or username
       removelabel = self.localize("Remove %s", projectcode)
       projectoptions = [{"name": "projectname-%s" % projectcode, "value": projectname, "type": "text"},
                         {"name": "projectdescription-%s" % projectcode, "value": projectdescription, "type": "text"},
@@ -223,6 +225,7 @@ class UsersAdminPage(pagelayout.PootlePage):
       else:
         activatedattr = ""
       userremove = None
+      # l10n: The parameter is a languagecode, projectcode or username
       removelabel = self.localize("Remove %s", usercode)
       useroptions = [{"name": "username-%s" % usercode, "value": fullname, "type": "text"},
                      {"name": "useremail-%s" % usercode, "value": email, "type": "text"},
@@ -259,9 +262,11 @@ class ProjectAdminPage(pagelayout.PootlePage):
     existing_title = self.localize("Existing languages")
     existing_languages = self.getexistinglanguages()
     new_languages = self.getnewlanguages()
+    # l10n: This refers to updating the translation files from the templates like with .pot files
     update_button = self.localize("Update Languages")
     pagetitle = self.localize("Pootle Admin: %s", projectname)
     norights_text = self.localize("You do not have the rights to administer this project.")
+    # l10n: This refers to updating the translation files from the templates like with .pot files
     update_link = self.localize("Update from templates")
     templatename = "projectadmin"
     sessionvars = {"status": self.session.status, "isopen": self.session.isopen, "issiteadmin": self.session.issiteadmin()}
@@ -383,6 +388,7 @@ class TranslationProjectAdminPage(pagelayout.PootlePage):
 
   def getuserdict(self, username, delete=True, usernode=None):
     """gets a dictionary for the given user given user's rights"""
+    # l10n: The parameter is a languagecode, projectcode or username
     remove_text = self.localize("Remove %s", username)
     fullname = getattr(usernode, "name", None) or username
     userdict = {"username": username, "delete": delete or None, "remove_text": remove_text, "fullname": fullname}
