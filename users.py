@@ -305,22 +305,22 @@ class OptionalLoginAppServer(server.LoginAppServer):
       password = ""
       # TODO: we can't figure out the password as we only store the md5sum. have a password reset mechanism
       message = self.localize("You (or someone else) attempted to register an account with your username.\n")
-      message += self.localize("We don't store your actual password but only a hash of it\n")
+      message += self.localize("We don't store your actual password but only a hash of it.\n")
       if supportaddress:
-        message += self.localize("If you have a problem with registration, please contact %s\n", supportaddress)
+        message += self.localize("If you have a problem with registration, please contact %s.\n", supportaddress)
       else:
-        message += self.localize("If you have a problem with registration, please contact the site administrator\n")
-      displaymessage = self.localize("That username already exists. An email will be sent to the registered email address...\n")
+        message += self.localize("If you have a problem with registration, please contact the site administrator.\n")
+      displaymessage = self.localize("That username already exists. An email will be sent to the registered email address.\n")
       redirecturl = "login.html?username=%s" % username
       displaymessage += self.localize("Proceeding to <a href='%s'>login</a>\n", redirecturl)
     else:
       minpasswordlen = 6
       if not password or len(password) < minpasswordlen:
-        raise RegistrationError(self.localize("You must supply a valid password of at least %d characters", minpasswordlen))
+        raise RegistrationError(self.localize("You must supply a valid password of at least %d characters.", minpasswordlen))
       self.adduser(users, username, fullname, email, password)
       activationcode = self.makeactivationcode(users, username)
       activationlink = ""
-      message = self.localize("A Pootle account has been created for you using this email address\n")
+      message = self.localize("A Pootle account has been created for you using this email address.\n")
       if session.instance.baseurl.startswith("http://"):
         message += self.localize("To activate your account, follow this link:\n")
         activationlink = session.instance.baseurl
@@ -330,7 +330,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
         message += "  %s  \n" % activationlink
       message += self.localize("Your activation code is:\n%s\n", activationcode)
       if activationlink:
-        message += self.localize("If you are unable to follow the link, please enter the above code at the activation page\n")
+        message += self.localize("If you are unable to follow the link, please enter the above code at the activation page.\n")
       message += self.localize("This message is sent to verify that the email address is in fact correct. If you did not want to register an account, you may simply ignore the message.\n")
       redirecturl = "activate.html?username=%s" % username
       displaymessage = self.localize("Account created. You will be emailed login details and an activation code. Please enter your activation code on the <a href='%s'>activation page</a>. ", redirecturl)
@@ -395,7 +395,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
               }
           redirectpage.completevars()
           return redirectpage
-      failedmessage = session.localize("The activation link you have entered was not valid")
+      failedmessage = session.localize("The activation link you have entered was not valid.")
       return ActivatePage(session, argdict, title=session.localize("Activation Failed"), message=failedmessage)
     else:
       return ActivatePage(session, argdict)
