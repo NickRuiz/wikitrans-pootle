@@ -97,8 +97,8 @@ class TranslationProject(object):
     self.projectcheckerstyle = self.potree.getprojectcheckerstyle(self.projectcode)
     checkerclasses = [checks.projectcheckers.get(self.projectcheckerstyle, checks.StandardChecker), pofilter.StandardPOChecker]
     self.checker = pofilter.POTeeChecker(checkerclasses=checkerclasses, errorhandler=self.filtererrorhandler)
+    self.quickstats = {}
     if create:
-      self.quickstats = {}
       self.converttemplates(InternalAdminSession())
     self.podir = potree.getpodir(languagecode, projectcode)
     if self.potree.hasgnufiles(self.podir, self.languagecode) == "gnu":
@@ -405,7 +405,7 @@ class TranslationProject(object):
     self.pofilenames = self.potree.getpofiles(self.languagecode, self.projectcode, poext=self.fileext)
     for pofilename in self.pofilenames:
       if not pofilename in self.pofiles:
-        self.pofiles[pofilename] = pootlefile.pootlefile(self, pofilename)
+        self.pofiles[pofilename] = pootlefile.pootlefile(self, pofilename, stats=False)
     # remove any files that have been deleted since initialization
     for pofilename in self.pofiles.keys():
       if not pofilename in self.pofilenames:
