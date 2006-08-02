@@ -49,7 +49,7 @@ Pootle:
   # This is the projects internal name and corresponds to the
   # directory entry that stores all the translations.
   #
-  #   fullname = "Pootles
+  #   fullname = "Pootle
   # The human readable version of the projects internal name.
   #
   #   description = "Web translation software"
@@ -95,12 +95,352 @@ Pootle:
   # in other PO files for your language.
   # 
   languages:
-    af:
-      fullname = "Afrikaans"
-      specialchars = "ÄËÏÖÜäëïöü ÂÊÎÔÛâêîôû"
-      nplurals = 2
-      pluralequation = "(n != 1)"
-    en.fullname = 'English'
-    vi.fullname = 'Vietnamese'
-    templates.fullname = 'Templates'
 
+# Afrikaans
+    af.fullname = "Afrikaans"
+    af.specialchars = "ÄËÏÖÜäëïöü ÂÊÎÔÛâêîôû"
+    af.nplurals = 2
+    af.pluralequation = "(n != 1)"
+
+# Arabic
+    ar.fullname = 'Arabic'
+    ar.nplurals = '6'
+    ar.pluralequation ='n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n>=3 && n<=10 ? 3 : n>=11 && n<=99 ? 4 : 5'
+
+# Azerbaijani
+#    az.fullname = 'Azerbaijani'
+#    az.nplurals = '2'
+#    az.pluralequation ='(n != 1)'
+
+# Belarusian
+#    be.fullname = 'Belarusian'
+#    be.nplurals = '3'
+#    be.pluralequation ='(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 or n%100>=20) ? 1 : 2)'
+
+# Bulgarian
+#    bg.fullname = 'Bulgarian'
+#    bg.nplurals = '2'
+#    bg.pluralequation ='(n != 1)'
+
+# Bengali
+#    bn.fullname = 'Bengali'
+#    bn.nplurals = '2'
+#    bn.pluralequation ='(n != 1)'
+
+# Tibetan
+#    bo.fullname = 'Tibetan'
+#    bo.nplurals = '1'
+#    bo.pluralequation ='0'
+
+# Bosnian
+#    bs.fullname = 'Bosnian'
+#    bs.nplurals = '3'
+#    bs.pluralequation ='(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 or n%100>=20) ? 1 : 2)'
+
+# Catalan
+    ca.fullname = 'Catalan'
+    ca.nplurals = '2'
+    ca.pluralequation ='(n != 1)'
+
+# Czech
+#    cs.fullname = 'Czech'
+#    cs.nplurals = '3'
+#    cs.pluralequation ='(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2'
+
+# Welsh
+#    cy.fullname = 'Welsh'
+#    cy.nplurals = '2'
+#    cy.pluralequation ='(n==2) ? 1 : 0'
+
+# Danish
+    da.fullname = 'Danish'
+    da.nplurals = '2'
+    da.pluralequation ='(n != 1)'
+
+# German
+    de.fullname = 'German'
+    de.nplurals = '2'
+    de.pluralequation ='(n != 1)'
+
+# Dzongkha
+#    dz.fullname = 'Dzongkha'
+#    dz.nplurals = '1'
+#    dz.pluralequation ='0'
+
+# Greek
+#    el.fullname = 'Greek'
+#    el.nplurals = '2'
+#    el.pluralequation ='(n != 1)'
+
+# English
+#    en.fullname = 'English'
+#    en.nplurals = '2'
+#    en.pluralequation ='(n != 1)'
+
+# Esperanto
+#    eo.fullname = 'Esperanto'
+#    eo.nplurals = '2'
+#    eo.pluralequation ='(n != 1)'
+
+# Spanish
+    es.fullname = 'Spanish'
+    es.nplurals = '2'
+    es.pluralequation ='(n != 1)'
+
+# Estonian
+#    et.fullname = 'Estonian'
+#    et.nplurals = '2'
+#    et.pluralequation ='(n != 1)'
+
+# Basque
+    eu.fullname = 'Basque'
+    eu.nplurals = '2'
+    eu.pluralequation ='(n != 1)'
+
+# Persian
+#    fa.fullname = 'Persian'
+#    fa.nplurals = '1'
+#    fa.pluralequation ='0'
+
+# Finnish
+#    fi.fullname = 'Finnish'
+#    fi.nplurals = '2'
+#    fi.pluralequation ='(n != 1)'
+
+# Faroese
+#    fo.fullname = 'Faroese'
+#    fo.nplurals = '2'
+#    fo.pluralequation ='(n != 1)'
+
+# French
+    fr.fullname = 'French'
+    fr.nplurals = '2'
+    fr.pluralequation ='(n > 1)'
+
+# Friulian
+    fur.fullname = 'Friulian'
+    fur.nplurals = '2'
+    fur.pluralequation ='(n != 1)'
+
+# Frisian
+#    fy.fullname = 'Frisian'
+#    fy.nplurals = '2'
+#    fy.pluralequation ='(n != 1)'
+
+# Irish
+#    ga.fullname = 'Irish'
+#    ga.nplurals = '3'
+#    ga.pluralequation ='n==1 ? 0 : n==2 ? 1 : 2'
+
+# Galician
+    gl.fullname = 'Galician'
+    gl.nplurals = '2'
+    gl.pluralequation ='(n != 1)'
+
+# Gujarati
+#    gu.fullname = 'Gujarati'
+#    gu.nplurals = '2'
+#    gu.pluralequation ='(n != 1)'
+
+# Hebrew
+#    he.fullname = 'Hebrew'
+#    he.nplurals = '2'
+#    he.pluralequation ='(n != 1)'
+
+# Hindi
+#    hi.fullname = 'Hindi'
+#    hi.nplurals = '2'
+#    hi.pluralequation ='(n != 1)'
+
+# Croatian
+    hr.fullname = 'Croatian'
+    hr.nplurals = '3'
+    hr.pluralequation ='(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 or n%100>=20) ? 1 : 2)'
+
+# Hungarian
+#    hu.fullname = 'Hungarian'
+#    hu.nplurals = '1'
+#    hu.pluralequation ='0'
+
+# Indonesian
+#    id.fullname = 'Indonesian'
+#    id.nplurals = '1'
+#    id.pluralequation ='0'
+
+# Italian
+    it.fullname = 'Italian'
+    it.nplurals = '2'
+    it.pluralequation ='(n != 1)'
+
+# Japanese
+    ja.fullname = 'Japanese'
+    ja.nplurals = '1'
+    ja.pluralequation ='0'
+
+# Georgian
+#    ka.fullname = 'Georgian'
+#    ka.nplurals = '1'
+#    ka.pluralequation ='0'
+
+# Korean
+#    ko.fullname = 'Korean'
+#    ko.nplurals = '1'
+#    ko.pluralequation ='0'
+
+# Kurdish
+#    ku.fullname = 'Kurdish'
+#    ku.nplurals = '2'
+#    ku.pluralequation ='(n!= 1)'
+
+# Letzeburgesch
+#    lb.fullname = 'Letzeburgesch'
+#    lb.nplurals = '2'
+#    lb.pluralequation ='(n != 1)'
+
+# Lithuanian
+#    lt.fullname = 'Lithuanian'
+#    lt.nplurals = '3'
+#    lt.pluralequation ='(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 or n%100>=20) ? 1 : 2)'
+
+# Latvian
+#    lv.fullname = 'Latvian'
+#    lv.nplurals = '3'
+#    lv.pluralequation ='(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2)'
+
+# Mongolian
+#    mn.fullname = 'Mongolian'
+#    mn.nplurals = '2'
+#    mn.pluralequation ='(n != 1)'
+
+# Maltese
+    mt.fullname = 'Maltese'
+    mt.nplurals = '4'
+    mt.pluralequation ='(n==1 ? 0 : n==0 or ( n%100>1 && n%100<11) ? 1 : n%100>10 && n%100<20 ) ? 2 : 3)'
+
+# Nahuatl
+#    nah.fullname = 'Nahuatl'
+#    nah.nplurals = '2'
+#    nah.pluralequation ='(n != 1)'
+
+# Norwegian Bokmal
+#    nb.fullname = 'Norwegian Bokmal'
+#    nb.nplurals = '2'
+#    nb.pluralequation ='(n != 1)'
+
+# Dutch
+#    nl.fullname = 'Dutch'
+#    nl.nplurals = '2'
+#    nl.pluralequation ='(n != 1)'
+
+# Norwegian Nynorsk
+#    nn.fullname = 'Nynorsk'
+#    nn.nplurals = '2'
+#    nn.pluralequation ='(n != 1)'
+
+# Northern Sotho
+#    nso.fullname = 'Northern Sotho'
+#    nso.nplurals = '2'
+#    nso.pluralequation ='(n > 1)'
+
+# Oriya
+#    or.fullname = 'Oriya'
+#    or.nplurals = '2'
+#    or.pluralequation ='(n != 1)'
+
+# Punjabi
+#    pa.fullname = 'Punjabi'
+#    pa.nplurals = '2'
+#    pa.pluralequation ='(n != 1)'
+
+# Polish
+    pl.fullname = 'Polish'
+    pl.nplurals = '3'
+    pl.pluralequation ='(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 or n%100>=20) ? 1 : 2)'
+
+# Portuguese
+    pt.fullname = 'Portuguese'
+    pt.nplurals = '2'
+    pt.pluralequation ='(n != 1)'
+
+# Brazilian Portuguese
+#    pt_BR.fullname = 'Brazilian Portuguese'
+#    pt_BR.nplurals = '2'
+#    pt_BR.pluralequation ='(n > 1)'
+
+# Romanian
+#    ro.fullname = 'Romanian'
+#    ro.nplurals = '3'
+#    ro.pluralequation ='(n==1 ? 0 : (n==0 or (n%100 > 0 && n%100 < 20)) ? 1 : 2);'
+
+# Russian
+#    ru.fullname = 'Russian'
+#    ru.nplurals = '3'
+#    ru.pluralequation ='(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 or n%100>=20) ? 1 : 2)'
+
+# Slovak
+#    sk.fullname = 'Slovak'
+#    sk.nplurals = '3'
+#    sk.pluralequation ='(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2'
+
+# Slovenian
+    sl.fullname = 'Slovenian'
+    sl.nplurals = '4'
+    sl.pluralequation ='(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 or n%100==4 ? 2 : 3)'
+
+# Albanian
+#    sq.fullname = 'Albanian'
+#    sq.nplurals = '2'
+#    sq.pluralequation ='(n != 1)'
+
+# Serbian
+    sr.fullname = 'Serbian'
+    sr.nplurals = '3'
+    sr.pluralequation ='(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 or n%100>=20) ? 1 : 2)'
+
+# Swedish
+    sv.fullname = 'Swedish'
+    sv.nplurals = '2'
+    sv.pluralequation ='(n != 1)'
+
+# Tamil
+#    ta.fullname = 'Tamil'
+#    ta.nplurals = '2'
+#    ta.pluralequation ='(n != 1)'
+
+# Turkmen
+#    tk.fullname = 'Turkmen'
+#    tk.nplurals = '2'
+#    tk.pluralequation ='(n != 1)'
+
+# Turkish
+    tr.fullname = 'Turkish'
+    tr.nplurals = '1'
+    tr.pluralequation ='0'
+
+# Ukrainian
+#    uk.fullname = 'Ukrainian'
+#    uk.nplurals = '3'
+#    uk.pluralequation ='(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 or n%100>=20) ? 1 : 2)'
+
+# Vietnamese
+    vi.fullname = 'Vietnamese'
+    vi.nplurals = '1'
+    vi.pluralequation ='0'
+
+# Walloon
+#    wa.fullname = 'Walloon'
+#    wa.nplurals = '2'
+#    wa.pluralequation ='(n > 1)'
+
+# Simplified Chinese (China mainland used below, but also used Singapore and Malaysia)
+#    zh_CN.fullname = 'Chinese (simplified)'
+#    zh_CN.nplurals = '1'
+#    zh_CN.pluralequation ='0'
+
+# Traditional Chinese (Taiwan used below, but also used in Hong Kong and Macau)
+#    zh_TW.fullname = 'Chinese (traditional)'
+#    zh_TW.nplurals = '1'
+#    zh_TW.pluralequation ='0'
+
+  # This is a "language" that gives people access to the (untranslated) template files
+    templates.fullname = 'Templates'

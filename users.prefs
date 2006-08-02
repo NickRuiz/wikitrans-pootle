@@ -49,7 +49,9 @@
 # 
 #  NOTE NOTE: leaving this user enabled will compromise your Pootle setup.
 #
-# startup:
-#   activated = 1
-#   passwdhash = 'dd82c1882969461de74b46427961ea2c'
-#   rights.siteadmin = True
+#startup:
+#  activated = 1
+#  passwdhash = 'dd82c1882969461de74b46427961ea2c'
+#  rights.siteadmin = True
+#  name = ''
+#  email = ''
