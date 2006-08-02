@@ -106,8 +106,8 @@ class TranslationProject(object):
     else:
       self.filestyle = "std"
     self.readprefs()
-    self.scanpofiles()
     self.readquickstats()
+    self.scanpofiles()
     self.initindex()
 
   def readprefs(self):
@@ -405,7 +405,7 @@ class TranslationProject(object):
     self.pofilenames = self.potree.getpofiles(self.languagecode, self.projectcode, poext=self.fileext)
     for pofilename in self.pofilenames:
       if not pofilename in self.pofiles:
-        self.pofiles[pofilename] = pootlefile.pootlefile(self, pofilename, stats=False)
+        self.pofiles[pofilename] = pootlefile.pootlefile(self, pofilename)
     # remove any files that have been deleted since initialization
     for pofilename in self.pofiles.keys():
       if not pofilename in self.pofilenames:
