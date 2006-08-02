@@ -37,6 +37,10 @@ be installed properly i.e. it needs to be accessible in your Python Path. This
 will normally be accomplished by installing from source:
 
 	python setup.py install
+	
+For Debian users: if you get this error ("Unable to open /usr/lib/python2.N/config/Makefile
+(no such file or directory)"), while running setup.py, you need to install python-dev library.
+Try apt-get install python2.N-dev.
 
 For the web interface, Pootle requires jToolkit (http://jtoolkit.sourceforge.net/)
 jToolkit can run applications either via Apache using mod_python, or standalone 
@@ -52,6 +56,21 @@ ZIP is needed to enable users to download ZIP files of directories.
 
 From version 0.9 of Pootle, kid (http://kid.lesscode.org/), and elementtree
 (http://effbot.org/downloads/#elementtree) are also needed.
+
+To install "elementtree", run
+	tar xvfz elementtree-N.N.N.tar.gz
+	cd elementtree-N.N.N
+	python setup.py install
+	
+To install kid, run
+	tar xvfz kid-N.N.N.tar.gz
+	cd kid-N.N.N
+	python setup.py install
+  
+For Debian users: if you do not have setuptools installed, try:
+	apt-get install python2.N-setuptools
+or
+	wget http://files.turbogears.org/eggs/setuptools-0.6a11-py2.4.egg
 
 Installation of PyLucene is optional, but helps to speed up searching.
 
