@@ -13,7 +13,7 @@ How it works
 ------------
 The concept is: a PO file is a document, so lets use PO files directly, 
 rather than storing it in a database.  But we need quick access to statistics 
-so we cache them in .stats files. This lets us do most checks etc in advance 
+so we cache them in .stats files. This lets us do most checks etc. in advance 
 and then iterate quickly.
 
 References
@@ -48,6 +48,8 @@ much easier! To install jToolkit run:
 	cd jToolkit-N.N.N
 	python jToolkitSetup.py install
 
+ZIP is needed to enable users to download ZIP files of directories.
+
 From version 0.9 of Pootle, kid (http://kid.lesscode.org/), and elementtree
 (http://effbot.org/downloads/#elementtree) are also needed.
 
@@ -62,9 +64,14 @@ To install Pootle itself, run
 Running
 -------
 To run, edit pootle.prefs and specify your languages and projects. The key detail 
-here is the podir for each project.  Then from the Pootle directory run:
+here is the podir for each project.  Then run:
 
 	PootleServer
+
+You can also copy pootle.prefs to another directory, allowing you to run Pootle outside
+of the installation directory.  Edit this copy of pootle.prefs as needed.  Then run:
+
+	PootleServer --prefsfile=your.prefs
 
 Use --help to see the other options.  You can tell it which prefs file to use, 
 what HTML file and what port to run on (the default is 8080). The defaults will 
