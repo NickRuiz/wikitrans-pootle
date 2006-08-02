@@ -453,8 +453,8 @@ class PootleOptionParser(simplewebserver.WebOptionParser):
 
 def checkversions():
   """Checks that version dependencies are met"""
-  if not hasattr(toolkitversion, "build") or toolkitversion.build < 9000:
-    raise RuntimeError("requires Translate Toolkit version >= 0.9.  Current installed version is: %s" % toolkitversion.ver)
+  if not hasattr(toolkitversion, "build") or toolkitversion.build < 9900:
+    raise RuntimeError("requires Translate Toolkit version >= 0.10.  Current installed version is: %s" % toolkitversion.ver)
 
 def usepsyco(options):
   # options.psyco == None means the default, which is "full", but don't give a warning...
