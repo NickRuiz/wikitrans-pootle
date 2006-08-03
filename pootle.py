@@ -204,6 +204,12 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
       picture.content_type = thumbgallery.getcontenttype(pathwords[-1])
       picture.allowcaching = True
       return picture
+    elif pathwords[-1].endswith(".ico"):
+      picturefile = os.path.join(filelocations.htmldir, *pathwords)
+      picture = widgets.SendFile(picturefile)
+      picture.content_type = 'image/ico'
+      picture.allowcaching = True
+      return picture
     elif top == "testtemplates.html":
       return templateserver.TemplateServer.getpage(self, pathwords, session, argdict)
     elif not top or top == "index.html":
