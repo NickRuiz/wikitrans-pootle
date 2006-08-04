@@ -333,7 +333,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
         message += self.localize("If you are unable to follow the link, please enter the above code at the activation page.\n")
       message += self.localize("This message is sent to verify that the email address is in fact correct. If you did not want to register an account, you may simply ignore the message.\n")
       redirecturl = "activate.html?username=%s" % username
-      displaymessage = self.localize("Account created. You will be emailed login details and an activation code. Please enter your activation code on the <a href='%s'>activation page</a>. ", redirecturl)
+      displaymessage = self.localize("Account created. You will be emailed login details and an activation code. Please enter your activation code on the <a href='%s'>activation page</a>.", redirecturl)
       if activationlink:
         displaymessage += self.localize("(Or simply click on the activation link in the email)")
     session.saveprefs()
@@ -395,7 +395,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
               }
           redirectpage.completevars()
           return redirectpage
-      failedmessage = session.localize("The activation link you have entered was not valid.")
+      failedmessage = session.localize("The activation information was not valid.")
       return ActivatePage(session, argdict, title=session.localize("Activation Failed"), message=failedmessage)
     else:
       return ActivatePage(session, argdict)
