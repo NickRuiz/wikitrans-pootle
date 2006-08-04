@@ -204,7 +204,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
       picture.content_type = thumbgallery.getcontenttype(pathwords[-1])
       picture.allowcaching = True
       return picture
-    elif pathwords[-1].endswith(".ico"):
+    elif pathwords and pathwords[-1].endswith(".ico"):
       picturefile = os.path.join(filelocations.htmldir, *pathwords)
       picture = widgets.SendFile(picturefile)
       picture.content_type = 'image/ico'
