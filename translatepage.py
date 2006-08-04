@@ -415,7 +415,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       origdict = self.getorigdict(item, orig, item in self.editable)
       transmerge = {}
       if item in self.editable:
-        comments = self.escapetext(thepo.getnotes())
+        comments = self.escapetext(thepo.getnotes(), stripescapes=True)
         locations = " ".join(thepo.getlocations())
         tm = tmsuggestions
         
@@ -468,15 +468,19 @@ class TranslatePage(pagelayout.PootleNavPage):
       spaces = spaces[1:]
     return '<span class="translation-space"> </span>\n' * len(spaces)
 
-  def escapetext(self, text, fancyspaces=True):
+  def escapetext(self, text, fancyspaces=True, stripescapes=False):
     """Replace special characters &, <, >, add and handle quotes if asked"""
     text = text.replace("&", "&amp;") # Must be done first!
     text = text.replace("<", "&lt;").replace(">", "&gt;")
     
-    text = text.replace("\r\n", '\\r\\n<br />')
-    text = text.replace("\n", '\\n<br />')
-    text = text.replace("\r", '\\r<br />')
-    text = text.replace("\t", '\\t')
+    if stripescapes:
+      text = text.replace("\n", '<br />')
+      text = text.replace("\r", '<br />')
+    else:
+      text = text.replace("\r\n", '\\r\\n<br />')
+      text = text.replace("\n", '\\n<br />')
+      text = text.replace("\r", '\\r<br />')
+      text = text.replace("\t", '\\t')
     text = text.replace("<br />", '<br />\n')
 
     if fancyspaces:
