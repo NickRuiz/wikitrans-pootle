@@ -98,6 +98,9 @@ class TranslationProject(object):
     checkerclasses = [checks.projectcheckers.get(self.projectcheckerstyle, checks.StandardChecker), pofilter.StandardPOChecker]
     self.checker = pofilter.POTeeChecker(checkerclasses=checkerclasses, errorhandler=self.filtererrorhandler)
     self.quickstats = {}
+    # terminology matcher
+    self.termmatcher = None
+    self.termmatchermtime = None
     if create:
       self.converttemplates(InternalAdminSession())
     self.podir = potree.getpodir(languagecode, projectcode)
@@ -1013,6 +1016,11 @@ class TranslationProject(object):
         wordcount += sum(pofile.msgidwordcounts[item])
     return wordcount
 
+  def getpomtime(self):
+    """returns the modification time of the last modified file in the project"""
+    return max(pofile.pomtime for pofile in self.pofiles.values())
+  pomtime = property(getpomtime)
+
   def track(self, pofilename, item, message):
     """sends a track message to the pofile"""
     self.pofiles[pofilename].track(item, message)
@@ -1163,25 +1171,39 @@ class TranslationProject(object):
     """returns the terminology store to be used for this project"""
     termfilename = "pootle-terminology.po"
     if termfilename in self.pofiles:
-      return self.pofiles[termfilename]
-    if not termfilename in self.pofiles and self.potree.hasproject(self.languagecode, "pootle"):
-      pootleproject = self.potree.getproject(self.languagecode, "pootle")
-      if termfilename in pootleproject.pofiles:
-        return pootleproject.pofiles[termfilename]
+      termfile = self.getpofile(termfilename, freshen=True)
+      return termfile
+    if self.potree.hasproject(self.languagecode, "terminology"):
+      termproject = self.potree.getproject(self.languagecode, "terminology")
+      if len(termproject.pofiles) > 0:
+        for termfile in termproject.pofiles.values():
+          termfile.pofreshen()
+        return termproject
     return None
 
+  def gettermmatcher(self):
+    """returns the terminology matcher"""
+    # TODO: Rather store a matcher in the terminology project for use in all 
+    # other projects where applicable.
+    termbase = self.gettermbase()
+    if not termbase:
+      return None
+    newmtime = termbase.pomtime
+    if newmtime != self.termmatchermtime:
+      self.termmatchermtime = newmtime
+      self.matcher = match.terminologymatcher(termbase)
+    return self.matcher
+    
   def getterminology(self, pofile, item):
     """find all the terminology for the given (pofile or pofilename) and item"""
+    termmatcher = self.gettermmatcher()
+    if not termmatcher:
+      return []
     if isinstance(pofile, (str, unicode)):
       pofilename = pofile
       pofile = self.getpofile(pofilename)
-    termbase = self.gettermbase()
-    if not termbase:
-      return []
     try:
-      termbase.readpofile()
-      matcher = match.terminologymatcher(termbase)
-      return matcher.matches(pofile.transelements[item].source)
+      return termmatcher.matches(pofile.transelements[item].source)
     except Exception:
       return []
 
