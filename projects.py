@@ -1167,18 +1167,23 @@ class TranslationProject(object):
     tmsuggestpos = pofile.gettmsuggestions(item)
     return tmsuggestpos
 
+  def isterminologyproject(self):
+    """returns whether this project is the main terminology project for a
+    language. Currently it is indicated by the project code 'terminology'"""
+    return self.projectcode == "terminology"
+
   def gettermbase(self):
-    """returns the terminology store to be used for this project"""
-    termfilename = "pootle-terminology.po"
-    if termfilename in self.pofiles:
-      termfile = self.getpofile(termfilename, freshen=True)
-      return termfile
-    if self.potree.hasproject(self.languagecode, "terminology"):
-      termproject = self.potree.getproject(self.languagecode, "terminology")
-      if len(termproject.pofiles) > 0:
-        for termfile in termproject.pofiles.values():
+    """returns this project's terminology store"""
+    if self.isterminologyproject():
+      if len(self.pofiles) > 0:
+        for termfile in self.pofiles.values():
           termfile.pofreshen()
-        return termproject
+        return self
+    else:
+      termfilename = "pootle-terminology.po"
+      if termfilename in self.pofiles:
+        termfile = self.getpofile(termfilename, freshen=True)
+        return termfile
     return None
 
   def gettermmatcher(self):
@@ -1186,12 +1191,21 @@ class TranslationProject(object):
     # TODO: Rather store a matcher in the terminology project for use in all 
     # other projects where applicable.
     termbase = self.gettermbase()
-    if not termbase:
-      return None
-    newmtime = termbase.pomtime
-    if newmtime != self.termmatchermtime:
-      self.termmatchermtime = newmtime
-      self.matcher = match.terminologymatcher(termbase)
+    if termbase:
+      newmtime = termbase.pomtime
+      if newmtime != self.termmatchermtime:
+        self.termmatchermtime = newmtime
+        if self.isterminologyproject():
+          self.matcher = match.terminologymatcher(self.pofiles.values())
+        else:
+          self.matcher = match.terminologymatcher(termbase)
+    elif not self.isterminologyproject() and self.potree.hasproject(self.languagecode, "terminology"):
+      termproject = self.potree.getproject(self.languagecode, "terminology")
+      self.matcher = termproject.gettermmatcher()
+      self.termmatchermtime = termproject.termmatchermtime
+    else:
+      self.matcher = None
+      self.termmatchermtime = None
     return self.matcher
     
   def getterminology(self, pofile, item):
