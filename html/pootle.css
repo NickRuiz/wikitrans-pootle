@@ -19,6 +19,35 @@
 	font-family:  verdana, arial, sans-serif;
 }
 
+/* Language specific settings (see http://translate.sourceforge.net/wiki/l10n/displaysettings) */
+:lang(ar)
+{
+	font-family: Tahoma, Nazli, "DejaVu Sans";
+}
+:lang(ja), :lang(ko), :lang(zh)
+{
+	font-size: 120%;
+}
+:lang(km)
+{
+	font-family: "Khmer OS System", "Khmer OS", "Khmer Kampongtrach", "CDT Khmer", inherit;
+	line-height: 170%;
+}
+:lang(vi)
+{
+	font-family: "Lucida Grande", "Vu Phu Tho", DejaVu;
+}
+:lang(vi) a:hover[href]
+{
+	text-decoration: none;
+	color: #606047;
+}
+:lang(vi) a:active[href]
+{
+	text-decoration: none;
+	color: #606047;
+}
+
 a 		{ color: #7090B7; text-decoration: none; }
 a:link		{ color: #004077; text-decoration: none; }
 a:visited	{ color: #004077; text-decoration: none; }
