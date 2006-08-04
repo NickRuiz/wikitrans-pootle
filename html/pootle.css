@@ -13,6 +13,12 @@
 {
 	unicode-bidi: embed;
 }
+/* Default settings */
+*
+{
+	font-family:  verdana, arial, sans-serif;
+}
+
 a 		{ color: #7090B7; text-decoration: none; }
 a:link		{ color: #004077; text-decoration: none; }
 a:visited	{ color: #004077; text-decoration: none; }
@@ -25,7 +31,6 @@ h1, h2, h3
 }
 .title
 {
-	font-family: verdana, arial, sans-serif;
 	font-size: small;
 	color: #004077;
 }
@@ -67,7 +72,6 @@ div.navbar
 div.searchform
 {
 	float: right;
-	font-family: verdana, arial, sans-serif;
 	max-width: 30%;
 }
 div.searchform[dir="rtl"]
@@ -82,19 +86,16 @@ div.goalitem
 }
 div.contentsitem
 {
-	font-family: verdana, arial, sans-serif;
 	font-size:small;
 	font-weight:normal;
   	line-height:100%;
 }
 div.item-description
 {
-	font-family: verdana, arial, sans-serif;
 	font-size:small;
 }
 div.item-statistics
 {
-	font-family:verdana, arial, sans-serif; 
 	font-size: x-small; 
 	color: #000000; 
 }
@@ -104,7 +105,6 @@ div.item-statistics
 }
 div.translate-form
 {
-	font-family:verdana, arial, sans-serif; 
 	font-size: x-small; 
   	line-height:150%;
 	direction: ltr;
@@ -200,7 +200,6 @@ textarea.translate-translation-fuzzy
 
 table.stats
 {
-	font-family: verdana, arial, sans-serif;
 	width: 100%;
 	border-spacing: 0;
 	padding: 0;
@@ -226,7 +225,6 @@ td.stats-graph
 }
 
 div.intro {
-	font-family: verdana, arial, sans-serif;
 	color:#000;
 	font-weight:normal;
 	line-height:140%;
@@ -236,7 +234,6 @@ div.intro {
 }
 #banner
 {
-	font-family: verdana, arial, sans-serif;
 	background-color: #FFF;
 	font-size:large;
 	font-weight:normal;
@@ -291,7 +288,6 @@ div.intro {
 }
 .sidetitle
 {
-	font-family:verdana, arial, sans-serif;
 	color:#004077;
 	font-size: small;
 	font-weight:bold;
@@ -304,7 +300,6 @@ div.intro {
 }
 .side
 {
-	font-family:verdana, arial, sans-serif;
 	color:#333;
 	font-size: 0.7em;
 	font-weight:normal;
