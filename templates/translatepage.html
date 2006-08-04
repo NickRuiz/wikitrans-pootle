@@ -65,7 +65,7 @@
             <td colspan="1" rowspan="1" class="translate-table-title" py:content="translation_title">translation</td>
           </tr>
 
-          <tr py:for="item in items">
+          <tr py:for="item in items" title="${item.comments}">
             <!-- Cell with original -->
             <td colspan="1" rowspan="1" class="translate-original translate-original-${item.polarity} ${item.focus_class}">
               <div id="${item.orig.itemid}" class="translate-original ${item.orig.focus_class}" lang="en">

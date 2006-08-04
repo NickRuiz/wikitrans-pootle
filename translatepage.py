@@ -425,7 +425,7 @@ class TranslatePage(pagelayout.PootleNavPage):
         else:
           transmerge = self.gettransedit(item, trans)
       else:
-        comments = ""
+        comments = thepo.getnotes()
         locations = ""
         tm = []
         transmerge = self.gettransview(item, trans)
