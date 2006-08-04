@@ -1021,7 +1021,7 @@ class TranslationProject(object):
 
   def getpomtime(self):
     """returns the modification time of the last modified file in the project"""
-    return max(pofile.pomtime for pofile in self.pofiles.values())
+    return max([pofile.pomtime for pofile in self.pofiles.values()])
   pomtime = property(getpomtime)
 
   def track(self, pofilename, item, message):
