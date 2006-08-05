@@ -109,8 +109,8 @@ class TranslationProject(object):
     else:
       self.filestyle = "std"
     self.readprefs()
-    self.readquickstats()
     self.scanpofiles()
+    self.readquickstats()
     self.initindex()
 
   def readprefs(self):
