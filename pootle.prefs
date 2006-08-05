@@ -177,6 +177,16 @@ Pootle:
 #    en.nplurals = '2'
 #    en.pluralequation ='(n != 1)'
 
+# English (British)
+#    en_GB.fullname = u'English (British)'
+#    en_GB.nplurals = '2'
+#    en_GB.pluralequation ='(n != 1)'
+
+# English (South African)
+#    en_ZA.fullname = u'English (South African)'
+#    en_ZA.nplurals = '2'
+#    en_ZA.pluralequation ='(n != 1)'
+
 # Esperanto
 #    eo.fullname = u'Esperanto'
 #    eo.nplurals = '2'
