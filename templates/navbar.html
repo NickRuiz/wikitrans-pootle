@@ -29,7 +29,7 @@
             <option value=""/>
             <option py:for="user in item.actions.goalform.users" value="${user}" py:content="user" selected="${item.actions.goalform.assignusers[user]}">Username</option>
           </select>
-          <a py:if="not item.actions.goalform.multiusers" href="#" onclick="var userselect = document.forms.${item.actions.goalform.name}.editfileuser; userselect.multiple = true; return false">Select Multiple</a>
+          <a py:if="not item.actions.goalform.multiusers" href="#" onclick="var userselect = document.forms.${item.actions.goalform.name}.editfileuser; userselect.multiple = true; return false" py:content="item.actions.goalform.selectmultiple_text">Select Multiple</a>
           <input type="hidden" name="allowmultikey" value="editfileuser"/>
           <select name="edituserwhich">
             <option py:for="a in item.actions.goalform.assignwhich" value="${a.value}">${a.text}</option>

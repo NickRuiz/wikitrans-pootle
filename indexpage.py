@@ -727,6 +727,7 @@ class ProjectIndex(pagelayout.PootleNavPage):
      "users": useroptions,
      "assignusers": dict([(username, username in assignusers or None) for username in useroptions]),
      "multiusers": multiusers,
+     "selectmultiple_text": self.localize("Select Multiple"),
      "assignwhich": [{"value": value, "text": text} for value, text in assignwhich],
      "assignto_text": self.localize("Assign To"),
      }
