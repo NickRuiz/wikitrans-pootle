@@ -1199,17 +1199,17 @@ class TranslationProject(object):
       if newmtime != self.termmatchermtime:
         self.termmatchermtime = newmtime
         if self.isterminologyproject():
-          self.matcher = match.terminologymatcher(self.pofiles.values())
+          self.termmatcher = match.terminologymatcher(self.pofiles.values())
         else:
-          self.matcher = match.terminologymatcher(termbase)
+          self.termmatcher = match.terminologymatcher(termbase)
     elif not self.isterminologyproject() and self.potree.hasproject(self.languagecode, "terminology"):
       termproject = self.potree.getproject(self.languagecode, "terminology")
-      self.matcher = termproject.gettermmatcher()
+      self.termmatcher = termproject.gettermmatcher()
       self.termmatchermtime = termproject.termmatchermtime
     else:
-      self.matcher = None
+      self.termmatcher = None
       self.termmatchermtime = None
-    return self.matcher
+    return self.termmatcher
     
   def getterminology(self, pofile, item):
     """find all the terminology for the given (pofile or pofilename) and item"""
