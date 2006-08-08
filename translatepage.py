@@ -482,6 +482,9 @@ class TranslatePage(pagelayout.PootleNavPage):
       text = text.replace("\r", '\\r<br />')
       text = text.replace("\t", '\\t')
     text = text.replace("<br />", '<br />\n')
+    # we don't need it at the end of the string
+    if text.endswith("<br />\n"):
+      text = text[:-len("<br />\n")]
 
     if fancyspaces:
       text = self.addfancyspaces(text)
