@@ -192,7 +192,7 @@ class TranslationProject(object):
     self.prefs.rights.__setattr__(username, rights)
     self.saveprefs()
 
-  def delrights(self, username):
+  def delrights(self, session, username):
     """deletes teh rights for the given username"""
     if username == "nobody" or username == "default":
       raise RightsError(session.localize('You cannot remove the "nobody" or "default" user'))
