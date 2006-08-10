@@ -45,7 +45,7 @@ def buildmatches(inputfile, outputfile, matcher):
     outputfile = factory.getobject(outputfile, ignore=".tm")
     #TODO: Do something useful with current content if file exists
     
-    inputfile.units.sort(key=match.sourcelen)
+    inputfile.units.sort(match.sourcelencmp)
     try:
         for unit in inputfile.units:
             if len(unit.source) > 70:
