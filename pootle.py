@@ -165,6 +165,17 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
     """generates a unique activation code"""
     return "".join(["%02x" % int(random.random()*0x100) for i in range(16)])
 
+  def generaterobotsfile(self):
+    """generates the robots.txt file"""
+    langcodes = self.potree.getlanguagecodes()
+    excludedfiles = ["login.html", "register.html", "activate.html"]
+    content = "User-agent: *\n"
+    for excludedfile in excludedfiles:
+      content += "Disallow: /%s\n" % excludedfile
+    for langcode in langcodes:
+      content += "Disallow: /%s/\n" % langcode
+    return content
+
   def getpage(self, pathwords, session, argdict):
     """return a page that will be sent to the user"""
     # TODO: strip off the initial path properly
@@ -210,6 +221,11 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
       picture.content_type = 'image/ico'
       picture.allowcaching = True
       return picture
+    elif top == "robots.txt":
+      robotspage = widgets.PlainContents(self.generaterobotsfile())
+      robotspage.content_type = 'text/plain'
+      robotspage.allowcaching = True
+      return robotspage
     elif top == "testtemplates.html":
       return templateserver.TemplateServer.getpage(self, pathwords, session, argdict)
     elif not top or top == "index.html":
