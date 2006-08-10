@@ -16,13 +16,22 @@
 /* Default settings */
 *
 {
-	font-family:  verdana, arial, sans-serif;
+	font-family:  verdana, arial, tahoma, sans-serif;
 }
 
 /* Language specific settings (see http://translate.sourceforge.net/wiki/l10n/displaysettings) */
 :lang(ar)
 {
-	font-family: Tahoma, Nazli, "DejaVu Sans";
+	font-family: Tahoma, Nazli, "DejaVu Sans", inherit;
+}
+:lang(el)
+{
+	font-family: "DejaVu Sans", inherit;
+}
+:lang(fa)
+{
+	font-family: Terafik, Traffic, Roya, Nazli, Nazanin, sans;
+	font-size: 120%;
 }
 :lang(ja), :lang(ko), :lang(zh)
 {
@@ -35,7 +44,7 @@
 }
 :lang(vi)
 {
-	font-family: "Lucida Grande", "Vu Phu Tho", DejaVu;
+	font-family: "Lucida Grande", "Vu Phu Tho", "DejaVu Sans", inherit;
 }
 :lang(vi) a:hover[href]
 {
