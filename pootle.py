@@ -178,6 +178,16 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
 
   def getpage(self, pathwords, session, argdict):
     """return a page that will be sent to the user"""
+    #Ensure we get unicode from argdict
+    #TODO: remove when jToolkit does this
+    newargdict = {}
+    for key, value in argdict.iteritems():
+      if isinstance(key, str):
+       key = key.decode("utf-8")
+      if isinstance(value, str):
+       value = value.decode("utf-8")
+      newargdict[key] = value
+    argdict = newargdict
     # TODO: strip off the initial path properly
     while pathwords and pathwords[0] == "pootle":
       pathwords = pathwords[1:]
