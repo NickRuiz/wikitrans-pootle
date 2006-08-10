@@ -40,6 +40,7 @@ from jToolkit import prefs
 import time
 import os
 import cStringIO
+import traceback
 import gettext
 from jToolkit.data import indexer
 from jToolkit import glock
@@ -1211,17 +1212,18 @@ class TranslationProject(object):
       self.termmatchermtime = None
     return self.termmatcher
     
-  def getterminology(self, pofile, item):
+  def getterminology(self, session, pofile, item):
     """find all the terminology for the given (pofile or pofilename) and item"""
-    termmatcher = self.gettermmatcher()
-    if not termmatcher:
-      return []
-    if isinstance(pofile, (str, unicode)):
-      pofilename = pofile
-      pofile = self.getpofile(pofilename)
     try:
-      return termmatcher.matches(pofile.transelements[item].source)
-    except Exception:
+      termmatcher = self.gettermmatcher()
+      if not termmatcher:
+        return []
+      if isinstance(pofile, (str, unicode)):
+        pofilename = pofile
+        pofile = self.getpofile(pofilename)
+        return termmatcher.matches(pofile.transelements[item].source)
+    except Exception, e:
+      session.server.errorhandler.logerror(traceback.format_exc())
       return []
 
   def savepofile(self, pofilename):

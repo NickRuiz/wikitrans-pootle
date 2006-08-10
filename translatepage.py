@@ -392,7 +392,7 @@ class TranslatePage(pagelayout.PootleNavPage):
       suggestions = {self.item: self.project.getsuggestions(self.pofilename, self.item)}
     if self.translatemode and self.item is not None:
       tmsuggestions = self.project.gettmsuggestions(self.pofilename, self.item)
-      tmsuggestions.extend(self.project.getterminology(self.pofilename, self.item))
+      tmsuggestions.extend(self.project.getterminology(self.session, self.pofilename, self.item))
     for row, thepo in enumerate(self.translations):
       orig = thepo.unquotedmsgid
       trans = thepo.unquotedmsgstr
