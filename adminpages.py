@@ -319,7 +319,7 @@ class TranslationProjectAdminPage(pagelayout.PootlePage):
             self.project.setrights(username, value)
           if key.startswith("rightsremove-"):
             username = key.replace("rightsremove-", "", 1)
-            self.project.delrights(username)
+            self.project.delrights(self.session, username)
         username = argdict.get("rightsnew-username", None)
         if username:
           username = username.strip()
