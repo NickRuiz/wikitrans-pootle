@@ -289,15 +289,14 @@ class ProjectIndex(pagelayout.PootleNavPage):
       mainstats = ""
       mainicon = "file"
     else:
-      if not dirfilter and not self.editing:
-        # the common case: plain stats table
-        pofilenames = self.project.browsefiles()
-        projectstats = self.project.getquickstats()
-      else:
-        # if we are editing, we need the complete stats to know if there are 
-        # suggestions, for example
+      if dirfilter or self.editing or self.showassigns or self.showchecks:
+        # we need the complete stats
         pofilenames = self.project.browsefiles(dirfilter)
         projectstats = self.project.combinestats(pofilenames)
+      else:
+        # a common case: plain stats table we can take a shortcut
+        pofilenames = self.project.browsefiles()
+        projectstats = self.project.getquickstats()
       if self.editing:
         actionlinks = self.getactionlinks("", projectstats, ["editing", "mine", "review", "check", "assign", "goal", "quick", "all", "zip", "sdf"], dirfilter)
       else: 
