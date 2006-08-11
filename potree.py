@@ -400,7 +400,6 @@ class POTree:
       return "*", None
     for projectcode, projectprefs in self.projects.iteritems():
       projectdir = canonicalpath(os.path.join(self.podirectory, projectcode))
-      print dirname, projectdir
       if projectdir == dirname:
         return projectcode, None
       for languagecode, languageprefs in self.languages.iteritems():
