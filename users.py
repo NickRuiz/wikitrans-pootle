@@ -44,7 +44,7 @@ class LoginPage(pagelayout.PootlePage):
         "language_title": self.localize('Language:'),
         "languages": self.getlanguageoptions(session),
         "login_text": self.localize('Login'),
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": instancetitle}
     pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
   def getlanguageoptions(self, session):
@@ -84,7 +84,7 @@ class RegisterPage(pagelayout.PootlePage):
         "password_tooltip": self.localize("Your desired password"),
         "password": self.argdict.get("password", ""),
         "register_text": self.localize('Register Account'),
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": instancetitle}
     pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
 class ActivatePage(pagelayout.PootlePage):
@@ -111,7 +111,7 @@ class ActivatePage(pagelayout.PootlePage):
         "code_tooltip": self.localize("The activation code you received"),
         "code": self.argdict.get("activationcode", ""),
         "activate_text": self.localize('Activate Account'),
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": instancetitle}
     pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
 
 class UserOptions(pagelayout.PootlePage):
@@ -140,7 +140,7 @@ class UserOptions(pagelayout.PootlePage):
         "languages": self.getlanguageoptions(),
         "home_link": self.localize("Home page"),
         "submit_button": self.localize("Save changes"),
-        "session": sessionvars, "instancetitle": pagetitle}
+        "session": sessionvars, "instancetitle": instancetitle}
     otheroptions = self.getotheroptions()
     templatevars.update(otheroptions)
     pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
