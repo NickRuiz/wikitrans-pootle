@@ -445,7 +445,7 @@ class PootleSession(session.LoginSession):
     self.language_set = language or ""
     if language:
       self.language = language
-    else:
+    elif not getattr(self, "language", None):
       if self.isopen:
         self.language = getattr(self.prefs, "uilanguage", "") or self.server.defaultlanguage
       else:
