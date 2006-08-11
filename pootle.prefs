@@ -27,9 +27,12 @@ Pootle:
 
   # When users register their details will be sent from "fromaddress" using the
   # SMTP server "smtpserver"
+  # If specified, "supportaddress" will be given in registration emails as the
+  # address to contact with queries
   registration:
     fromaddress = "pootle-registration@localhost"
     smtpserver = "localhost"
+  # supportaddress = "pootle-admin@yourdomain.org"
 
   # Where users are directed by default when they login
   homepage = "home/"
