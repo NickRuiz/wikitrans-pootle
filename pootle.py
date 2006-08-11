@@ -98,6 +98,27 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
       setattr(self.instance, optionname, value)
     self.saveprefs()
 
+  def initlanguage(self, req, session):
+    """Initialises the session language from the request"""
+    # This version doesn't know which languages we have, so we just set it as 
+    # preferred by the user. Overridden in PootleServer.
+    availablelanguages = self.potree.getlanguagecodes('pootle')
+    acceptlanguageheader = req.headers_in.getheader('Accept-Language')
+    if not acceptlanguageheader:
+      return
+
+    for langpref in acceptlanguageheader.split(","):
+      pos = langpref.find(";")
+      if pos >= 0:
+        langpref = langpref[:pos]
+      if langpref in availablelanguages:
+        session.setlanguage(langpref)
+        return
+      elif langpref.startswith("en"):
+        session.setlanguage(None)
+        return
+    session.setlanguage(None)
+        
   def inittranslation(self, localedir=None, localedomains=None, defaultlanguage=None):
     """initializes live translations using the Pootle PO files"""
     self.localedomains = ['jToolkit', 'pootle']
