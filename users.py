@@ -352,7 +352,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
     message += session.localize("Your registered email address is: %s\n", email)
     smtpserver = self.instance.registration.smtpserver
     fromaddress = self.instance.registration.fromaddress
-    messagedict = {"from": fromaddress, "to": [email], "subject": "Pootle Registration", "body": message}
+    messagedict = {"from": fromaddress, "to": [email], "subject": session.localize("Pootle Registration"), "body": message}
     if supportaddress:
       messagedict["reply-to"] = supportaddress
     fullmessage = mailer.makemessage(messagedict)
