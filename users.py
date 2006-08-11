@@ -190,8 +190,16 @@ class OptionalLoginAppServer(server.LoginAppServer):
     if session.isopen:
       session.pagecount += 1
       session.remote_ip = self.getremoteip(req)
+    else:
+      self.initlanguage(req, session)
     return self.getpage(pathwords, session, argdict)
 
+  def initlanguage(self, req, session):
+    """Initialises the session language from the request"""
+    # This version doesn't know which languages we have, so we have to override
+    # in PootleServer.
+    session.setlanguage("en")
+      
   def hasuser(self, users, username):
     """returns whether the user exists in users"""
     return users.__hasattr__(username)
