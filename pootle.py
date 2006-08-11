@@ -270,7 +270,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
       message = None
       if 'username' in argdict:
         session.username = argdict["username"]
-	message = self.localize("Login failed")
+	message = session.localize("Login failed")
       return users.LoginPage(session, languagenames=self.languagenames, message=message)
     elif top == "register.html":
       return self.registerpage(session, argdict)
