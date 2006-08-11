@@ -276,13 +276,13 @@ class OptionalLoginAppServer(server.LoginAppServer):
         if self.hasuser(users, username):
           raise ValueError("Already have user with the login: %s" % username)
         userpassword = argdict.get("newuserpassword", None)
-        if userpassword is None or userpassword == self.localize("(add password here)"):
+        if userpassword is None or userpassword == session.localize("(add password here)"):
           raise ValueError("You must specify a password")
         userfullname = argdict.get("newuserfullname", None)
-        if userfullname == self.localize("(add full name here)"):
+        if userfullname == session.localize("(add full name here)"):
           raise ValueError("Please set the users full name or leave it blank")
         useremail = argdict.get("newuseremail", None)
-        if useremail == self.localize("(add email here)"):
+        if useremail == session.localize("(add email here)"):
           raise ValueError("Please set the users email address or leave it blank")
         useractivate = "newuseractivate" in argdict
         self.adduser(users, username, userfullname, useremail, userpassword)
@@ -295,15 +295,16 @@ class OptionalLoginAppServer(server.LoginAppServer):
 
   def handleregistration(self, session, argdict):
     """handles the actual registration"""
+    #TODO: Fix layout, punctuation, spacing and correlation of messages
     supportaddress = getattr(self.instance.registration, 'supportaddress', "")
     username = argdict.get("username", "")
     if not username or not username.isalnum() or not username[0].isalpha():
-      raise RegistrationError("Username must be alphanumeric, and must start with an alphabetic character")
+      raise RegistrationError(session.localize("Username must be alphanumeric, and must start with an alphabetic character"))
     fullname = argdict.get("name", "")
     email = argdict.get("email", "")
     password = argdict.get("password", "")
     if " " in email or not (email and "@" in email and "." in email):
-      raise RegistrationError("You must supply a valid email address")
+      raise RegistrationError(session.localize("You must supply a valid email address"))
     userexists = session.loginchecker.userexists(username)
     users = session.loginchecker.users
     if userexists:
@@ -312,43 +313,43 @@ class OptionalLoginAppServer(server.LoginAppServer):
       email = getattr(usernode, "email", email)
       password = ""
       # TODO: we can't figure out the password as we only store the md5sum. have a password reset mechanism
-      message = self.localize("You (or someone else) attempted to register an account with your username.\n")
-      message += self.localize("We don't store your actual password but only a hash of it.\n")
+      message = session.localize("You (or someone else) attempted to register an account with your username.\n")
+      message += session.localize("We don't store your actual password but only a hash of it.\n")
       if supportaddress:
-        message += self.localize("If you have a problem with registration, please contact %s.\n", supportaddress)
+        message += session.localize("If you have a problem with registration, please contact %s.\n", supportaddress)
       else:
-        message += self.localize("If you have a problem with registration, please contact the site administrator.\n")
-      displaymessage = self.localize("That username already exists. An email will be sent to the registered email address.\n")
+        message += session.localize("If you have a problem with registration, please contact the site administrator.\n")
+      displaymessage = session.localize("That username already exists. An email will be sent to the registered email address.\n")
       redirecturl = "login.html?username=%s" % username
-      displaymessage += self.localize("Proceeding to <a href='%s'>login</a>\n", redirecturl)
+      displaymessage += session.localize("Proceeding to <a href='%s'>login</a>\n", redirecturl)
     else:
       minpasswordlen = 6
       if not password or len(password) < minpasswordlen:
-        raise RegistrationError(self.localize("You must supply a valid password of at least %d characters.", minpasswordlen))
+        raise RegistrationError(session.localize("You must supply a valid password of at least %d characters.", minpasswordlen))
       self.adduser(users, username, fullname, email, password)
       activationcode = self.makeactivationcode(users, username)
       activationlink = ""
-      message = self.localize("A Pootle account has been created for you using this email address.\n")
+      message = session.localize("A Pootle account has been created for you using this email address.\n")
       if session.instance.baseurl.startswith("http://"):
-        message += self.localize("To activate your account, follow this link:\n")
+        message += session.localize("To activate your account, follow this link:\n")
         activationlink = session.instance.baseurl
         if not activationlink.endswith("/"):
           activationlink += "/"
         activationlink += "activate.html?username=%s&activationcode=%s" % (username, activationcode)
         message += "  %s  \n" % activationlink
-      message += self.localize("Your activation code is:\n%s\n", activationcode)
+      message += session.localize("Your activation code is:\n%s\n", activationcode)
       if activationlink:
-        message += self.localize("If you are unable to follow the link, please enter the above code at the activation page.\n")
-      message += self.localize("This message is sent to verify that the email address is in fact correct. If you did not want to register an account, you may simply ignore the message.\n")
+        message += session.localize("If you are unable to follow the link, please enter the above code at the activation page.\n")
+      message += session.localize("This message is sent to verify that the email address is in fact correct. If you did not want to register an account, you may simply ignore the message.\n")
       redirecturl = "activate.html?username=%s" % username
-      displaymessage = self.localize("Account created. You will be emailed login details and an activation code. Please enter your activation code on the <a href='%s'>activation page</a>.", redirecturl)
+      displaymessage = session.localize("Account created. You will be emailed login details and an activation code. Please enter your activation code on the <a href='%s'>activation page</a>.", redirecturl)
       if activationlink:
-        displaymessage += self.localize("(Or simply click on the activation link in the email)")
+        displaymessage += " ", session.localize("(Or simply click on the activation link in the email)")
     session.saveprefs()
-    message += self.localize("Your user name is: %s\n", username)
+    message += session.localize("Your user name is: %s\n", username)
     if password.strip():
-      message += self.localize("Your password is: %s\n", password)
-    message += self.localize("Your registered email address is: %s\n", email)
+      message += session.localize("Your password is: %s\n", password)
+    message += session.localize("Your registered email address is: %s\n", email)
     smtpserver = self.instance.registration.smtpserver
     fromaddress = self.instance.registration.fromaddress
     messagedict = {"from": fromaddress, "to": [email], "subject": "Pootle Registration", "body": message}
