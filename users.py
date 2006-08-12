@@ -344,7 +344,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
       redirecturl = "activate.html?username=%s" % username
       displaymessage = session.localize("Account created. You will be emailed login details and an activation code. Please enter your activation code on the <a href='%s'>activation page</a>.", redirecturl)
       if activationlink:
-        displaymessage += " ", session.localize("(Or simply click on the activation link in the email)")
+        displaymessage += " " + session.localize("(Or simply click on the activation link in the email)")
     session.saveprefs()
     message += session.localize("Your user name is: %s\n", username)
     if password.strip():
