@@ -224,6 +224,8 @@ class TranslationProject(object):
     includedirs specifies whether to return directory names
     expanddirs specifies whether to expand directories and return all files in them
     includepartial specifies whether to return directories that are not in the goal, but have files below maxdepth in the goal"""
+    if not goalname:
+      return self.getnogoalfiles(dirfilter=dirfilter, maxdepth=maxdepth, includedirs=includedirs, expanddirs=expanddirs, includepartial=includepartial)
     goals = getattr(self.prefs, "goals", {})
     poext = os.extsep + self.fileext
     pathsep = os.path.sep
@@ -263,6 +265,20 @@ class TranslationProject(object):
       else:
         return unique(goalfiles)
     return []
+
+  def getnogoalfiles(self, dirfilter=None, maxdepth=None, includedirs=True, expanddirs=False, includepartial=False):
+    """Returns the files that are not in a goal. This works with getgoalfiles
+    and therefre the API resembles that closely"""
+    all = self.browsefiles(dirfilter=dirfilter, maxdepth=maxdepth, includedirs=includedirs)
+    pathsep = os.path.sep
+    goals = getattr(self.prefs, "goals", {})
+    for testgoalname in self.getgoals():
+      goalfiles = self.getgoalfiles(testgoalname, dirfilter=dirfilter, maxdepth=maxdepth, includedirs=includedirs, expanddirs=expanddirs, includepartial=False)
+      for goalfile in goalfiles:
+        if goalfile.endswith(pathsep):
+          goalfile = goalfile[:-len(pathsep)]
+        all.remove(goalfile)
+    return all
 
   def getancestry(self, filename):
     """returns parent directories of the file"""

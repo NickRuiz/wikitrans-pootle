@@ -588,7 +588,6 @@ class ProjectIndex(pagelayout.PootleNavPage):
 
   def getgoalitem(self, goalname, dirfilter, goalusers):
     """returns an item showing a goal entry"""
-    # TODO: fix stats for goalless
     pofilenames = self.project.getgoalfiles(goalname, dirfilter, expanddirs=True, includedirs=False)
     projectstats = self.project.combinestats(pofilenames)
     goal = {"actions": None, "icon": "goal", "isgoal": True, "goal": {"name": goalname}}
