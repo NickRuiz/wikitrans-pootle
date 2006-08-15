@@ -515,7 +515,7 @@ class pootlefile(po.pofile):
     thepo = self.transelements[item]
     newpo = thepo.copy()
     if username is not None:
-      newpo.msgidcomments.append('"_: suggested by %s"' % username)
+      newpo.msgidcomments.append('"_: suggested by %s\\n"' % username)
     newpo.unquotedmsgstr = suggmsgstr
     newpo.markfuzzy(False)
     self.pendingfile.units.append(newpo)
