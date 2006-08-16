@@ -185,14 +185,42 @@ class OptionalLoginAppServer(server.LoginAppServer):
   """a server that enables login but doesn't require it except for specified pages"""
   def handle(self, req, pathwords, argdict):
     """handles the request and returns a page object in response"""
-    argdict = self.processargs(argdict)
-    session = self.getsession(req, argdict)
-    if session.isopen:
-      session.pagecount += 1
-      session.remote_ip = self.getremoteip(req)
-    else:
-      self.initlanguage(req, session)
-    return self.getpage(pathwords, session, argdict)
+    try:
+      argdict = self.processargs(argdict)
+      session = self.getsession(req, argdict)
+      if session.isopen:
+        session.pagecount += 1
+        session.remote_ip = self.getremoteip(req)
+      else:
+        self.initlanguage(req, session)
+      page = self.getpage(pathwords, session, argdict)
+    except Exception, e:
+      exceptionstr = self.errorhandler.exception_str()
+      errormessage = str(e).decode("utf-8")
+      traceback = self.errorhandler.traceback_str().decode('utf-8')
+      browsertraceback = ""
+      if self.options.browsererrors == 'traceback':
+        browsertraceback = traceback
+      if self.options.logerrors == 'traceback':
+        self.errorhandler.logerror(traceback)
+      elif self.options.logerrors == 'exception':
+        self.errorhandler.logerror(exceptionstr)
+      elif self.options.logerrors == 'message':
+        self.errorhandler.logerror(errormessage)
+      
+      refreshurl = req.headers_in.getheader('Referer') or "/"
+      templatename = "error"
+      templatevars = {
+          "pagetitle": session.localize("Error"),
+          "refresh": 30,
+          "refreshurl": refreshurl,
+          "message": errormessage,
+	  "traceback": browsertraceback,
+	  "back": session.localize("Back"),
+          }
+      pagelayout.completetemplatevars(templatevars, session)
+      page = server.Redirect(refreshurl, withtemplate=(templatename, templatevars))
+    return page
 
   def initlanguage(self, req, session):
     """Initialises the session language from the request"""
