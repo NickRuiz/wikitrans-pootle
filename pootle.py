@@ -100,8 +100,6 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
 
   def initlanguage(self, req, session):
     """Initialises the session language from the request"""
-    # This version doesn't know which languages we have, so we just set it as 
-    # preferred by the user. Overridden in PootleServer.
     availablelanguages = self.potree.getlanguagecodes('pootle')
     acceptlanguageheader = req.headers_in.getheader('Accept-Language')
     if not acceptlanguageheader:
