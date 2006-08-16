@@ -539,6 +539,7 @@ def main():
   if options.action != "runwebserver":
     options.servertype = "dummy"
   server = parser.getserver(options)
+  server.options = options
   if options.action == "runwebserver":
     simplewebserver.run(server, options)
   elif options.action == "refreshstats":
