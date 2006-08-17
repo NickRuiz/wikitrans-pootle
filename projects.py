@@ -585,12 +585,17 @@ class TranslationProject(object):
     for potfilename in templates:
       inputfile = open(os.path.join(templatesdir, potfilename), "rb")
       outputfile = cStringIO.StringIO()
-      pot2po.convertpot(inputfile, outputfile, None)
-      dirname, potfilename = os.path.dirname(potfilename), os.path.basename(potfilename)
       if self.filestyle == "gnu":
         pofilename = self.languagecode + os.extsep + "po"
       else:
         pofilename = potfilename[:-len(os.extsep+"pot")] + os.extsep + "po"
+      origpofilename = os.path.join(self.podir, pofilename)
+      if os.path.exists(origpofilename):
+        origpofile = open(origpofilename)
+      else:
+        origpofile = None
+      pot2po.convertpot(inputfile, outputfile, origpofile)
+      dirname, potfilename = os.path.dirname(potfilename), os.path.basename(potfilename)
       self.uploadfile(session, dirname, pofilename, outputfile.getvalue())
 
   def filtererrorhandler(self, functionname, str1, str2, e):
