@@ -67,6 +67,11 @@ Pootle:
       description = "Web translation software"
       checkstyle = "standard"
 
+    terminology:
+      fullname = "Terminology"
+      description = "Terminology project that Pootle should use to suggest terms"
+      checkstyle = "standard"
+
   # The languages section defines the languages being translated into on this
   # instance of Pootle.  This describes the fields listed in the following
   # language.
