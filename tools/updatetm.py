@@ -83,7 +83,7 @@ def main(argv=None):
     formats = {"po": ("po.tm", writematches)}
     parser = convert.ConvertOptionParser(formats, usetemplates=False, description=__doc__)
     parser.add_option("-t", "--tm", dest="tm", default=None,
-        help="The file to use as translation momory")
+        help="The file to use as translation memory")
     parser.passthrough.append("tm")
     parser.add_option("-c", "--candidates", dest="max_candidates", default=4,
         help="The maximum number of TM candidates to store per message")
