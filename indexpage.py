@@ -46,6 +46,8 @@ class AboutPage(pagelayout.PootlePage):
     self.localize = session.localize
     pagetitle = getattr(session.instance, "title")
     description = getattr(session.instance, "description")
+    keywords = ["Pootle", "WordForge", "translate", "translation", "localisation",
+                "localization", "l10n", "traduction", "traduire"]
     abouttitle = self.localize("About Pootle")
     introtext = self.localize("<strong>Pootle</strong> is a simple web portal that should allow you to <strong>translate</strong>! Since Pootle is <strong>Free Software</strong>, you can download it and run your own copy if you like. You can also help participate in the development in many ways (you don't have to be able to program).")
     hosttext = self.localize('The Pootle project itself is hosted at <a href="http://translate.sourceforge.net/">translate.sourceforge.net</a> where you can find the details about source code, mailing lists etc.')
@@ -58,6 +60,7 @@ class AboutPage(pagelayout.PootlePage):
     instancetitle = getattr(session.instance, "title", session.localize("Pootle Demo"))
     sessionvars = {"status": session.status, "isopen": session.isopen, "issiteadmin": session.issiteadmin()}
     templatevars = {"pagetitle": pagetitle, "description": description,
+        "description": description, "keywords": keywords,
         "abouttitle": abouttitle, "introtext": introtext,
         "hosttext": hosttext, "nametext": nametext, "versiontitle": versiontitle, "versiontext": versiontext,
         "session": sessionvars, "instancetitle": instancetitle}
@@ -71,6 +74,9 @@ class PootleIndex(pagelayout.PootlePage):
     self.localize = session.localize
     self.nlocalize = session.nlocalize
     templatename = "index"
+    description = getattr(session.instance, "description")
+    keywords = ["Pootle", "WordForge", "translate", "translation", "localisation", "localization",
+                "l10n", "traduction", "traduire"] + self.getprojectnames()
     aboutlink = self.localize("About this Pootle server")
     languagelink = self.localize('Languages')
     projectlink = self.localize('Projects')
@@ -81,6 +87,7 @@ class PootleIndex(pagelayout.PootlePage):
     if languages:
       languages[-1]["sep"] = ""
     templatevars = {"pagetitle": pagetitle, "aboutlink": aboutlink,
+        "description": description, "keywords": keywords,
         "languagelink": languagelink, "languages": languages,
         "projectlink": projectlink, "projects": self.getprojects(),
         "session": sessionvars, "instancetitle": instancetitle}
@@ -96,6 +103,9 @@ class PootleIndex(pagelayout.PootlePage):
     if projects:
       projects[-1]["sep"] = ""
     return projects
+
+  def getprojectnames(self):
+    return [self.potree.getprojectname(projectcode) for projectcode in self.potree.getprojectcodes()]
 
 class UserIndex(pagelayout.PootlePage):
   """home page for a given user"""
