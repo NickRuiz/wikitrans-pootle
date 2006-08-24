@@ -1214,8 +1214,6 @@ class TranslationProject(object):
 
   def gettermmatcher(self):
     """returns the terminology matcher"""
-    # TODO: Rather store a matcher in the terminology project for use in all 
-    # other projects where applicable.
     termbase = self.gettermbase()
     if termbase:
       newmtime = termbase.pomtime
