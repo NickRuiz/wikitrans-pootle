@@ -47,7 +47,7 @@
 #  user using the admin interface or by manually deleting the lines from this 
 #  file.  Please also ensure that you have a user with siteadmin rights.
 # 
-#  NOTE NOTE: leaving this user enabled will compromise your Pootle setup.
+#  NOTE: leaving this user enabled will compromise your Pootle setup.
 #
 #startup:
 #  activated = 1
