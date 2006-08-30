@@ -220,6 +220,7 @@ class PootleNavPage(PootlePage):
                 "untranslatedwords": self.localize("Untranslated words"),
                 "total": self.localize("Total"),
                 "totalwords": self.localize("Total words"),
+                # l10n: noun. The graphical representation of translation status
                 "graph": self.localize("Graph")}
     return headings
 

@@ -51,7 +51,10 @@ class AdminPage(pagelayout.PootlePage):
     return text
     
   def getoptions(self):
-    optiontitles = {"title": self.localize("Title"), "description": self.localize("Description"), "baseurl": self.localize("Base URL"), "homepage": self.localize("Home Page")}
+    optiontitles = {"title": self.localize("Title"), 
+                    "description": self.localize("Description"),
+                    "baseurl": self.localize("Base URL"),
+                    "homepage": self.localize("Home Page")}
     options = []
     for optionname, optiontitle in optiontitles.items():
       optionvalue = getattr(self.instance, optionname, "")
@@ -84,7 +87,8 @@ class LanguagesAdminPage(pagelayout.PootlePage):
     
   def getoptions(self):
     options = [{"name": "code", "title": self.localize("ISO Code"), "size": 6, "newvalue": ""},
-               {"name": "name", "title": self.localize("Full Name"), "newvalue": self.localize("(add language here)")},
+               {"name": "name", "title": self.localize("Full Name"), 
+                                "newvalue": self.localize("(add language here)")},
                {"name": "specialchars", "title": self.localize("Special Chars"), "newvalue": self.localize("(special characters)")},
                {"name": "nplurals", "title": self.localize("Number of Plurals"), "newvalue": self.localize("(number of plurals)")},
                {"name": "pluralequation", "title": self.localize("Plural Equation"), "newvalue": self.localize("(plural equation)")},
@@ -139,7 +143,8 @@ class ProjectsAdminPage(pagelayout.PootlePage):
 
   def getoptions(self):
     options = [{"name": "code", "title": self.localize("Project Code"), "size": 6, "newvalue": ""},
-               {"name": "name", "title": self.localize("Full Name"), "newvalue": self.localize("(add project here)")},
+               {"name": "name", "title": self.localize("Full Name"), 
+                                "newvalue": self.localize("(add project here)")},
                {"name": "description", "title": self.localize("Project Description"), "newvalue": self.localize("(project description)")},
                {"name": "checkerstyle", "title": self.localize("Checker Style"), "selectoptions": self.allchecks, "newvalue": ""},
                {"name": "createmofiles", "title": self.localize("Create MO Files"), "type": "checkbox", "newvalue": ""},
@@ -200,7 +205,8 @@ class UsersAdminPage(pagelayout.PootlePage):
     
   def getoptions(self):
     options = [{"name": "name", "title": self.localize("Login"), "newvalue": "", "size": 6},
-               {"name": "fullname", "title": self.localize("Full Name"), "newvalue": self.localize("(add full name here)")},
+               {"name": "fullname", "title": self.localize("Full Name"), 
+                                    "newvalue": self.localize("(add full name here)")},
                {"name": "email", "title": self.localize("Email Address"), "newvalue": self.localize("(add email here)")},
                {"name": "password", "title": self.localize("Password"), "newvalue": self.localize("(add password here)")},
                {"name": "activated", "title": self.localize("Activated"), "type": "checkbox", "checked": "true", "newvalue": "", "label": self.localize("Activate New User")},
