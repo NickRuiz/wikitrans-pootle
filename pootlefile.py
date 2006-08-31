@@ -331,7 +331,7 @@ class pootlefile(po.pofile):
         print "invalid assigns line in %s: %r" % (self.assignsfilename, line)
         continue
       username, action, itemranges = line.split(":", 2)
-      username, action = username.strip(), action.strip()
+      username, action = username.strip().decode('utf-8'), action.strip().decode('utf-8')
       if not username in poassigns:
         poassigns[username] = {}
       userassigns = poassigns[username]
@@ -393,7 +393,7 @@ class pootlefile(po.pofile):
         if items:
           lastitem = None
           rangestart = None
-          assignstring = "%s: %s: " % (username, action)
+          assignstring = "%s: %s: " % (username.encode('utf-8'), action.encode('utf-8'))
           for item in items:
             if item - 1 == lastitem:
               if rangestart is None:
