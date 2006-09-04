@@ -6,6 +6,7 @@
 
   <title py:content="pagetitle">Pootle: ${project.name}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="description" content="${meta_description}" />
   <link rel="stylesheet" type="text/css" href="/pootle.css" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <script type="text/javascript" src="/js/sorttable.js"></script>
@@ -30,6 +31,10 @@
       <div class="item-statistics" py:content="project.stats">
         0 languages, average 0% translated
       </div>
+    </div>
+
+    <div class="intro" py:content="XML(description)">
+      This is the project description
     </div>
 
       <table class="sortable stats" id="stats" cellpadding="5" cellspacing="0" width="100%">

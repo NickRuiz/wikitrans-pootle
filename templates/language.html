@@ -37,7 +37,7 @@
           <tr>
             <th class="stats">${statsheadings.name}</th>
             <th class="stats">${statsheadings.translated}</th>
-	    <th class="stats" title="${statsheadings.translatedpercentage}">%</th>
+            <th class="stats" title="${statsheadings.translatedpercentage}">%</th>
             <th class="stats">${statsheadings.fuzzy}</th>
             <th class="stats" title="${statsheadings.fuzzypercentage}">%</th>
             <th class="stats">${statsheadings.untranslated}</th>
@@ -48,7 +48,7 @@
       </thead>
       <tbody class="stats">
         <div py:for="item in projects" py:strip="True">
-          <tr  class="item item-${item.parity}">
+          <tr class="item item-${item.parity}" title="${item.description}">
             <div over:include="navbar#itemdata" />
           </tr>
         </div>
