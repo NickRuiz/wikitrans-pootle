@@ -83,6 +83,9 @@ class RegisterPage(pagelayout.PootlePage):
         "password_title": self.localize("Password"),
         "password_tooltip": self.localize("Your desired password"),
         "password": self.argdict.get("password", ""),
+        "passwordconfirm_title": self.localize("Confirm password"),
+        "passwordconfirm_tooltip": self.localize("Type your password again to ensure it is entered correctly"),
+        "passwordconfirm": self.argdict.get("passwordconfirm", ""),
         "register_text": self.localize('Register Account'),
         "session": sessionvars, "instancetitle": instancetitle}
     pagelayout.PootlePage.__init__(self, templatename, templatevars, session)
@@ -331,6 +334,7 @@ class OptionalLoginAppServer(server.LoginAppServer):
     fullname = argdict.get("name", "")
     email = argdict.get("email", "")
     password = argdict.get("password", "")
+    passwordconfirm = argdict.get("passwordconfirm", "")
     if " " in email or not (email and "@" in email and "." in email):
       raise RegistrationError(session.localize("You must supply a valid email address"))
     userexists = session.loginchecker.userexists(username)
@@ -354,6 +358,8 @@ class OptionalLoginAppServer(server.LoginAppServer):
       minpasswordlen = 6
       if not password or len(password) < minpasswordlen:
         raise RegistrationError(session.localize("You must supply a valid password of at least %d characters.", minpasswordlen))
+      if not password == passwordconfirm:
+        raise RegistrationError(session.localize("The password is not the same as the confirmation."))
       self.adduser(users, username, fullname, email, password)
       activationcode = self.makeactivationcode(users, username)
       activationlink = ""
