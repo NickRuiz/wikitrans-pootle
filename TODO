@@ -4,7 +4,6 @@ current tasks:
   - what has been returned, what hasn't
   - ability to send work to people
   - let maintainer add people manually
-  detect languages from browser accept-language
   priorities (directory/file order)
   process (administrators/translators/reviewers)
   locking
@@ -31,10 +30,9 @@ other:
   display results of checks for each string on submission
   handle project versions
   have clickable characters to add for a language (mostly useful for diacritics)
-  a reviewer can mark as string as fuzzy but not provide a translation (in
+  a reviewer can mark a string as fuzzy but not provide a translation (in
     order to browse and fixup things like af KDE.
   integrate with KBabel/POEdit
-  allow XLIFF version of files to be uploaded
   show KDE comment (_:...\n)
   create .qm (compiled Qt .ts files).  See lrelease which is GPL'd for Qt .qm files
   create XPI files automatically when updates are made
@@ -42,7 +40,7 @@ other:
     this PO editor don't have to configure everything
   stats:
     percentage change.  So you can see if a language/project is active or not.
-  if there is only one .PO firl for a project then merge the header bar and the
+  if there is only one .PO file for a project then merge the header bar and the
     PO file bar to make it less clutered and more logical.
   goto a specific message.  Maybe a better thing to have a bar graph showing
     what bits aren't translated and jump straight to that.
@@ -54,7 +52,6 @@ other:
 bugs:
   currently project codes cannot have a dash "-" in them eg kde-i18n.  Either
     we should allow or warn when starting pootle. (check, should be fixed)
-  "no group" entry shows 0 stats
   items inside the current group should have "group=" in link so clicking "remove" on assignment doesn't jump out of group
 
 assignment:
