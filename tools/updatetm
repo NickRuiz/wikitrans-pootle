@@ -21,7 +21,6 @@
 """Script to create the tm files for use in Pootle"""
 
 from Pootle.tools import updatetm
-import profile
 
 if __name__ == '__main__':
   updatetm.main()
