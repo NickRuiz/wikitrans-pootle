@@ -44,12 +44,10 @@ def processfile(filename):
       if conflictmarker not in msgstr:
         replacemsgstrs.append(msgstr)
         continue
-      lines = msgstr.split("\\n")
+      lines = msgstr.split("\n")
       parts = []
       marker, part = "", ""
       for line in lines:
-        while line.startswith("\n"): line = line[1:]
-        while line.endswith("\n"): line = line[:-1]
         if line.startswith(conflictmarker) and line.endswith(conflictmarker):
           if marker or part:
             parts.append((marker, part))
