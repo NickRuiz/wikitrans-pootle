@@ -210,7 +210,30 @@ function resettextarea(link, rows, cols)
 	if (link == null) alert("link is null");
 	var textarea = findsiblingtextarea(link);
 	if (textarea == null) return true;
-    textarea.rows = rows;
-    textarea.cols = cols;
+	textarea.rows = rows;
+	textarea.cols = cols;
 	return false;
+}
+
+function copyorigtranslation(elementNumber)
+{
+	var i = 0;
+	var enelement = document.getElementById("orig-pure" + elementNumber + "." + 0);
+	//no plurals
+	var trelement = document.getElementById("areatrans" + elementNumber );
+	if (trelement){
+		trelement.value = enelement.value;
+		trelement.focus();
+		return;
+	}
+
+	//plurals
+	trelement = document.getElementById("areatrans" + elementNumber + "." + i );
+	while (trelement)
+	{
+		trelement.focus(); //it will go to the last one
+		trelement.value = enelement.value;
+		i++;
+		trelement = document.getElementById("areatrans" + elementNumber + "." + i );
+	}
 }

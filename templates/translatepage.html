@@ -137,7 +137,7 @@
                   <!-- No plurals -->
                   <span py:if="not item.trans.isplural" py:strip="True">
                     <!--! TODO: spell checking -->
-                    <textarea dir="$language.dir" lang="$language.code" class="translation ${item.state_class}" name="${item.trans.itemid}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(item.trans.text)">
+                    <textarea dir="$language.dir" lang="$language.code" class="translation ${item.state_class}" name="${item.trans.itemid}" id="area${item.trans.itemid}"  rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(item.trans.text)">
                       translatable text
                     </textarea>
                   </span>
@@ -147,7 +147,7 @@
                       <div class="translation-text-headers" py:content="form.title">Plural Form ${form.n}</div><br />
                       <!--! TODO: spell checking -->
                       <div>
-                        <textarea dir="$language.dir" lang="$language.code" class="translation ${item.state_class}" name="${form.name}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(form.text)">
+                        <textarea dir="$language.dir" lang="$language.code" class="translation ${item.state_class}" name="${form.name}" id="area${form.name}" rows="${item.trans.rows}" cols="${item.trans.cols}" py:content="XML(form.text)">
                           translatable text for plural form
                         </textarea>
                       </div>
@@ -160,7 +160,7 @@
                       <input py:if="'back' in buttons.desired" type="button" name="back${buttons.item}" accesskey="b" value="${buttons.back}" onclick="history.back(); return false;" />
                       <input py:if="'skip' in buttons.desired" type="submit" name="skip${buttons.item}" accesskey="k" value="${buttons.skip}"/>
                       <input type="button" py:if="'copy' in buttons.desired" accesskey="c"
-                        onclick="document.forms.translate.trans${buttons.item}.value = document.getElementById('orig-pure${buttons.item}.0').value ; document.forms.translate.trans${buttons.item}.focus(); return false"
+                        onclick="copyorigtranslation('${buttons.item}'); return false"
                         value="${buttons.copy_text}" /> 
                       <input py:if="'suggest' in buttons.desired" type="submit" name="submitsuggest${buttons.item}" accesskey="e" value="${buttons.suggest}"/>
                       <input py:if="'translate' in buttons.desired" type="submit" name="submit${buttons.item}" accesskey="s" value="${buttons.submit}"/>
