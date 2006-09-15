@@ -270,7 +270,7 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
       message = None
       if 'username' in argdict:
         session.username = argdict["username"]
-	message = session.localize("Login failed")
+        message = session.localize("Login failed")
       return users.LoginPage(session, languagenames=self.languagenames, message=message)
     elif top == "register.html":
       return self.registerpage(session, argdict)
@@ -324,13 +324,18 @@ class PootleServer(users.OptionalLoginAppServer, templateserver.TemplateServer):
       if not top or top == "index.html":
         return indexpage.UserIndex(self.potree, session)
       elif top == "options.html":
-        if "changeoptions" in argdict:
-          session.setoptions(argdict)
-        if "changepersonal" in argdict:
-          session.setpersonaloptions(argdict)
-        if "changeinterface" in argdict:
-          session.setinterfaceoptions(argdict)
-        return users.UserOptions(self.potree, session)
+        message = None
+        try:
+          if "changeoptions" in argdict:
+            session.setoptions(argdict)
+          if "changepersonal" in argdict:
+            session.setpersonaloptions(argdict)
+            message = session.localize("Personal details updated")
+          if "changeinterface" in argdict:
+            session.setinterfaceoptions(argdict)
+        except users.RegistrationError, errormessage:
+          message = errormessage
+        return users.UserOptions(self.potree, session, message)
     elif top == "admin":
       pathwords = pathwords[1:]
       if pathwords:
