@@ -14,13 +14,10 @@
 </head>
 
 <body bgcolor="#FFFFFF">
+  <div id="abovefooter">
   <div id="banner" over:include="pootlepage#banner"/>
 
   <div id="content" dir="$uidir" lang="$uilanguage">
-    <div class="intro">
-      <a href="/about.html" py:content="aboutlink">About this Pootle server</a>
-    </div>
-
     <div class="contents">
       <h3 class="title" py:content="languagelink">Languages</h3>
 
@@ -30,6 +27,8 @@
     </div>
   </div>
 
+  </div>
   <div id="links" over:include="pootlepage#links"/>
+  <div id="about" over:include="pootlepage#about"/>
 </body>
 </html>
