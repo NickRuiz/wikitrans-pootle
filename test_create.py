@@ -117,6 +117,7 @@ class TestCreate(object):
         prefs.setvalue("Pootle.languages.zxx.fullname", "Test Language")
         prefs.setvalue("Pootle.projects.testproject.fullname", "Pootle Unit Tests")
         prefs.setvalue("Pootle.projects.testproject.description", "Test Project for verifying functionality")
+        prefs.setvalue("Pootle.projects.testproject.localfiletype", "po")
         prefs.setvalue("Pootle.users.testuser.activated", 1)
         testuserprefs = instance.users.testuser
         testuserprefs.passwdhash = users.session.md5hexdigest("")
