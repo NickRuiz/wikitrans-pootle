@@ -52,7 +52,9 @@ def cvsreadfile(cvsroot, path, revision=None):
   revision: revision or tag to get (retrieves from HEAD if None)
   """
   path = shellescape(path)
+  cvsroot = shellescape(cvsroot)
   if revision:
+    revision = shellescape(revision)
     command = "cvs -d %s -Q co -p -r%s %s" % (cvsroot, revision, path)
   else:
     command = "cvs -d %s -Q co -p %s" % (cvsroot, path)
@@ -74,6 +76,7 @@ def cvsupdatefile(path, revision=None):
     basecommand = "cd %s ; " % dirname
   command = basecommand + "mv %s %s.bak ; " % (filename, filename)
   if revision:
+    revision = shellescape(revision)
     command += "cvs -Q update -C -r%s %s" % (revision, filename)
   else:
     command += "cvs -Q update -C %s" % (filename)
@@ -92,7 +95,7 @@ def cvscommitfile(path, message=None):
   if dirname:
     basecommand = "cd %s ; " % dirname
   if message:
-    message = ' -m "%s" ' % message
+    message = ' -m %s ' % shellescape(message)
   elif message is None:
     message = ""
   command = basecommand + "cvs -Q commit %s %s" % (message, filename)
@@ -125,6 +128,7 @@ def svnreadfile(path, revision=None):
   """Get a clean version of a file from the SVN repository"""
   path = shellescape(path)
   if revision:
+    revision = shellescape(revision)
     command = "svn cat -r %s %s" % (revision, path)
   else:
     command = "svn cat %s" % path
@@ -138,6 +142,7 @@ def svnupdatefile(path, revision=None):
   path = shellescape(path)
   command = "svn revert %s ; " % path
   if revision:
+    revision = shellescape(revision)
     command += "svn update -r%s %s" % (revision, path)
   else:
     command += "svn update %s" % (path)
@@ -154,7 +159,7 @@ def svncommitfile(path, message=None):
   if dirname:
     basecommand = "cd %s ; " % dirname
   if message:
-    message = ' -m "%s" ' % message
+    message = ' -m %s ' % shellescape(message)
   elif message is None:
     message = ""
   command = basecommand + "svn -q --non-interactive commit %s %s" % (message, filename)
