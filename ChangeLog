@@ -1,3 +1,3135 @@
+2007-05-25 09:36  friedelwolff
+
+	* src/trunk/Pootle/CREDITS: Credit Capel Brunker
+
+2007-05-24 15:50  friedelwolff
+
+	* src/trunk/Pootle/__version__.py: Version 1.0
+
+2007-05-24 15:34  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/eo,
+	  src/trunk/Pootle/po/pootle/eo/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/eo/pootle.po: Add minimal Esperanto
+	  (eo) translation (2% translated)
+
+2007-05-24 15:30  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/af/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/af/pootle.po,
+	  src/trunk/Pootle/po/pootle/ca/pootle.po,
+	  src/trunk/Pootle/po/pootle/de/pootle.po,
+	  src/trunk/Pootle/po/pootle/es/pootle.po,
+	  src/trunk/Pootle/po/pootle/eu/pootle.po,
+	  src/trunk/Pootle/po/pootle/fa/pootle.po,
+	  src/trunk/Pootle/po/pootle/fi/pootle.po,
+	  src/trunk/Pootle/po/pootle/gl/pootle.po,
+	  src/trunk/Pootle/po/pootle/ko/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ko/pootle.po,
+	  src/trunk/Pootle/po/pootle/ms/pootle.po,
+	  src/trunk/Pootle/po/pootle/pt_BR/pootle.po,
+	  src/trunk/Pootle/po/pootle/ro/pootle.po,
+	  src/trunk/Pootle/po/pootle/ru/pootle.po,
+	  src/trunk/Pootle/po/pootle/sr/pootle.po,
+	  src/trunk/Pootle/po/pootle/st/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/st/pootle.po,
+	  src/trunk/Pootle/po/pootle/sv/pootle.po,
+	  src/trunk/Pootle/po/pootle/tr/pootle.po,
+	  src/trunk/Pootle/po/pootle/uk/pootle.po,
+	  src/trunk/Pootle/po/pootle/zh_TW/pootle.po: Update translations
+	  from http://pootle.wordforge.org for 1.0 release
+
+2007-05-24 12:59  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs: Change the Afrikaans diacritics.
+	  Clean up whitespace.
+
+2007-05-24 09:29  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs: Disable Slovak (sk) enabled by
+	  accident
+
+2007-05-24 09:16  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs: Enable Persian (fa), Korean (ko),
+	  Romanian (ro), Serbian (sr), Sotho, (st), Turkish (tr), Ukrainian
+	  (uk) in the default install
+
+2007-05-24 06:26  andreaspauley
+
+	* src/trunk/Pootle/html/doc/en/index.html: Added links to
+	  translated documentation.
+
+2007-05-23 14:43  andreaspauley
+
+	* src/trunk/pootlesetup.py: Included 'en' subdir for HTML
+	  documentation.
+
+2007-05-23 12:43  friedelwolff
+
+	* src/trunk/Pootle/__version__.py: Version 1.0rc3
+
+2007-05-23 10:56  friedelwolff
+
+	* src/trunk/Pootle/README: Tidy up and mention toolkit dependencies
+
+2007-05-22 10:30  friedelwolff
+
+	* src/trunk/Pootle/CREDITS: Reflow the text, credit translators and
+	  Nicolas François
+
+2007-05-18 16:14  friedelwolff
+
+	* src/trunk/Pootle/__version__.py: Version 1.0rc2
+
+2007-05-17 11:44  friedelwolff
+
+	* src/trunk/Pootle/README: Mention that we can't run with the
+	  newest PyLucene
+
+2007-05-17 10:49  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Fix the bug where PyLucene breaks
+	  some tests
+
+2007-05-16 12:25  friedelwolff
+
+	* src/trunk/Pootle/indexpage.py, src/trunk/Pootle/pootle.py,
+	  src/trunk/Pootle/potree.py, src/trunk/Pootle/translatepage.py:
+	  Changed obsolete sre references to re
+
+2007-05-16 12:10  friedelwolff
+
+	* src/trunk/Pootle/indexpage.py, src/trunk/Pootle/pagelayout.py,
+	  src/trunk/Pootle/users.py: Translate language names and sort them
+	  properly
+
+2007-05-16 08:53  friedelwolff
+
+	* src/trunk/Pootle/users.py: Handle session initialisation errors
+	  better
+
+2007-05-11 09:33  andreaspauley
+
+	* src/trunk/Pootle/html/doc/en,
+	  src/trunk/Pootle/html/doc/en/howto.html,
+	  src/trunk/Pootle/html/doc/en/index.html,
+	  src/trunk/Pootle/html/doc/en/resources.html,
+	  src/trunk/Pootle/html/doc/howto.html,
+	  src/trunk/Pootle/html/doc/index.html,
+	  src/trunk/Pootle/html/doc/resources.html,
+	  src/trunk/Pootle/pagelayout.py,
+	  src/trunk/Pootle/templates/pootlepage.html: Moved the English
+	  user documentation into an 'en' subdirectory. This is to be able
+	  to provide our user's guide in multiple languages.
+
+2007-05-07 12:22  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Close pending file after writing
+	  it
+
+2007-05-07 10:37  friedelwolff
+
+	* src/trunk/Pootle/pootle.py: Remove debug message
+
+2007-05-03 19:41  friedelwolff
+
+	* src/trunk/Pootle/__version__.py: Change the version to 1.0rc1
+
+2007-05-03 19:18  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/af/pootle.po,
+	  src/trunk/Pootle/po/pootle/ak/pootle.po,
+	  src/trunk/Pootle/po/pootle/am/pootle.po,
+	  src/trunk/Pootle/po/pootle/ar/pootle.po,
+	  src/trunk/Pootle/po/pootle/bg/pootle.po,
+	  src/trunk/Pootle/po/pootle/bn/pootle.po,
+	  src/trunk/Pootle/po/pootle/ca/pootle.po,
+	  src/trunk/Pootle/po/pootle/cs/pootle.po,
+	  src/trunk/Pootle/po/pootle/da/pootle.po,
+	  src/trunk/Pootle/po/pootle/de/pootle.po,
+	  src/trunk/Pootle/po/pootle/el/pootle.po,
+	  src/trunk/Pootle/po/pootle/en/pootle.po,
+	  src/trunk/Pootle/po/pootle/en_ZA/pootle.po,
+	  src/trunk/Pootle/po/pootle/es/pootle.po,
+	  src/trunk/Pootle/po/pootle/et/pootle.po,
+	  src/trunk/Pootle/po/pootle/eu/pootle.po,
+	  src/trunk/Pootle/po/pootle/fa/pootle.po,
+	  src/trunk/Pootle/po/pootle/fi/pootle.po,
+	  src/trunk/Pootle/po/pootle/fr/pootle.po,
+	  src/trunk/Pootle/po/pootle/fur/pootle.po,
+	  src/trunk/Pootle/po/pootle/gl/pootle.po,
+	  src/trunk/Pootle/po/pootle/ha/pootle.po,
+	  src/trunk/Pootle/po/pootle/he/pootle.po,
+	  src/trunk/Pootle/po/pootle/hi/pootle.po,
+	  src/trunk/Pootle/po/pootle/hr/pootle.po,
+	  src/trunk/Pootle/po/pootle/hu/pootle.po,
+	  src/trunk/Pootle/po/pootle/hy/pootle.po,
+	  src/trunk/Pootle/po/pootle/is/pootle.po,
+	  src/trunk/Pootle/po/pootle/it/pootle.po,
+	  src/trunk/Pootle/po/pootle/ja/pootle.po,
+	  src/trunk/Pootle/po/pootle/ka/pootle.po,
+	  src/trunk/Pootle/po/pootle/kg/pootle.po,
+	  src/trunk/Pootle/po/pootle/km/pootle.po,
+	  src/trunk/Pootle/po/pootle/ko/pootle.po,
+	  src/trunk/Pootle/po/pootle/ku/pootle.po,
+	  src/trunk/Pootle/po/pootle/lt/pootle.po,
+	  src/trunk/Pootle/po/pootle/lv/pootle.po,
+	  src/trunk/Pootle/po/pootle/mr/pootle.po,
+	  src/trunk/Pootle/po/pootle/ms/pootle.po,
+	  src/trunk/Pootle/po/pootle/mt/pootle.po,
+	  src/trunk/Pootle/po/pootle/nb/pootle.po,
+	  src/trunk/Pootle/po/pootle/ne/pootle.po,
+	  src/trunk/Pootle/po/pootle/nl/pootle.po,
+	  src/trunk/Pootle/po/pootle/nn/pootle.po,
+	  src/trunk/Pootle/po/pootle/pa/pootle.po,
+	  src/trunk/Pootle/po/pootle/pl/pootle.po,
+	  src/trunk/Pootle/po/pootle/pt/pootle.po,
+	  src/trunk/Pootle/po/pootle/pt_BR/pootle.po,
+	  src/trunk/Pootle/po/pootle/ro/pootle.po,
+	  src/trunk/Pootle/po/pootle/ru/pootle.po,
+	  src/trunk/Pootle/po/pootle/sl/pootle.po,
+	  src/trunk/Pootle/po/pootle/sr/pootle.po,
+	  src/trunk/Pootle/po/pootle/st/pootle.po,
+	  src/trunk/Pootle/po/pootle/sv/pootle.po,
+	  src/trunk/Pootle/po/pootle/tr/pootle.po,
+	  src/trunk/Pootle/po/pootle/uk/pootle.po,
+	  src/trunk/Pootle/po/pootle/ve/pootle.po,
+	  src/trunk/Pootle/po/pootle/vi/pootle.po,
+	  src/trunk/Pootle/po/pootle/xh/pootle.po,
+	  src/trunk/Pootle/po/pootle/zh_CN/pootle.po,
+	  src/trunk/Pootle/po/pootle/zh_HK/pootle.po,
+	  src/trunk/Pootle/po/pootle/zh_TW/pootle.po,
+	  src/trunk/Pootle/po/pootle/zu/pootle.po: Update translations to
+	  new template
+
+2007-05-03 16:24  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/cs/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/cs/pootle.po,
+	  src/trunk/Pootle/po/pootle/el/pootle.po,
+	  src/trunk/Pootle/po/pootle/es/pootle.po,
+	  src/trunk/Pootle/po/pootle/fr/pootle.po,
+	  src/trunk/Pootle/po/pootle/pt/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/pt/pootle.po,
+	  src/trunk/Pootle/po/pootle/pt_BR/pootle.po,
+	  src/trunk/Pootle/po/pootle/ro/pootle.po,
+	  src/trunk/Pootle/po/pootle/st/pootle.po,
+	  src/trunk/Pootle/po/pootle/zh_TW/pootle.po: Forward port
+	  translation updates from revision 5558 on wordforge-0-10-branch
+
+2007-04-25 14:29  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css: Typo: text-size -> font-size
+
+2007-04-20 15:30  andreaspauley
+
+	* src/trunk/Pootle/pootle.prefs: Documented the valid values for
+	  localfiletype in pootle.prefs
+
+2007-04-20 15:18  andreaspauley
+
+	* src/trunk/Pootle/pagelayout.py, src/trunk/Pootle/pootle.prefs:
+	  Included the logo config options in the default pootle.prefs and
+	  simplified the retrieval of these options.
+
+2007-04-19 17:12  andreaspauley
+
+	* src/trunk/Pootle/users.py: Encode the Subject Header of the
+	  registration mails in UTF-8. Patch contributed by Nicolas
+	  François.
+
+2007-04-19 17:07  andreaspauley
+
+	* src/trunk/Pootle/pagelayout.py,
+	  src/trunk/Pootle/templates/pootlepage.html: Permit
+	  personalization of the Pootle logos. Patch contributed by Nicolas
+	  François.
+
+2007-04-19 16:11  andreaspauley
+
+	* src/trunk/Pootle/potree.py: Made potree check for 'treestyle' in
+	  the prefs file, so as to avoid traversing directories to
+	  determine if a project is gnu-style or not. Patch contributed by
+	  Nicolas François.
+
+2007-04-17 15:04  andreaspauley
+
+	* src/trunk/Pootle/projects.py: Fixed some docstring typos,
+	  contributed by Nicolas François.
+
+2007-04-13 14:27  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/af/af: Delete duplicate Afrikaans (af)
+	  tranlation
+
+2007-04-13 14:20  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/zh_TW: Copy the zh_TW translations
+	  from the 0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:20  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/zh_HK: Copy the zh_HK translations
+	  from the 0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:19  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/zh_CN: Copy the zh_CN translations
+	  from the 0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:19  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/pt_BR: Copy the pt_BR translations
+	  from the 0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:18  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/en_ZA: Copy the en_ZA translations
+	  from the 0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:18  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/fur: Copy the fur translations from
+	  the 0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:18  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/zu: Copy the zu translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:17  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/xh: Copy the xh translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:17  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/vi: Copy the vi translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:16  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ve: Copy the ve translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:16  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/uk: Copy the uk translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:16  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/tr: Copy the tr translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:15  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/sv: Copy the sv translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:15  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/st: Copy the st translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:14  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/sr: Copy the sr translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:14  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/sl: Copy the sl translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:14  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ru: Copy the ru translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:13  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ro: Copy the ro translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:13  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/pt: Copy the pt translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:13  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/pl: Copy the pl translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:12  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/pa: Copy the pa translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:12  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/nn: Copy the nn translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:11  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/nl: Copy the nl translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:11  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ne: Copy the ne translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:11  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/nb: Copy the nb translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:10  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/mt: Copy the mt translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:10  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ms: Copy the ms translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:10  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/mr: Copy the mr translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:09  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/lv: Copy the lv translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:09  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/lt: Copy the lt translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:09  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ku: Copy the ku translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:08  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ko: Copy the ko translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:08  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/km: Copy the km translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:07  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/kg: Copy the kg translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:07  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ka: Copy the ka translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:07  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ja: Copy the ja translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:06  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/it: Copy the it translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:06  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/is: Copy the is translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:06  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/hy: Copy the hy translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:05  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/hu: Copy the hu translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:05  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/hr: Copy the hr translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:05  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/hi: Copy the hi translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:04  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/he: Copy the he translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:04  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ha: Copy the ha translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:04  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/gl: Copy the gl translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:03  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/fr: Copy the fr translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:03  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/fi: Copy the fi translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:03  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/fa: Copy the fa translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:02  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/eu: Copy the eu translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:02  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/et: Copy the et translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:01  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/es: Copy the es translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:01  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/en: Copy the en translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:01  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/el: Copy the el translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:00  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/de: Copy the de translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:00  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/da: Copy the da translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 14:00  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/cs: Copy the cs translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 13:59  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ca: Copy the ca translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 13:59  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/bn: Copy the bn translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 13:59  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/bg: Copy the bg translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 13:58  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ar: Copy the ar translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 13:58  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/am: Copy the am translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 13:58  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ak: Copy the ak translations from the
+	  0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 13:57  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/af/af: Copy the af translations from
+	  the 0.10 branch (version 0.11) to preserve ancestry
+
+2007-04-13 13:50  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/af: Copy the af translation from the
+	  0.10 branch to preserve ancestry
+
+2007-04-13 13:35  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/af, src/trunk/Pootle/po/pootle/aka,
+	  src/trunk/Pootle/po/pootle/am, src/trunk/Pootle/po/pootle/ar,
+	  src/trunk/Pootle/po/pootle/bn, src/trunk/Pootle/po/pootle/ca,
+	  src/trunk/Pootle/po/pootle/da, src/trunk/Pootle/po/pootle/de,
+	  src/trunk/Pootle/po/pootle/el, src/trunk/Pootle/po/pootle/en,
+	  src/trunk/Pootle/po/pootle/en_ZA, src/trunk/Pootle/po/pootle/es,
+	  src/trunk/Pootle/po/pootle/et, src/trunk/Pootle/po/pootle/eu,
+	  src/trunk/Pootle/po/pootle/fa, src/trunk/Pootle/po/pootle/fi,
+	  src/trunk/Pootle/po/pootle/fr, src/trunk/Pootle/po/pootle/fur,
+	  src/trunk/Pootle/po/pootle/gl, src/trunk/Pootle/po/pootle/he,
+	  src/trunk/Pootle/po/pootle/hi, src/trunk/Pootle/po/pootle/hr,
+	  src/trunk/Pootle/po/pootle/hu, src/trunk/Pootle/po/pootle/is,
+	  src/trunk/Pootle/po/pootle/it, src/trunk/Pootle/po/pootle/ja,
+	  src/trunk/Pootle/po/pootle/ka, src/trunk/Pootle/po/pootle/ko,
+	  src/trunk/Pootle/po/pootle/kon, src/trunk/Pootle/po/pootle/ku,
+	  src/trunk/Pootle/po/pootle/lt, src/trunk/Pootle/po/pootle/lv,
+	  src/trunk/Pootle/po/pootle/mr, src/trunk/Pootle/po/pootle/ms,
+	  src/trunk/Pootle/po/pootle/mt, src/trunk/Pootle/po/pootle/nb,
+	  src/trunk/Pootle/po/pootle/ne, src/trunk/Pootle/po/pootle/nl,
+	  src/trunk/Pootle/po/pootle/no, src/trunk/Pootle/po/pootle/pa,
+	  src/trunk/Pootle/po/pootle/pl, src/trunk/Pootle/po/pootle/pt,
+	  src/trunk/Pootle/po/pootle/ru, src/trunk/Pootle/po/pootle/sl,
+	  src/trunk/Pootle/po/pootle/sr, src/trunk/Pootle/po/pootle/st,
+	  src/trunk/Pootle/po/pootle/sv, src/trunk/Pootle/po/pootle/tr,
+	  src/trunk/Pootle/po/pootle/uk, src/trunk/Pootle/po/pootle/ve,
+	  src/trunk/Pootle/po/pootle/vi, src/trunk/Pootle/po/pootle/xh,
+	  src/trunk/Pootle/po/pootle/zh_CN,
+	  src/trunk/Pootle/po/pootle/zh_HK, src/trunk/Pootle/po/pootle/zu:
+	  Remove old placeholder translations. Will update now with
+	  migrated ones from 0.10 branch
+
+2007-04-13 10:25  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/templates/pootle.pot: New POT file for
+	  upcoming 1.0 release
+
+2007-04-13 06:38  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Send the target language to the
+	  POTeeChecker
+
+2007-04-12 12:25  friedelwolff
+
+	* src/trunk/Pootle/html/js/autoexpand.js: Only autoexpand after 500
+	  miliseconds
+
+2007-04-12 09:56  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css: Make borders around focused
+	  unit thicker
+
+2007-04-12 09:55  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css,
+	  src/trunk/Pootle/templates/translatepage.html: Always make text
+	  areas consume 100% of available width.
+
+2007-04-12 09:50  friedelwolff
+
+	* src/trunk/Pootle/html/js/autoexpand.js,
+	  src/trunk/Pootle/templates/translatepage.html,
+	  src/trunk/Pootle/translatepage.py, src/trunk/Pootle/users.py:
+	  Remove option to set the width of the text area
+
+2007-04-12 07:56  friedelwolff
+
+	* src/trunk/Pootle/projects.py, src/trunk/Pootle/translatepage.py:
+	  Add some l10n tips for translators
+
+2007-04-05 10:35  andreaspauley
+
+	* src/trunk/Pootle/__version__.py: Bumped version number of Pootle
+	  to beta 2.
+
+2007-04-05 09:10  friedelwolff
+
+	* src/trunk/Pootle/templates/translatepage.html: Slight relayout of
+	  translate table. This gives more space for units and restyles the
+	  comment area, etc.
+
+2007-04-05 09:07  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css: Slight relayout of banner, and
+	  the table in the translate page for more space. Improve styling
+	  of comment area
+
+2007-04-04 15:08  friedelwolff
+
+	* src/trunk/Pootle/test_client.py: Mark test XLIFF units as
+	  approved so that they are not seen as fuzzy
+
+2007-04-04 15:03  friedelwolff
+
+	* src/trunk/Pootle/users.py: Only use the session language as the
+	  default language on the login page if it is neither English nor
+	  the default server language (fix for bug 234)
+
+2007-04-03 15:08  andreaspauley
+
+	* src/trunk/Pootle/indexpage.py: Allow version control updates for
+	  any valid project file extension, not just PO files.
+
+2007-04-03 14:58  andreaspauley
+
+	* src/trunk/Pootle/indexpage.py: Allow version control commits for
+	  any valid project file extension, not just PO files.
+
+2007-04-03 09:35  andreaspauley
+
+	* src/trunk/Pootle/indexpage.py, src/trunk/Pootle/pootle.py,
+	  src/trunk/Pootle/projects.py: Add conversion from xliff to po for
+	  xliff-based projects.
+
+2007-04-02 10:00  andreaspauley
+
+	* src/trunk/Pootle/indexpage.py: Remove non-functional converters
+	  for xliff files.
+
+2007-04-02 08:49  friedelwolff
+
+	* src/trunk/Pootle/CREDITS: Credit Miklos Vajna
+
+2007-04-02 08:48  friedelwolff
+
+	* src/trunk/Pootle/versioncontrol.py: [Contributed by Miklos Vajna]
+	  Support darcs version control system
+
+2007-03-30 12:15  andreaspauley
+
+	* src/trunk/Pootle/pootle.py: Cater for xliff files, they don't
+	  have an encoding attribute.
+
+2007-03-29 12:05  andreaspauley
+
+	* src/trunk/Pootle/pootlefile.py: Save the file after an alt-trans
+	  suggestion has been deleted in an xliff file.
+
+2007-03-29 09:52  andreaspauley
+
+	* src/trunk/Pootle/pootlefile.py: Fix adding of suggestions in
+	  xliff.
+
+2007-03-28 08:50  andreaspauley
+
+	* src/trunk/Pootle/adminpages.py: Fixed a bug where the
+	  localfiletype was not set properly on creation of a new project.
+
+2007-03-26 14:49  friedelwolff
+
+	* src/trunk/Pootle/pagelayout.py: Ensure correct link depth and
+	  trailing slash for XLIFF based projects
+
+2007-03-20 13:06  andreaspauley
+
+	* src/trunk/Pootle/adminpages.py: Let pootle rather display xliff
+	  files with extension .xlf
+
+2007-03-16 15:47  friedelwolff
+
+	* src/trunk/Pootle/translatepage.py: Test for .xlf in dirfilter
+
+2007-03-16 15:27  friedelwolff
+
+	* src/trunk/Pootle/test_pootlefile.py: Don't remove the locking
+	  file anymore now that we don't do locking
+
+2007-03-16 14:55  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Remove the locking code while it
+	  affects performance and isn't complete anyway
+
+2007-03-16 14:51  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Postpone opening the lock file
+	  and close it immediately after using. This fixes the error "too
+	  many open files" that could appear in large projects
+
+2007-03-16 10:59  friedelwolff
+
+	* src/trunk/Pootle/translatepage.py: Fix a bug when searching for
+	  non-existing text from a file listing.
+
+2007-03-13 15:13  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs: Surround example descriptions with
+	  <span> with dir attribute to ensure good rendering with rtl
+	  layout
+
+2007-02-27 09:10  andreaspauley
+
+	* src/trunk/Pootle/pootle.prefs: Display language names in English
+	  by default.
+
+2007-02-23 10:56  andreaspauley
+
+	* src/trunk/pootlesetup.py: Update some distutils classifier values.
+
+2007-02-20 13:43  andreaspauley
+
+	* src/trunk/pootlesetup.py: Remove subversion directories from our
+	  distribution.
+
+2007-02-07 14:49  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Fix the undefined variable
+	  'usesources'. Reported in bug 217.
+
+2007-02-07 13:25  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css: Only use unicode-bidi: embed
+	  for the navigation bar. This improves rtl display with somewhat
+	  untranslated Pootle interface
+
+2007-02-06 16:48  friedelwolff
+
+	* src/trunk/pootlesetup.py: Don't limit packaged PO files to
+	  approved languages. Prune the correct (new) directories.
+
+2007-02-05 09:42  andreaspauley
+
+	* src/trunk/Pootle/pootlefile.py: Close files after opening them.
+
+2007-02-02 13:48  friedelwolff
+
+	* src/trunk/Pootle/statistics.py: Close the stats file after
+	  reading
+
+2007-01-31 09:48  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs: Add the defaultright configuration
+	  option with documentation
+
+2007-01-31 09:09  friedelwolff
+
+	* src/trunk/Pootle/templates/pootlepage.html: Don't use baseurl for
+	  the documentation for the moment
+
+2007-01-26 15:17  friedelwolff
+
+	* src/trunk/Pootle/potree.py, src/trunk/Pootle/projects.py: Get the
+	  default project rights from the preferences
+
+2007-01-26 12:40  friedelwolff
+
+	* src/trunk/Pootle/test_create.py: Fix corresponding to the rename
+	  of session in commit of revision 4772
+
+2007-01-26 11:27  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Remove review right by default
+
+2007-01-26 10:15  friedelwolff
+
+	* src/trunk/Pootle/pootle.py: Rather send user to index page with
+	  all the files on error
+
+2007-01-26 09:20  friedelwolff
+
+	* src/trunk/Pootle/pagelayout.py, src/trunk/Pootle/pootle.py,
+	  src/trunk/Pootle/templates/about.html,
+	  src/trunk/Pootle/templates/activate.html,
+	  src/trunk/Pootle/templates/adminindex.html,
+	  src/trunk/Pootle/templates/adminlanguages.html,
+	  src/trunk/Pootle/templates/adminprojects.html,
+	  src/trunk/Pootle/templates/adminusers.html,
+	  src/trunk/Pootle/templates/error.html,
+	  src/trunk/Pootle/templates/fileindex.html,
+	  src/trunk/Pootle/templates/home.html,
+	  src/trunk/Pootle/templates/index.html,
+	  src/trunk/Pootle/templates/language.html,
+	  src/trunk/Pootle/templates/languages.html,
+	  src/trunk/Pootle/templates/login.html,
+	  src/trunk/Pootle/templates/navbar.html,
+	  src/trunk/Pootle/templates/options.html,
+	  src/trunk/Pootle/templates/pootlepage.html,
+	  src/trunk/Pootle/templates/project.html,
+	  src/trunk/Pootle/templates/projectadmin.html,
+	  src/trunk/Pootle/templates/projectlangadmin.html,
+	  src/trunk/Pootle/templates/projects.html,
+	  src/trunk/Pootle/templates/redirect.html,
+	  src/trunk/Pootle/templates/register.html,
+	  src/trunk/Pootle/templates/translatepage.html: [Contributed by
+	  Lars Kruse] Use the configured baseurl. Fix for bug 113.
+
+2007-01-24 11:22  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css, src/trunk/Pootle/pagelayout.py:
+	  Add two more languages as rtl (right-to-left): Aramaic (arc) and
+	  Dhivehi (dv). Rewrite direction detection slightly to be more
+	  robust
+
+2007-01-22 14:48  friedelwolff
+
+	* src/trunk/Pootle/translatepage.py: A fix for an encoding problem
+	  with non-ascii usernames
+
+2007-01-22 12:05  andreaspauley
+
+	* src/trunk/Pootle/pootle.py: Used the warning method defined in
+	  optrecurse, rather than using a print statement.
+
+2007-01-19 08:19  andreaspauley
+
+	* src/trunk/Pootle/pootlefile.py: Corrected a reference to
+	  header_order, see bug 217.
+
+2007-01-18 06:56  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/ns: Remove old garbage translation
+	  (ns)
+
+2007-01-17 15:46  friedelwolff
+
+	* src/trunk/Pootle/TODO: Remove some done items from the TODO list
+
+2007-01-17 13:32  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Ignore files in the goal that has
+	  been removed from the project
+
+2007-01-17 07:43  friedelwolff
+
+	* src/trunk/Pootle/CREDITS: Credit Lars Kruse and Add Simos' name
+	  in Greek script
+
+2007-01-17 07:34  friedelwolff
+
+	* src/trunk/Pootle/versioncontrol.py: [Contributed by Lars Kruse]
+	  Also use shellescape for for cvsroot, revision and message
+
+2007-01-17 06:42  friedelwolff
+
+	* src/trunk/Pootle/pagelayout.py,
+	  src/trunk/Pootle/translatepage.py: Fix the bug with links in the
+	  navigation bar with certain directory tries. Fix for bug 218.
+
+2007-01-16 16:14  andreaspauley
+
+	* src/trunk/Pootle/pootle.py, src/trunk/Pootle/pootlefile.py,
+	  src/trunk/Pootle/potree.py, src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/statistics.py,
+	  src/trunk/Pootle/translatepage.py, src/trunk/Pootle/users.py:
+	  General code improvements to appease the wrath of pylint. Bug
+	  217.
+
+2007-01-16 09:36  friedelwolff
+
+	* src/trunk/Pootle/potree.py: Make sure that the local file type is
+	  nevery empty
+
+2007-01-12 11:57  friedelwolff
+
+	* src/trunk/Pootle/indexpage.py,
+	  src/trunk/Pootle/templates/fileindex.html: Reword file
+	  overwriting text and provide tooltips. Remove configurable input
+	  type while template doesn't support it
+
+2007-01-12 08:31  friedelwolff
+
+	* src/trunk/Pootle/README: Update URL for wiki documentation
+
+2007-01-11 15:12  friedelwolff
+
+	* src/trunk/Pootle/pootle.py: Increase the version of the expected
+	  build number of the toolkit. Add TODO
+
+2007-01-11 15:09  friedelwolff
+
+	* src/trunk/Pootle/__version__.py: Up the version to 1.0beta
+
+2007-01-11 14:14  friedelwolff
+
+	* src/trunk/Pootle/indexpage.py, src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/templates/fileindex.html: Impliment the
+	  'overwrite' right that allows the user to overwrite a file,
+	  otherwise not. Only show the UI options if the right is present
+
+2007-01-11 14:10  friedelwolff
+
+	* src/trunk/Pootle/test_client.py: Don't pass unnecessary
+	  'dooverwrite' parameter in tests. Test more carefully for
+	  successful overwrite.
+
+2007-01-11 12:33  friedelwolff
+
+	* src/trunk/Pootle/test_client.py: Pass the permissions of testuser
+	  to setup_testproject now that translate is not allowed by default
+
+2007-01-10 10:56  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Disable translate right by default
+
+2007-01-10 10:55  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Enable suggest right by default
+
+2007-01-08 12:03  friedelwolff
+
+	* src/trunk/Pootle/templates/fileindex.html: Do a slight relayout
+	  of the file upload form
+
+2007-01-08 11:59  friedelwolff
+
+	* src/trunk/Pootle/indexpage.py: Use question mark with question in
+	  translatable text
+
+2007-01-08 11:44  friedelwolff
+
+	* src/trunk/Pootle/users.py: Rewrite error handling slightly
+	  simpler
+
+2007-01-08 11:21  friedelwolff
+
+	* src/trunk/Pootle/templates/fileindex.html: Fix problem where we
+	  are unable to assign a user to a goal because of naming mismatch
+
+2007-01-08 10:41  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Fix typo in comment
+
+2007-01-08 07:47  friedelwolff
+
+	* src/trunk/Pootle/users.py: Don't make 'templates' a possible
+	  interface language
+
+2007-01-04 12:40  friedelwolff
+
+	* src/trunk/Pootle/users.py: Indicate message bug in comment
+
+2007-01-04 11:07  andreaspauley
+
+	* src/trunk/Pootle/html/pootle.css,
+	  src/trunk/Pootle/templates/translatepage.html,
+	  src/trunk/Pootle/translatepage.py: Display the message context,
+	  if available.
+
+2006-12-28 14:45  friedelwolff
+
+	* src/trunk/Pootle/translatepage.py: Rewrite fuzzy and comment form
+	  handling to ensure that we will be able to handle multiple
+	  submittions.
+
+2006-12-28 08:41  friedelwolff
+
+	* src/trunk/Pootle/templates/translatepage.html: Keep displaying
+	  the search text in the search form. Fix for bug 195
+
+2006-12-27 11:49  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py, src/trunk/Pootle/projects.py:
+	  Allow XLIFF suggestions using alt-trans tags. Move some code from
+	  projects.py to pootlefile.py, etc.
+
+2006-12-22 07:25  friedelwolff
+
+	* src/trunk/Pootle/users.py: Recheck the session status after
+	  changing the interface language to ensure that the status message
+	  is correctly traslated in the new locale (fix for bug 197)
+
+2006-11-28 09:01  varsist
+
+	* src/trunk/Pootle/indexpage.py, src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/templates/fileindex.html,
+	  src/trunk/Pootle/test_client.py: Project fileindex webpage now
+	  supports Overwrite abilities for files.
+
+2006-11-24 07:31  andreaspauley
+
+	* src/trunk/Pootle/pootlefile.py, src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/test_pootlefile.py,
+	  src/trunk/Pootle/translatepage.py: Updated Pootle to work with
+	  the updated pogrep, and changed a lot of po-specific variable
+	  names.
+
+2006-11-16 14:21  andreaspauley
+
+	* src/trunk/Pootle/test_pootlefile.py: Wrote a test for our
+	  updateunit() method.
+
+2006-11-16 10:00  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Use a local variable for
+	  innerclass (fixes some unit tests)
+
+2006-11-14 16:28  andreaspauley
+
+	* src/trunk/Pootle/test_client.py: Wrote 2 new tests for the
+	  submission of plural translations. Found a possible bug when
+	  submitting a plural translation to a language that doesn't
+	  support plurals, eg. Japanese.
+
+2006-11-14 13:48  andreaspauley
+
+	* src/trunk/Pootle/translatepage.py: Fixed a small bug where the
+	  translate_comments url var didn't get popped in all instances.
+
+2006-11-14 13:47  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: provide .updateheaderplural() and
+	  .updateheader() functions to delegate if it exists in the
+	  innerobj
+
+2006-11-14 13:44  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Always use self.innerclass
+	  instead of global innerclass
+
+2006-11-14 06:38  andreaspauley
+
+	* src/trunk/Pootle/templates/translatepage.html: Fixed a bug where
+	  the location comments didn't display if a translation unit didn't
+	  have developer comments as well.
+
+2006-11-13 12:09  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Add pootlefile.getheaderplural()
+	  that delegates to the innerobj if available
+
+2006-11-10 15:14  andreaspauley
+
+	* src/trunk/Pootle/html/pootle.css, src/trunk/Pootle/pootlefile.py,
+	  src/trunk/Pootle/templates/translatepage.html,
+	  src/trunk/Pootle/test_client.py,
+	  src/trunk/Pootle/translatepage.py: Added the ability to edit
+	  comments. Moved all comments to a separate row in edit mode.
+
+2006-11-08 15:03  dwaynebailey
+
+	* src/trunk/Pootle/statistics.py: First step to put all meta data
+	  into a dict and remove specific special cases.
+
+2006-11-07 15:53  friedelwolff
+
+	* src/trunk/Pootle/test_pootlefile.py: Remove pootleunit tests now
+	  that we don't have pootleunit anymore
+
+2006-11-07 15:50  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Various fixes to make all the
+	  unit tests work.\n+ classmethod parsefile(), don't inherit from
+	  base.TranslationStore
+
+2006-11-06 15:35  dwaynebailey
+
+	* src/trunk/Pootle/statistics.py: s/poel/unit/ for consistency
+
+2006-11-06 15:28  dwaynebailey
+
+	* src/trunk/Pootle/statistics.py: s/filter/check/ for clarity
+
+2006-11-06 13:38  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Do away with pootleunit and all
+	  of its users
+
+2006-11-05 19:13  dwaynebailey
+
+	* src/trunk/Pootle/statistics.py: Remove some more po'ness
+
+2006-11-05 10:47  dwaynebailey
+
+	* src/trunk/Pootle/statistics.py,
+	  src/trunk/Pootle/test_statistics.py: Change remove() to
+	  hasparent() and adjust tests.
+
+2006-11-03 15:16  andreaspauley
+
+	* src/trunk/Pootle/test_client.py: Removed the mixture of spaces
+	  and tabs, changed indentation to 4 spaces.
+
+2006-11-03 14:39  friedelwolff
+
+	* src/trunk/Pootle/translatepage.py: Correct pofile parameter that
+	  caused problems with navigation links
+
+2006-11-03 14:19  andreaspauley
+
+	* src/trunk/Pootle/test_client.py: Added
+	  test_navigation_url_parameters, tests that the navigation urls
+	  (next/end etc) has the necessary parameters
+
+2006-11-03 14:19  friedelwolff
+
+	* src/trunk/Pootle/CREDITS: Credit Andreas and Capel
+
+2006-11-03 06:54  dwaynebailey
+
+	* src/trunk/Pootle/projects.py, src/trunk/Pootle/statistics.py:
+	  Remove references to msgstr and msgid and replace with source and
+	  target.
+	  Leave 'readstats' with ability to read {msgstr,msgid}wordcounts
+	  so that old stats files can be read (they will be updated to use
+	  {source,target}wordcounts when they are saved)
+
+2006-11-03 06:11  dwaynebailey
+
+	* src/trunk/Pootle/statistics.py,
+	  src/trunk/Pootle/test_statistics.py: Add a remove function that
+	  checks that the stats file is associated with some translatable
+	  file and removes
+	  the stats file if it is no longer associated.
+
+2006-11-02 15:19  dwaynebailey
+
+	* src/trunk/Pootle/statistics.py,
+	  src/trunk/Pootle/test_statistics.py: Add a StatsFile class for
+	  creating, reading and writing the stats file
+	  Add initial test file
+
+2006-11-02 14:21  dwaynebailey
+
+	* src/trunk/Pootle/pootlefile.py, src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/statistics.py: Place pootlestatistics class in a
+	  seperate file and adjust all references. Making ready to
+	  break up pootlestatistics so that we can migrate some of the
+	  functionality to the toolkit.
+
+2006-11-02 13:21  andreaspauley
+
+	* src/trunk/Pootle/conflict2suggest.py,
+	  src/trunk/Pootle/pootlefile.py, src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/translatepage.py: Renamed setmsgstr() to
+	  updateunit() and replaced the "target" parameter with a dict that
+	  can contain more than just the target, eg. "fuzzy"
+
+2006-11-01 10:11  friedelwolff
+
+	* src/trunk/Pootle/templates/home.html: Remove trailing slash (/)
+	  in admin url
+
+2006-10-31 07:57  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Rewrite statement with
+	  .isblankmsgstr() to rather use new .gettargetlen()
+
+2006-10-31 05:53  friedelwolff
+
+	* src/trunk/Pootle/potree.py: Use .po as default file type if the
+	  project doesn't have one specified
+
+2006-10-30 08:47  varsist
+
+	* src/trunk/Pootle/projects.py: Variable name chane, left one
+	  variable name behind. Fixed
+
+2006-10-30 08:37  varsist
+
+	* src/trunk/Pootle/projects.py: Comment/Documentation change for
+
+2006-10-30 08:34  varsist
+
+	* src/trunk/Pootle/test_client.py, src/trunk/Pootle/test_create.py:
+	  Adapted test cases for new project file type attribute
+
+2006-10-30 08:33  varsist
+
+	* src/trunk/Pootle/adminpages.py, src/trunk/Pootle/benchmark.py,
+	  src/trunk/Pootle/potree.py: Added new project attribute allowing
+	  specific file types (e.g po/xliff) for individual projects,
+	  accessable via the Web interface
+
+2006-10-30 08:27  varsist
+
+	* src/trunk/Pootle/indexpage.py, src/trunk/Pootle/projects.py:
+	  Removed reliance on po file types
+
+2006-10-30 08:26  varsist
+
+	* src/trunk/Pootle/pootle.prefs: Update of Pootle Preference file
+	  to support new local file type attribute
+
+2006-10-25 16:19  andreaspauley
+
+	* src/trunk/Pootle/pootlefile.py, src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/templates/translatepage.html,
+	  src/trunk/Pootle/test_client.py,
+	  src/trunk/Pootle/translatepage.py: Add fuzzy checkbox to the
+	  translate page, bug 188.
+
+2006-10-20 14:21  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Remove unused functions
+	  .getitemclasses() and .unquotefrompo()
+
+2006-10-20 09:59  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Addapt ungettext() to use new base
+	  class methods instead of unquotefrompo
+
+2006-10-19 15:28  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Commeniting .getitemclasses() in
+	  preperation for removal - no users of this function
+
+2006-10-19 15:27  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Remove reduntant assign
+
+2006-10-19 13:57  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Fix typo
+
+2006-10-19 13:36  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Cosmetic reordering of instructions
+
+2006-10-19 13:34  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Use correct filename when uploading
+	  new file from template. This fixes the bug with projects with a
+	  directory hierarchy in the temlates directory
+
+2006-10-18 15:25  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs: Update plural equation for Akan
+	  from information from paa kwesi imbeah
+
+2006-10-16 07:24  varsist
+
+	* src/trunk/Pootle/pootlefile.py,
+	  src/trunk/Pootle/test_pootlefile.py: filename and extension API
+	  now avaliable via getext() and getfilename(). Added cleanup for
+	  left over files from pootlefile tests
+
+2006-10-13 22:15  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Filter interested users by language
+	  only, not by project as well.
+
+2006-10-13 15:26  friedelwolff
+
+	* src/trunk/Pootle/adminpages.py: Make sure that we have the
+	  information of all relevant users, even if they don't have the
+	  language selected yet or anymore
+
+2006-10-13 07:20  friedelwolff
+
+	* src/trunk/Pootle/test_client.py: Adapt expected hyperlink to
+	  account for lang attribute that is now inserted
+
+2006-10-12 23:27  friedelwolff
+
+	* src/trunk/Pootle/adminpages.py, src/trunk/Pootle/indexpage.py,
+	  src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/templates/fileindex.html,
+	  src/trunk/Pootle/templates/projectlangadmin.html: Display more
+	  friendly usernames for selection, displaying the full name where
+	  available. Only list users that registered for the specific
+	  project/language combination.
+
+2006-10-12 21:30  friedelwolff
+
+	* src/trunk/Pootle/potree.py: Use new localelanguage() function
+	  when entering languages
+
+2006-10-12 21:23  friedelwolff
+
+	* src/trunk/Pootle/indexpage.py,
+	  src/trunk/Pootle/templates/home.html: Show administrate link on
+	  home page next to language if the user is a project admin
+
+2006-10-12 15:36  friedelwolff
+
+	* src/trunk/Pootle/pootle.py: Convert the browser's Accept-Lang
+	  when looking for the preferred translation
+
+2006-10-12 15:35  friedelwolff
+
+	* src/trunk/Pootle/pagelayout.py: Add function localelanguage() to
+	  reformat a web style (pt-br) language code to a locale style
+	  (pt_BR) style code
+
+2006-10-12 15:23  friedelwolff
+
+	* src/trunk/Pootle/pootle.py: Don't complain if no English
+	  translation is found
+
+2006-10-12 14:40  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Use the unit's own
+	  .istranslated(). Adjust comment
+
+2006-10-12 14:32  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Use a factory to construct the
+	  storage classes for the __innerobj__, pending files, and tm
+	  files. Move classify function from pootleunit, and rename a few
+	  things (mostly pofile -> file)
+
+2006-10-12 14:27  friedelwolff
+
+	* src/trunk/Pootle/test_pootlefile.py: Move test_classify to make
+	  upcoming structure easier to test
+
+2006-10-12 14:03  friedelwolff
+
+	* src/trunk/Pootle/test_client.py: Correct the expected hyperlinks.
+	  Since we now include a lang attribute that kid puts before href,
+	  this broke the tests
+
+2006-10-12 07:33  friedelwolff
+
+	* src/trunk/Pootle/templates/pootlepage.html: Add dir and lang
+	  attributes to the about div in the footer
+
+2006-10-12 07:14  friedelwolff
+
+	* src/trunk/Pootle/conf.py, src/trunk/Pootle/indexpage.py,
+	  src/trunk/Pootle/pagelayout.py, src/trunk/Pootle/pootle.py,
+	  src/trunk/Pootle/storage_client.py, src/trunk/Pootle/users.py,
+	  src/trunk/Pootle/utils.py: Revert 4019:4021 by Gasper since it is
+	  not yet working perfectly. It will probably be remerged in
+	  smaller chunks.
+
+2006-10-11 16:26  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css: Several display updates for
+	  specific languages, remove most places where line-height is
+	  altered, don't use percentage increases for fonts, etc.
+
+2006-10-11 16:24  friedelwolff
+
+	* src/trunk/Pootle/templates/translatepage.html: Insert space
+	  between clickable special characters
+
+2006-10-11 16:21  friedelwolff
+
+	* src/trunk/Pootle/templates/navbar.html: Display filenames as
+	  normal links (not H3) and style as lang=en dir=ltr
+
+2006-10-11 13:08  zejn
+
+	* src/trunk/Pootle/indexpage.py: Fixed a typo.
+
+2006-10-11 12:56  zejn
+
+	* src/trunk/Pootle/conf.py, src/trunk/Pootle/indexpage.py,
+	  src/trunk/Pootle/pagelayout.py, src/trunk/Pootle/pootle.py,
+	  src/trunk/Pootle/storage_client.py, src/trunk/Pootle/users.py,
+	  src/trunk/Pootle/utils.py: Moving methods of PootlePage
+	  subclasses out of indexpage, pagelayout and users. This
+	  will allow for easier migration. All still works as before.
+	  conf.py contains global pootle variables: prefs and potree.
+	  storage_client has all the functions that were returning a list
+	  of projects, languages...
+	  utils.py has universally usable functions.
+
+2006-10-11 12:45  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs: Add configurations for some
+	  missing languages
+
+2006-10-11 10:44  friedelwolff
+
+	* src/trunk/Pootle/users.py: Properly deal with interface language
+	  set at login and/or preferences
+
+2006-10-10 10:02  friedelwolff
+
+	* src/trunk/Pootle/translatepage.py: Always provide pofilename so
+	  that navigation works even when using project search or translate
+	  functions
+
+2006-10-10 07:32  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py, src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/test_pootlefile.py: Complete the merge of the
+	  refactorings from the Pootle locking branch. Initial locking work
+	  also ported.
+
+2006-10-09 08:36  zejn
+
+	* src/trunk/Pootle/html/selenium, src/trunk/Pootle/html/tests,
+	  src/trunk/Pootle/html/tests/LoginTest.html,
+	  src/trunk/Pootle/html/tests/ProjectPageTest.html,
+	  src/trunk/Pootle/html/tests/TestSuite.html,
+	  src/trunk/Pootle/pootle.py: Removing selenium from svn
+	  repository, it's far too big. I've rather added notes on
+	  installation.
+
+2006-10-09 08:03  zejn
+
+	* src/trunk/Pootle/html/selenium/README.txt: Adding a note in
+	  readme file explaining how to run tests.
+
+2006-10-09 07:57  zejn
+
+	* src/trunk/Pootle/html/selenium,
+	  src/trunk/Pootle/html/selenium/InjectedSeleneseRunner.html,
+	  src/trunk/Pootle/html/selenium/SeleneseRunner.html,
+	  src/trunk/Pootle/html/selenium/SeleniumLog.html,
+	  src/trunk/Pootle/html/selenium/TestPrompt.html,
+	  src/trunk/Pootle/html/selenium/TestRunner-splash.html,
+	  src/trunk/Pootle/html/selenium/TestRunner.hta,
+	  src/trunk/Pootle/html/selenium/TestRunner.html,
+	  src/trunk/Pootle/html/selenium/domviewer,
+	  src/trunk/Pootle/html/selenium/domviewer/butmin.gif,
+	  src/trunk/Pootle/html/selenium/domviewer/butplus.gif,
+	  src/trunk/Pootle/html/selenium/domviewer/domviewer.css,
+	  src/trunk/Pootle/html/selenium/domviewer/domviewer.html,
+	  src/trunk/Pootle/html/selenium/domviewer/selenium-domviewer.js,
+	  src/trunk/Pootle/html/selenium/iedoc-core.xml,
+	  src/trunk/Pootle/html/selenium/iedoc.xml,
+	  src/trunk/Pootle/html/selenium/lib,
+	  src/trunk/Pootle/html/selenium/lib/cssQuery,
+	  src/trunk/Pootle/html/selenium/lib/cssQuery/cssQuery-p.js,
+	  src/trunk/Pootle/html/selenium/lib/cssQuery/src,
+	  src/trunk/Pootle/html/selenium/lib/cssQuery/src/cssQuery-level2.js,
+	  src/trunk/Pootle/html/selenium/lib/cssQuery/src/cssQuery-level3.js,
+	  src/trunk/Pootle/html/selenium/lib/cssQuery/src/cssQuery-standard.js,
+	  src/trunk/Pootle/html/selenium/lib/cssQuery/src/cssQuery.js,
+	  src/trunk/Pootle/html/selenium/lib/prototype.js,
+	  src/trunk/Pootle/html/selenium/lib/scriptaculous,
+	  src/trunk/Pootle/html/selenium/lib/scriptaculous/builder.js,
+	  src/trunk/Pootle/html/selenium/lib/scriptaculous/controls.js,
+	  src/trunk/Pootle/html/selenium/lib/scriptaculous/dragdrop.js,
+	  src/trunk/Pootle/html/selenium/lib/scriptaculous/effects.js,
+	  src/trunk/Pootle/html/selenium/lib/scriptaculous/scriptaculous.js,
+	  src/trunk/Pootle/html/selenium/lib/scriptaculous/slider.js,
+	  src/trunk/Pootle/html/selenium/lib/scriptaculous/unittest.js,
+	  src/trunk/Pootle/html/selenium/scripts,
+	  src/trunk/Pootle/html/selenium/scripts/find_matching_child.js,
+	  src/trunk/Pootle/html/selenium/scripts/htmlutils.js,
+	  src/trunk/Pootle/html/selenium/scripts/injection.html,
+	  src/trunk/Pootle/html/selenium/scripts/injection_iframe.html,
+	  src/trunk/Pootle/html/selenium/scripts/js2html.js,
+	  src/trunk/Pootle/html/selenium/scripts/narcissus-defs.js,
+	  src/trunk/Pootle/html/selenium/scripts/narcissus-exec.js,
+	  src/trunk/Pootle/html/selenium/scripts/narcissus-parse.js,
+	  src/trunk/Pootle/html/selenium/scripts/se2html.js,
+	  src/trunk/Pootle/html/selenium/scripts/selenium-api.js,
+	  src/trunk/Pootle/html/selenium/scripts/selenium-browserbot.js,
+	  src/trunk/Pootle/html/selenium/scripts/selenium-browserdetect.js,
+	  src/trunk/Pootle/html/selenium/scripts/selenium-commandhandlers.js,
+	  src/trunk/Pootle/html/selenium/scripts/selenium-executionloop.js,
+	  src/trunk/Pootle/html/selenium/scripts/selenium-logging.js,
+	  src/trunk/Pootle/html/selenium/scripts/selenium-seleneserunner.js,
+	  src/trunk/Pootle/html/selenium/scripts/selenium-testrunner.js,
+	  src/trunk/Pootle/html/selenium/scripts/selenium-version.js,
+	  src/trunk/Pootle/html/selenium/scripts/user-extensions.js.sample,
+	  src/trunk/Pootle/html/selenium/scripts/xmlextras.js,
+	  src/trunk/Pootle/html/selenium/selenium-logo.png,
+	  src/trunk/Pootle/html/selenium/selenium.css,
+	  src/trunk/Pootle/html/selenium/tests,
+	  src/trunk/Pootle/html/selenium/tests/LoginTest.html,
+	  src/trunk/Pootle/html/selenium/tests/ProjectPageTest.html,
+	  src/trunk/Pootle/html/selenium/tests/TestSuite.html,
+	  src/trunk/Pootle/html/selenium/xpath,
+	  src/trunk/Pootle/html/selenium/xpath/dom.js,
+	  src/trunk/Pootle/html/selenium/xpath/misc.js,
+	  src/trunk/Pootle/html/selenium/xpath/xpath.js,
+	  src/trunk/Pootle/pootle.py: Adding selenium for testing portal
+	  from browser.
+
+2006-10-06 11:50  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Move some more pootlefile
+	  functions around. All changes are purely cosmetic to make review
+	  of upcomming merging from pootle-locking branch easier
+
+2006-10-06 11:29  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Revert accidental commit as part
+	  of revision on 15 June 2006 - pootlefile in dummy project has no
+	  checker
+
+2006-10-06 09:19  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Move some pootlefile functions
+	  around. All changes are purely cosmetic to make review of
+	  upcomming merging from pootle-locking branch easier
+
+2006-10-06 08:45  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Remove some methods from
+	  pootleunit that are duplicated from Wrapper. Add methods in
+	  pootleunit that need to be overridden
+
+2006-10-06 08:12  friedelwolff
+
+	* src/trunk/Pootle/test_client.py: Give adminrights in
+	  test_upload_xliff_over_file. Make xliff more readable
+
+2006-10-05 06:52  friedelwolff
+
+	* src/trunk/Pootle/users.py: Correctly display exceptions in unit
+	  tests (we don't have a server.options variable)
+
+2006-10-04 13:46  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Override __str__ for pootleunit
+	  to call __str__ for __innerobj__
+
+2006-10-04 10:08  friedelwolff
+
+	* src/trunk/Pootle/__version__.py: Up to mystical version 0.10.90
+	  (just for current HEAD)
+
+2006-10-03 12:54  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Merge Wrapper class from
+	  pootle-locking branch and implement for pootleunit with some
+	  differences from branch (pootleunit not a base.TranslationUnit)
+
+2006-10-03 07:01  friedelwolff
+
+	* src/trunk/Pootle/benchmark.py,
+	  src/trunk/Pootle/conflict2suggest.py,
+	  src/trunk/Pootle/pootlefile.py, src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/test_pootlefile.py: Renaming for consistency:
+	  element -> unit. First step in preparation of merging in the
+	  pootle-locking branch
+
+2006-09-29 07:13  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Rather use pocount.wordcount to
+	  avoid duplication
+
+2006-09-22 10:02  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py: Adapt to refactoring that
+	  happened with poheaders in toolkit
+
+2006-09-22 06:57  friedelwolff
+
+	* src/trunk/Pootle/users.py: Only set the UI language from
+	  preference if it is not yet set from the login
+
+2006-09-22 06:51  friedelwolff
+
+	* src/trunk/Pootle/CREDITS: Credit Gasper Zeijn
+
+2006-09-22 06:48  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css, src/trunk/Pootle/indexpage.py,
+	  src/trunk/Pootle/pagelayout.py,
+	  src/trunk/Pootle/templates/activate.html,
+	  src/trunk/Pootle/templates/adminindex.html,
+	  src/trunk/Pootle/templates/adminlanguages.html,
+	  src/trunk/Pootle/templates/adminprojects.html,
+	  src/trunk/Pootle/templates/adminusers.html,
+	  src/trunk/Pootle/templates/error.html,
+	  src/trunk/Pootle/templates/fileindex.html,
+	  src/trunk/Pootle/templates/home.html,
+	  src/trunk/Pootle/templates/index.html,
+	  src/trunk/Pootle/templates/language.html,
+	  src/trunk/Pootle/templates/languages.html,
+	  src/trunk/Pootle/templates/login.html,
+	  src/trunk/Pootle/templates/options.html,
+	  src/trunk/Pootle/templates/pootlepage.html,
+	  src/trunk/Pootle/templates/project.html,
+	  src/trunk/Pootle/templates/projectadmin.html,
+	  src/trunk/Pootle/templates/projectlangadmin.html,
+	  src/trunk/Pootle/templates/projects.html,
+	  src/trunk/Pootle/templates/redirect.html,
+	  src/trunk/Pootle/templates/register.html,
+	  src/trunk/Pootle/templates/translatepage.html: Move 'About this
+	  Pootle server' to the footer on each page'. Contributed by Gasper
+	  Zejn.
+
+2006-09-20 15:22  friedelwolff
+
+	* src/trunk/Pootle/potree.py: Fix encoding issue with special
+	  character administration
+
+2006-09-18 10:23  varsist
+
+	* src/trunk/Pootle/test_pootlefile.py: removal of redundant
+	  unquoting test method
+
+2006-09-18 10:22  varsist
+
+	* src/trunk/Pootle/pootlefile.py: removal of redundant unquotedmsg
+	  methods and utilization of source and target directly
+
+2006-09-18 10:19  varsist
+
+	* src/trunk/Pootle/projects.py, src/trunk/Pootle/translatepage.py:
+	  implementation of direct source and target
+
+2006-09-18 09:29  friedelwolff
+
+	* src/trunk/Pootle/users.py: Handle language preference better
+	  across server restarts. Allow changing interface language
+	  immediately at user options
+
+2006-09-18 06:20  friedelwolff
+
+	* src/trunk/Pootle/templates/translatepage.html: Convert tab to
+	  space
+
+2006-09-18 06:11  friedelwolff
+
+	* src/trunk/Pootle/html/js/autoexpand.js,
+	  src/trunk/Pootle/templates/translatepage.html: Make special
+	  characters clickable [Contributed by Djihed Afifi]
+
+2006-09-15 23:53  friedelwolff
+
+	* src/trunk/Pootle/users.py: Minor improvements to new translatable
+	  messages. Unify existing message with the better worded new
+	  message.
+
+2006-09-15 22:44  friedelwolff
+
+	* src/trunk/Pootle/pootle.py, src/trunk/Pootle/users.py: Allow
+	  users to change their password. Factor out some error handling
+	  and display error messages [Contributed by Charl van Niekerk]
+
+2006-09-15 22:42  friedelwolff
+
+	* src/trunk/Pootle/templates/options.html: Support messages in
+	  user's option page
+
+2006-09-15 06:45  varsist
+
+	* src/trunk/Pootle/conflict2suggest.py: removed unquotedmsgstr/id
+	  dependency and added plural checking on strings
+
+2006-09-14 15:25  friedelwolff
+
+	* src/trunk/Pootle/pagelayout.py,
+	  src/trunk/Pootle/translatepage.py: Convert lang directives from
+	  locale style (pt_BR) to web style (pt-BR) when passing to
+	  templates
+
+2006-09-14 12:17  friedelwolff
+
+	* src/trunk/Pootle/templates/options.html,
+	  src/trunk/Pootle/users.py: Enable functionality for users to
+	  change their passwords [Contributed by Charl van Niekerk]
+
+2006-09-12 10:56  friedelwolff
+
+	* src/trunk/Pootle/conflict2suggest.py: Split strings on newline
+	  not literal '\n'
+
+2006-09-12 08:40  friedelwolff
+
+	* src/trunk/Pootle/CREDITS: Credit Djihed Afifi
+
+2006-09-12 08:39  friedelwolff
+
+	* src/trunk/Pootle/html/js/autoexpand.js,
+	  src/trunk/Pootle/templates/translatepage.html,
+	  src/trunk/Pootle/translatepage.py: Enable copying text for plural
+	  messages too. Contributed by Djihed Afifi
+
+2006-09-09 08:06  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs, src/trunk/Pootle/tools/updatetm,
+	  src/trunk/Pootle/users.prefs: [Forward port from
+	  wordforge-0-10-branch] Import minor fixes (mainly typo's) from
+	  debian pootle package (Nicolas François)
+
+2006-09-08 10:09  friedelwolff
+
+	* src/trunk/Pootle/tools/updatetm.py: Remove svn:executable
+	  property
+
+2006-09-07 13:38  friedelwolff
+
+	* src/trunk/Pootle/CREDITS: Add Clytie and Charl
+
+2006-09-07 09:41  friedelwolff
+
+	* src/trunk/Pootle/templates/adminlanguages.html,
+	  src/trunk/Pootle/templates/adminprojects.html,
+	  src/trunk/Pootle/templates/adminusers.html: Use new fullwidth
+	  classes for some pages. Remove temporary hack
+
+2006-09-07 09:40  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css: Add new CSS classes for pages
+	  that should use the full width of the screen instead of just the
+	  normal contents area
+
+2006-09-07 09:37  friedelwolff
+
+	* src/trunk/Pootle/TODO: Update by removing some items that are
+	  already done
+
+2006-09-05 06:15  friedelwolff
+
+	* src/trunk/Pootle/templates/register.html,
+	  src/trunk/Pootle/users.py: [Contributed by Charl van Niekerk]
+	  Implement password confirmation on registration page
+
+2006-09-04 09:23  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs: Improve configuration
+	  documentation, with examples and explanations of how descriptions
+	  can now contain markup
+
+2006-09-04 09:09  friedelwolff
+
+	* src/trunk/Pootle/indexpage.py,
+	  src/trunk/Pootle/templates/language.html,
+	  src/trunk/Pootle/templates/project.html: Display descriptions for
+	  the project on the project page and shortened forms in tooltips
+	  elsewhere
+
+2006-09-04 09:05  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css: Also overflow display of
+	  comments and locations that are too long
+
+2006-09-01 10:25  friedelwolff
+
+	* src/trunk/Pootle/indexpage.py,
+	  src/trunk/Pootle/templates/index.html: Display site description
+	  on front page
+
+2006-09-01 09:57  friedelwolff
+
+	* src/trunk/Pootle/indexpage.py, src/trunk/Pootle/pootle.prefs,
+	  src/trunk/Pootle/templates/about.html,
+	  src/trunk/Pootle/templates/index.html: Support markup in site
+	  description. Strip markup for meta description tag. Document with
+	  example
+
+2006-08-31 13:13  friedelwolff
+
+	* src/trunk/Pootle/pootlefile.py, src/trunk/Pootle/projects.py: Use
+	  unicode goalnames and encode as necessary. Fixes problem with
+	  assigns and non-ascii goalnames
+
+2006-08-30 09:26  friedelwolff
+
+	* src/trunk/Pootle/translatepage.py: Use the correct icon
+	  (file/edit) on the translate page
+
+2006-08-30 09:25  friedelwolff
+
+	* src/trunk/Pootle/translatepage.py: Display navigation links in
+	  edit mode too
+
+2006-08-30 08:08  friedelwolff
+
+	* src/trunk/Pootle/adminpages.py, src/trunk/Pootle/indexpage.py,
+	  src/trunk/Pootle/pagelayout.py, src/trunk/Pootle/projects.py,
+	  src/trunk/Pootle/translatepage.py: Improve localize calls to have
+	  one on a line in most cases. Add more l10n comments
+
+2006-08-30 07:45  friedelwolff
+
+	* src/trunk/Pootle/tools/updatetm.py: Fix bug with format change in
+	  notes
+
+2006-08-29 08:22  friedelwolff
+
+	* src/trunk/Pootle/html/images/up.png: Commit images from CVS where
+	  the svn properties got mixed up
+
+2006-08-29 08:00  friedelwolff
+
+	* src/trunk/Pootle/html/images/down.png,
+	  src/trunk/Pootle/html/images/none.png: Commit images from CVS
+	  where the svn properties got mixed up
+
+2006-08-29 07:37  friedelwolff
+
+	* src/trunk/Pootle/html/images/down.png,
+	  src/trunk/Pootle/html/images/none.png,
+	  src/trunk/Pootle/html/images/pootle.svg: Remove invalid svn
+	  properties and add mime-type. (hopefully) fixes unusable images
+	  in Pootle
+
+2006-08-28 11:43  friedelwolff
+
+	* src/trunk/pootlesetup.py: Also package subpackages (currently
+	  only tools)
+
+2006-08-28 09:57  friedelwolff
+
+	* src/trunk/Pootle/users.prefs: Fix typo
+
+2006-08-24 21:16  friedelwolff
+
+	* src/trunk/pootlesetup.py: Update list of languages for install
+
+2006-08-24 21:11  friedelwolff
+
+	* src/trunk/pootlesetup.py: prune editor and lingua directories
+	  from the build
+
+2006-08-24 15:03  friedelwolff
+
+	* src/trunk/Pootle/translatepage.py: Remove some unnecessary
+	  template variables, but ensure we always pass rows and cols for
+	  the textarea
+
+2006-08-24 15:01  friedelwolff
+
+	* src/trunk/Pootle/translatepage.py: Don't retrieve tm and
+	  terminology unnecessarily, but show it always if one item is in
+	  view
+
+2006-08-24 13:23  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs: Update default preferences
+	  according to current translation status (75% +)
+
+2006-08-24 13:17  friedelwolff
+
+	* src/trunk/Pootle/po/pootle/af/pootle.po,
+	  src/trunk/Pootle/po/pootle/ar/pootle.po,
+	  src/trunk/Pootle/po/pootle/ca/pootle.po,
+	  src/trunk/Pootle/po/pootle/de/pootle.po,
+	  src/trunk/Pootle/po/pootle/eu/pootle.po,
+	  src/trunk/Pootle/po/pootle/fr/pootle.po,
+	  src/trunk/Pootle/po/pootle/gl/pootle.po,
+	  src/trunk/Pootle/po/pootle/it/pootle.po,
+	  src/trunk/Pootle/po/pootle/ja/pootle.po,
+	  src/trunk/Pootle/po/pootle/mt/pootle.po,
+	  src/trunk/Pootle/po/pootle/pt/pootle.po,
+	  src/trunk/Pootle/po/pootle/sr/pootle.po,
+	  src/trunk/Pootle/po/pootle/sv/pootle.po,
+	  src/trunk/Pootle/po/pootle/zh_CN/pootle.po,
+	  src/trunk/Pootle/po/pootle/zh_HK/pootle.po: Translation updates
+	  from pootle.wordforge.org: mainly ar, de, sr and incorrect type
+	  comments (fixed manually)
+
+2006-08-24 09:33  friedelwolff
+
+	* src/trunk/Pootle/projects.py: Remove TODO that is already done
+
+2006-08-23 13:02  friedelwolff
+
+	* src/trunk/pootlesetup.py: add tools/updatetm as a script to be
+	  installed
+
+2006-08-23 11:06  friedelwolff
+
+	* src/trunk/Pootle/__version__.py: Version 0.10rc4
+
+2006-08-22 18:03  friedelwolff
+
+	* src/trunk/Pootle/indexpage.py,
+	  src/trunk/Pootle/templates/about.html,
+	  src/trunk/Pootle/templates/index.html: Supply meta tags for
+	  description and keywords on about page and index(/) page
+
+2006-08-22 12:41  friedelwolff
+
+	* src/trunk/Pootle/tools/updatetm.py: Typo in help text of
+	  commandline option
+
+2006-08-21 12:53  friedelwolff
+
+	* src/trunk/Pootle/filelocations.py: Remove #! - it isn't a script
+
+2006-08-21 12:30  friedelwolff
+
+	* src/trunk/Pootle/html/pootle.css,
+	  src/trunk/Pootle/templates/adminlanguages.html,
+	  src/trunk/Pootle/templates/adminprojects.html,
+	  src/trunk/Pootle/templates/adminusers.html,
+	  src/trunk/translate/misc/test_zipfileext.py: Remove some
+	  executable properties and #! where it isn't a script
+
+2006-08-21 10:45  friedelwolff
+
+	* src/trunk/Pootle/test_client.py: Fix tests to work with new
+	  layout of KDE comments, and correct output of suggestion string
+	  (suggested by testuser\n
+
+2006-08-21 10:14  friedelwolff
+
+	* src/trunk/Pootle/README: Mention cvs and svn clients under
+	  requirements
+
+2006-08-21 08:57  friedelwolff
+
+	* src/trunk/Pootle/pootle.prefs: Add terminology project to default
+	  preferences
+
+2006-08-21 08:53  friedelwolff
+
+	* src/trunk/Pootle/po/terminology/am/pootle-terminology-am.prefs,
+	  src/trunk/Pootle/po/terminology/ar/pootle-terminology-ar.prefs,
+	  src/trunk/Pootle/po/terminology/az/pootle-terminology-az.prefs,
+	  src/trunk/Pootle/po/terminology/ca/pootle-terminology-ca.prefs,
+	  src/trunk/Pootle/po/terminology/cs/pootle-terminology-cs.prefs,
+	  src/trunk/Pootle/po/terminology/da/pootle-terminology-da.prefs,
+	  src/trunk/Pootle/po/terminology/eo/pootle-terminology-eo.prefs,
+	  src/trunk/Pootle/po/terminology/es/pootle-terminology-es.prefs,
+	  src/trunk/Pootle/po/terminology/eu/pootle-terminology-eu.prefs,
+	  src/trunk/Pootle/po/terminology/fa/pootle-terminology-fa.prefs,
+	  src/trunk/Pootle/po/terminology/fr/pootle-terminology-fr.prefs,
+	  src/trunk/Pootle/po/terminology/hi/pootle-terminology-hi.prefs,
+	  src/trunk/Pootle/po/terminology/hu/pootle-terminology-hu.prefs,
+	  src/trunk/Pootle/po/terminology/it/pootle-terminology-it.prefs,
+	  src/trunk/Pootle/po/terminology/ja/pootle-terminology-ja.prefs,
+	  src/trunk/Pootle/po/terminology/kn/pootle-terminology-kn.prefs,
+	  src/trunk/Pootle/po/terminology/ku/pootle-terminology-ku.prefs,
+	  src/trunk/Pootle/po/terminology/mk/pootle-terminology-mk.prefs,
+	  src/trunk/Pootle/po/terminology/mr/pootle-terminology-mr.prefs,
+	  src/trunk/Pootle/po/terminology/ms/pootle-terminology-ms.prefs,
+	  src/trunk/Pootle/po/terminology/nb/pootle-terminology-nb.prefs,
+	  src/trunk/Pootle/po/terminology/nl/pootle-terminology-nl.prefs,
+	  src/trunk/Pootle/po/terminology/nn/pootle-terminology-nn.prefs,
+	  src/trunk/Pootle/po/terminology/pa/pootle-terminology-pa.prefs,
+	  src/trunk/Pootle/po/terminology/pl/pootle-terminology-pl.prefs,
+	  src/trunk/Pootle/po/terminology/pt/pootle-terminology-pt.prefs,
+	  src/trunk/Pootle/po/terminology/pt_BR/pootle-terminology-pt_BR.prefs,
+	  src/trunk/Pootle/po/terminology/rw/pootle-terminology-rw.prefs,
+	  src/trunk/Pootle/po/terminology/sk/pootle-terminology-sk.prefs,
+	  src/trunk/Pootle/po/terminology/sq/pootle-terminology-sq.prefs,
+	  src/trunk/Pootle/po/terminology/sv/pootle-terminology-sv.prefs,
+	  src/trunk/Pootle/po/terminology/th/pootle-terminology-th.prefs,
+	  src/trunk/Pootle/po/terminology/uk/pootle-terminology-uk.prefs,
+	  src/trunk/Pootle/po/terminology/vi/pootle-terminology-vi.prefs,
+	  src/trunk/Pootle/po/terminology/wa/pootle-terminology-wa.prefs,
+	  src/trunk/Pootle/po/terminology/zh_CN/pootle-terminology-zh_CN.prefs,
+	  src/trunk/Pootle/po/terminology/zh_HK/pootle-terminology-zh_HK.prefs,
+	  src/trunk/Pootle/po/terminology/zh_TW/pootle-terminology-zh_TW.prefs:
+	  Add default .prefs file for all terminology projects that only
+	  allow viewing
+
+2006-08-21 08:21  friedelwolff
+
+	* src/trunk/Pootle/po/terminology,
+	  src/trunk/Pootle/po/terminology/am,
+	  src/trunk/Pootle/po/terminology/am/gnome,
+	  src/trunk/Pootle/po/terminology/am/gnome/am.po,
+	  src/trunk/Pootle/po/terminology/ar,
+	  src/trunk/Pootle/po/terminology/ar/gnome,
+	  src/trunk/Pootle/po/terminology/ar/gnome/ar.po,
+	  src/trunk/Pootle/po/terminology/az,
+	  src/trunk/Pootle/po/terminology/az/gnome,
+	  src/trunk/Pootle/po/terminology/az/gnome/az.po,
+	  src/trunk/Pootle/po/terminology/ca,
+	  src/trunk/Pootle/po/terminology/ca/gnome,
+	  src/trunk/Pootle/po/terminology/ca/gnome/ca.po,
+	  src/trunk/Pootle/po/terminology/cs,
+	  src/trunk/Pootle/po/terminology/cs/gnome,
+	  src/trunk/Pootle/po/terminology/cs/gnome/cs.po,
+	  src/trunk/Pootle/po/terminology/da,
+	  src/trunk/Pootle/po/terminology/da/gnome,
+	  src/trunk/Pootle/po/terminology/da/gnome/da.po,
+	  src/trunk/Pootle/po/terminology/eo,
+	  src/trunk/Pootle/po/terminology/eo/gnome,
+	  src/trunk/Pootle/po/terminology/eo/gnome/eo.po,
+	  src/trunk/Pootle/po/terminology/es,
+	  src/trunk/Pootle/po/terminology/es/gnome,
+	  src/trunk/Pootle/po/terminology/es/gnome/es.po,
+	  src/trunk/Pootle/po/terminology/eu,
+	  src/trunk/Pootle/po/terminology/eu/gnome,
+	  src/trunk/Pootle/po/terminology/eu/gnome/eu.po,
+	  src/trunk/Pootle/po/terminology/fa,
+	  src/trunk/Pootle/po/terminology/fa/gnome,
+	  src/trunk/Pootle/po/terminology/fa/gnome/fa.po,
+	  src/trunk/Pootle/po/terminology/fr,
+	  src/trunk/Pootle/po/terminology/fr/gnome,
+	  src/trunk/Pootle/po/terminology/fr/gnome/fr.po,
+	  src/trunk/Pootle/po/terminology/hi,
+	  src/trunk/Pootle/po/terminology/hi/gnome,
+	  src/trunk/Pootle/po/terminology/hi/gnome/hi.po,
+	  src/trunk/Pootle/po/terminology/hu,
+	  src/trunk/Pootle/po/terminology/hu/gnome,
+	  src/trunk/Pootle/po/terminology/hu/gnome/hu.po,
+	  src/trunk/Pootle/po/terminology/it,
+	  src/trunk/Pootle/po/terminology/it/gnome,
+	  src/trunk/Pootle/po/terminology/it/gnome/it.po,
+	  src/trunk/Pootle/po/terminology/ja,
+	  src/trunk/Pootle/po/terminology/ja/gnome,
+	  src/trunk/Pootle/po/terminology/ja/gnome/ja.po,
+	  src/trunk/Pootle/po/terminology/kn,
+	  src/trunk/Pootle/po/terminology/kn/gnome,
+	  src/trunk/Pootle/po/terminology/kn/gnome/kn.po,
+	  src/trunk/Pootle/po/terminology/ku,
+	  src/trunk/Pootle/po/terminology/ku/gnome,
+	  src/trunk/Pootle/po/terminology/ku/gnome/ku.po,
+	  src/trunk/Pootle/po/terminology/mk,
+	  src/trunk/Pootle/po/terminology/mk/gnome,
+	  src/trunk/Pootle/po/terminology/mk/gnome/mk.po,
+	  src/trunk/Pootle/po/terminology/mr,
+	  src/trunk/Pootle/po/terminology/mr/gnome,
+	  src/trunk/Pootle/po/terminology/mr/gnome/mr.po,
+	  src/trunk/Pootle/po/terminology/ms,
+	  src/trunk/Pootle/po/terminology/ms/gnome,
+	  src/trunk/Pootle/po/terminology/ms/gnome/ms.po,
+	  src/trunk/Pootle/po/terminology/nb,
+	  src/trunk/Pootle/po/terminology/nb/gnome,
+	  src/trunk/Pootle/po/terminology/nb/gnome/nb.po,
+	  src/trunk/Pootle/po/terminology/nl,
+	  src/trunk/Pootle/po/terminology/nl/gnome,
+	  src/trunk/Pootle/po/terminology/nl/gnome/nl.po,
+	  src/trunk/Pootle/po/terminology/nn,
+	  src/trunk/Pootle/po/terminology/nn/gnome,
+	  src/trunk/Pootle/po/terminology/nn/gnome/nn.po,
+	  src/trunk/Pootle/po/terminology/pa,
+	  src/trunk/Pootle/po/terminology/pa/gnome,
+	  src/trunk/Pootle/po/terminology/pa/gnome/pa.po,
+	  src/trunk/Pootle/po/terminology/pl,
+	  src/trunk/Pootle/po/terminology/pl/gnome,
+	  src/trunk/Pootle/po/terminology/pl/gnome/pl.po,
+	  src/trunk/Pootle/po/terminology/pt,
+	  src/trunk/Pootle/po/terminology/pt/gnome,
+	  src/trunk/Pootle/po/terminology/pt/gnome/pt.po,
+	  src/trunk/Pootle/po/terminology/pt_BR,
+	  src/trunk/Pootle/po/terminology/pt_BR/gnome,
+	  src/trunk/Pootle/po/terminology/pt_BR/gnome/pt_BR.po,
+	  src/trunk/Pootle/po/terminology/rw,
+	  src/trunk/Pootle/po/terminology/rw/gnome,
+	  src/trunk/Pootle/po/terminology/rw/gnome/rw.po,
+	  src/trunk/Pootle/po/terminology/sk,
+	  src/trunk/Pootle/po/terminology/sk/gnome,
+	  src/trunk/Pootle/po/terminology/sk/gnome/sk.po,
+	  src/trunk/Pootle/po/terminology/sq,
+	  src/trunk/Pootle/po/terminology/sq/gnome,
+	  src/trunk/Pootle/po/terminology/sq/gnome/sq.po,
+	  src/trunk/Pootle/po/terminology/sv,
+	  src/trunk/Pootle/po/terminology/sv/gnome,
+	  src/trunk/Pootle/po/terminology/sv/gnome/sv.po,
+	  src/trunk/Pootle/po/terminology/th,
+	  src/trunk/Pootle/po/terminology/th/gnome,
+	  src/trunk/Pootle/po/terminology/th/gnome/th.po,
+	  src/trunk/Pootle/po/terminology/uk,
+	  src/trunk/Pootle/po/terminology/uk/gnome,
+	  src/trunk/Pootle/po/terminology/uk/gnome/uk.po,
+	  src/trunk/Pootle/po/terminology/vi,
+	  src/trunk/Pootle/po/terminology/vi/gnome,
+	  src/trunk/Pootle/po/terminology/vi/gnome/vi.po,
+	  src/trunk/Pootle/po/terminology/wa,
+	  src/trunk/Pootle/po/terminology/wa/gnome,
+	  src/trunk/Pootle/po/terminology/wa/gnome/wa.po,
+	  src/trunk/Pootle/po/terminology/zh_CN,
+	  src/trunk/Pootle/po/terminology/zh_CN/gnome,
+	  src/trunk/Pootle/po/terminology/zh_CN/gnome/zh_CN.po,
+	  src/trunk/Pootle/po/terminology/zh_HK,
+	  src/trunk/Pootle/po/terminology/zh_HK/gnome,
+	  src/trunk/Pootle/po/terminology/zh_HK/gnome/zh_HK.po,
+	  src/trunk/Pootle/po/terminology/zh_TW,
+	  src/trunk/Pootle/po/terminology/zh_TW/gnome,
+	  src/trunk/Pootle/po/terminology/zh_TW/gnome/zh_TW.po: terminology
+	  project, currently only with the gnome glossaries without
+	  encoding problems
+
+2006-08-19 16:06  friedelwolff
+
+	* src/trunk/Pootle/po, src/trunk/Pootle/po/pootle,
+	  src/trunk/Pootle/po/pootle/af,
+	  src/trunk/Pootle/po/pootle/af/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/af/pootle.po,
+	  src/trunk/Pootle/po/pootle/aka,
+	  src/trunk/Pootle/po/pootle/aka/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/aka/pootle.po,
+	  src/trunk/Pootle/po/pootle/am,
+	  src/trunk/Pootle/po/pootle/am/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/am/pootle.po,
+	  src/trunk/Pootle/po/pootle/ar,
+	  src/trunk/Pootle/po/pootle/ar/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ar/pootle.po,
+	  src/trunk/Pootle/po/pootle/bn,
+	  src/trunk/Pootle/po/pootle/bn/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/bn/pootle.po,
+	  src/trunk/Pootle/po/pootle/ca,
+	  src/trunk/Pootle/po/pootle/ca/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ca/pootle.po,
+	  src/trunk/Pootle/po/pootle/da,
+	  src/trunk/Pootle/po/pootle/da/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/da/pootle.po,
+	  src/trunk/Pootle/po/pootle/de,
+	  src/trunk/Pootle/po/pootle/de/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/de/pootle.po,
+	  src/trunk/Pootle/po/pootle/el,
+	  src/trunk/Pootle/po/pootle/el/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/el/pootle.po,
+	  src/trunk/Pootle/po/pootle/en,
+	  src/trunk/Pootle/po/pootle/en/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/en/pootle.po,
+	  src/trunk/Pootle/po/pootle/en_ZA,
+	  src/trunk/Pootle/po/pootle/en_ZA/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/en_ZA/pootle.po,
+	  src/trunk/Pootle/po/pootle/es,
+	  src/trunk/Pootle/po/pootle/es/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/es/pootle.po,
+	  src/trunk/Pootle/po/pootle/et,
+	  src/trunk/Pootle/po/pootle/et/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/et/pootle.po,
+	  src/trunk/Pootle/po/pootle/eu,
+	  src/trunk/Pootle/po/pootle/eu/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/eu/pootle.po,
+	  src/trunk/Pootle/po/pootle/fa,
+	  src/trunk/Pootle/po/pootle/fa/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/fa/pootle.po,
+	  src/trunk/Pootle/po/pootle/fi,
+	  src/trunk/Pootle/po/pootle/fi/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/fi/pootle.po,
+	  src/trunk/Pootle/po/pootle/fr,
+	  src/trunk/Pootle/po/pootle/fr/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/fr/pootle.po,
+	  src/trunk/Pootle/po/pootle/fur,
+	  src/trunk/Pootle/po/pootle/fur/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/fur/pootle.po,
+	  src/trunk/Pootle/po/pootle/gl,
+	  src/trunk/Pootle/po/pootle/gl/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/gl/pootle.po,
+	  src/trunk/Pootle/po/pootle/he,
+	  src/trunk/Pootle/po/pootle/he/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/he/pootle.po,
+	  src/trunk/Pootle/po/pootle/hi,
+	  src/trunk/Pootle/po/pootle/hi/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/hi/pootle.po,
+	  src/trunk/Pootle/po/pootle/hr,
+	  src/trunk/Pootle/po/pootle/hr/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/hr/pootle.po,
+	  src/trunk/Pootle/po/pootle/hu,
+	  src/trunk/Pootle/po/pootle/hu/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/hu/pootle.po,
+	  src/trunk/Pootle/po/pootle/is,
+	  src/trunk/Pootle/po/pootle/is/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/is/pootle.po,
+	  src/trunk/Pootle/po/pootle/it,
+	  src/trunk/Pootle/po/pootle/it/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/it/pootle.po,
+	  src/trunk/Pootle/po/pootle/ja,
+	  src/trunk/Pootle/po/pootle/ja/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ja/pootle.po,
+	  src/trunk/Pootle/po/pootle/ka,
+	  src/trunk/Pootle/po/pootle/ka/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ka/pootle.po,
+	  src/trunk/Pootle/po/pootle/ko,
+	  src/trunk/Pootle/po/pootle/ko/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ko/pootle.po,
+	  src/trunk/Pootle/po/pootle/kon,
+	  src/trunk/Pootle/po/pootle/kon/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/kon/pootle.po,
+	  src/trunk/Pootle/po/pootle/ku,
+	  src/trunk/Pootle/po/pootle/ku/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ku/pootle.po,
+	  src/trunk/Pootle/po/pootle/lt,
+	  src/trunk/Pootle/po/pootle/lt/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/lt/pootle.po,
+	  src/trunk/Pootle/po/pootle/lv,
+	  src/trunk/Pootle/po/pootle/lv/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/lv/pootle.po,
+	  src/trunk/Pootle/po/pootle/mr,
+	  src/trunk/Pootle/po/pootle/mr/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/mr/pootle.po,
+	  src/trunk/Pootle/po/pootle/ms,
+	  src/trunk/Pootle/po/pootle/ms/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ms/pootle.po,
+	  src/trunk/Pootle/po/pootle/mt,
+	  src/trunk/Pootle/po/pootle/mt/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/mt/pootle.po,
+	  src/trunk/Pootle/po/pootle/nb,
+	  src/trunk/Pootle/po/pootle/nb/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/nb/pootle.po,
+	  src/trunk/Pootle/po/pootle/ne,
+	  src/trunk/Pootle/po/pootle/ne/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ne/pootle.po,
+	  src/trunk/Pootle/po/pootle/nl,
+	  src/trunk/Pootle/po/pootle/nl/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/nl/pootle.po,
+	  src/trunk/Pootle/po/pootle/no,
+	  src/trunk/Pootle/po/pootle/no/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/no/pootle.po,
+	  src/trunk/Pootle/po/pootle/ns,
+	  src/trunk/Pootle/po/pootle/ns/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ns/pootle.po,
+	  src/trunk/Pootle/po/pootle/pa,
+	  src/trunk/Pootle/po/pootle/pa/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/pa/pootle.po,
+	  src/trunk/Pootle/po/pootle/pl,
+	  src/trunk/Pootle/po/pootle/pl/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/pl/pootle.po,
+	  src/trunk/Pootle/po/pootle/pt,
+	  src/trunk/Pootle/po/pootle/pt/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/pt/pootle.po,
+	  src/trunk/Pootle/po/pootle/ru,
+	  src/trunk/Pootle/po/pootle/ru/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ru/pootle.po,
+	  src/trunk/Pootle/po/pootle/sl,
+	  src/trunk/Pootle/po/pootle/sl/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/sl/pootle.po,
+	  src/trunk/Pootle/po/pootle/sr,
+	  src/trunk/Pootle/po/pootle/sr/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/sr/pootle.po,
+	  src/trunk/Pootle/po/pootle/st,
+	  src/trunk/Pootle/po/pootle/st/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/st/pootle.po,
+	  src/trunk/Pootle/po/pootle/sv,
+	  src/trunk/Pootle/po/pootle/sv/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/sv/pootle.po,
+	  src/trunk/Pootle/po/pootle/templates,
+	  src/trunk/Pootle/po/pootle/templates/jToolkit.pot,
+	  src/trunk/Pootle/po/pootle/templates/pootle.pot,
+	  src/trunk/Pootle/po/pootle/tr,
+	  src/trunk/Pootle/po/pootle/tr/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/tr/pootle.po,
+	  src/trunk/Pootle/po/pootle/uk,
+	  src/trunk/Pootle/po/pootle/uk/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/uk/pootle.po,
+	  src/trunk/Pootle/po/pootle/ve,
+	  src/trunk/Pootle/po/pootle/ve/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/ve/pootle.po,
+	  src/trunk/Pootle/po/pootle/vi,
+	  src/trunk/Pootle/po/pootle/vi/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/vi/pootle.po,
+	  src/trunk/Pootle/po/pootle/xh,
+	  src/trunk/Pootle/po/pootle/xh/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/xh/pootle.po,
+	  src/trunk/Pootle/po/pootle/zh_CN,
+	  src/trunk/Pootle/po/pootle/zh_CN/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/zh_CN/pootle.po,
+	  src/trunk/Pootle/po/pootle/zh_HK,
+	  src/trunk/Pootle/po/pootle/zh_HK/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/zh_HK/pootle.po,
+	  src/trunk/Pootle/po/pootle/zu,
+	  src/trunk/Pootle/po/pootle/zu/jToolkit.po,
+	  src/trunk/Pootle/po/pootle/zu/pootle.po: Add all the translations
+	  and templates for pootle and jToolkit from pootle.wordforge.org
+
+2006-08-19 13:47  friedelwolff
+
+	* src/trunk/pootlesetup.py: [forwardport] merge from
+	  wordforge-0-9-branch -r2816:3281. Include po/ and po/pootle/ for
+	  approved languages
+
+2006-08-19 08:17  friedelwolff
+
+	* src/trunk/Pootle/html/doc/howto.html: Use relative links instead
+	  of hard links to pootle.wordforge.org
+
+2006-08-17 12:03  gintautasm
+
+	* src/trunk, trunk: Moved trunk (3/3).
+
+2006-08-17 10:38  friedelwolff
+
+	* projects.py: Pass the original po file to pot2po. This minimises
+	  the difference with the final po and uses the new fuzzy matching.
+
+2006-08-17 08:04  friedelwolff
+
+	* templates/error.html: Templatepage for displaying errors. Can
+	  behave like redirect page, but also has explicit back button
+
+2006-08-16 16:10  friedelwolff
+
+	* __version__.py, trunk/translate/__version__.py: Version 0.10rc3
+
+2006-08-16 13:45  friedelwolff
+
+	* users.py: Trap exceptions and display a neat error page. This
+	  does not trap kid errors that can occur, though.
+
+2006-08-16 13:32  friedelwolff
+
+	* pootle.py: Store optparse options in PootleServer
+
+2006-08-16 13:31  friedelwolff
+
+	* pootle.py: Remove misleading comment
+
+2006-08-16 09:36  friedelwolff
+
+	* templates/fileindex.html, templates/language.html,
+	  templates/project.html: Use description in title for percentage
+	  columns in stats view
+
+2006-08-15 15:51  friedelwolff
+
+	* pootlefile.py: Add real KDE comments with trailing newline
+
+2006-08-14 08:35  friedelwolff
+
+	* pootle.prefs: Fix brackets for the plural equation of Maltese
+
+2006-08-14 07:24  friedelwolff
+
+	* pootle.prefs: Fix plural equations where 'or' was used instead of
+	  '||'
+
+2006-08-14 06:03  friedelwolff
+
+	* indexpage.py, projects.py: Fix statistics for goalles files
+
+2006-08-12 13:31  friedelwolff
+
+	* users.py: Typo in code to add space for extra sentence
+
+2006-08-11 21:56  friedelwolff
+
+	* users.py: Use localised email subject (already used elsewhere)
+
+2006-08-11 21:52  friedelwolff
+
+	* users.py: Use instancetitle instead of repeating the pagetitle
+	  (like other pages)
+
+2006-08-11 21:46  friedelwolff
+
+	* pootle.py: Initialse languagenames as before t fix logic error,
+	  but retain extra initialisation to compensate for jToolkit
+	  overriting it (should be rare)
+
+2006-08-11 21:45  friedelwolff
+
+	* users.py: Use session.localize() instead of self.localize().
+	  Internationalise more errors for next version. More of these left
+	  todo.
+
+2006-08-11 20:30  friedelwolff
+
+	* __version__.py, trunk/translate/__version__.py: Version 0.10rc2
+
+2006-08-11 14:49  friedelwolff
+
+	* pootle.prefs: [forwardport] Document the 'supportaddress'
+	  configuration option
+
+2006-08-11 12:20  friedelwolff
+
+	* potree.py: Remove unnecessary debug message
+
+2006-08-11 12:19  friedelwolff
+
+	* pootle.py: Initialise languagenames later, since jToolkit
+	  overrites them otherwise. This fixes the problem of no languages
+	  in login page if no default language is set.
+
+2006-08-11 12:14  friedelwolff
+
+	* pootle.py: call localize of the session, not the server. Fix
+	  untranslated 'Login failed'
+
+2006-08-11 12:13  friedelwolff
+
+	* pootle.py: Initialise the language for the session from the
+	  browsers Accept-language: directive
+
+2006-08-11 12:09  friedelwolff
+
+	* users.py: with setlanguage(None) only change .language if it
+	  doesn't already have a value
+
+2006-08-11 12:08  friedelwolff
+
+	* users.py: Pave the way to have the session language set if the
+	  session is not open.
+
+2006-08-11 07:14  friedelwolff
+
+	* indexpage.py: Use complete stats in more cases. Reword. Fixes bug
+	  when showing assigns or checks.
+
+2006-08-11 06:53  dwaynebailey
+
+	* html/doc/resources.html: Link to Pootle online docs and
+	  Localisation Guide.
+
+2006-08-10 15:57  friedelwolff
+
+	* projects.py: Add don't translate comment for message
+
+2006-08-10 15:53  friedelwolff
+
+	* html/pootle.css: Display updates for Greek (el), Persian (fa),
+	  and Vietnamese (vi). Add Tahoma do default fonts
+
+2006-08-10 15:32  friedelwolff
+
+	* projects.py: Receive the session on delrights() for access to
+	  localize() function
+
+2006-08-10 15:27  friedelwolff
+
+	* pootle.py: [backport] Hack to ensure we always have unicode
+	  arguments (should be in jToolkit)
+
+2006-08-10 15:19  friedelwolff
+
+	* adminpages.py: Pass the session to project.delrights() for access
+	  to localize() function
+
+2006-08-10 15:11  friedelwolff
+
+	* html/robots.txt: Remove static robots.txt since we now generate
+	  it dynamically in the code
+
+2006-08-10 14:20  friedelwolff
+
+	* projects.py, translatepage.py: Robustly handle errors in
+	  terminology to enable user to continue, but log complete
+	  traceback.
+
+2006-08-10 14:18  friedelwolff
+
+	* tools/updatetm.py: Use new sourcelencmp function for the sake of
+	  python 2.3
+
+2006-08-10 13:05  friedelwolff
+
+	* pootle.py: Generate a robots.txt file dynamically for for the
+	  languages that are in use
+
+2006-08-08 07:56  friedelwolff
+
+	* translatepage.py: Strip added <br /> at end of displayed message
+
+2006-08-07 10:17  friedelwolff
+
+	* indexpage.py: Update stats of language listing in project
+
+2006-08-07 08:48  friedelwolff
+
+	* indexpage.py, templates/navbar.html: Internationalise 'Select
+	  Multiple' in assings form
+
+2006-08-07 07:21  friedelwolff
+
+	* projects.py: Use consistent naming for matcher -> termmatcher
+
+2006-08-05 10:13  dwaynebailey
+
+	* pootle.prefs: Add entries for British and South African English
+
+2006-08-05 00:09  friedelwolff
+
+	* projects.py: (re)fix order of file initialisation. This is
+	  necessary because we might need to update the stats files and
+	  call getquickstats() before we called scanpofiles
+
+2006-08-04 23:45  friedelwolff
+
+	* projects.py: Correct typo in list comprehension
+
+2006-08-04 23:08  friedelwolff
+
+	* users.py: Two minor improvements to English messages
+
+2006-08-04 21:41  friedelwolff
+
+	* templates/translatepage.html, translatepage.py: Show comments in
+	  a tooltip in all view modes
+
+2006-08-04 21:39  friedelwolff
+
+	* projects.py: Display stats summary in commit message
+
+2006-08-04 12:22  friedelwolff
+
+	* html/pootle.css: Add language specific display settings, mostly
+	  from http://translate.sourceforge.net/wiki/l10n/displaysettings
+
+2006-08-04 12:21  friedelwolff
+
+	* html/pootle.css: Refactor all font-family declerations
+
+2006-08-04 10:24  friedelwolff
+
+	* translatepage.py: Have the option to strip and interpret escapes
+	  rather than showing them. Now used to display comments
+
+2006-08-04 09:37  friedelwolff
+
+	* projects.py: +isterminologyproject(). Remove implementation with
+	  muliple matchers with the terminology project as term base
+
+2006-08-04 07:27  friedelwolff
+
+	* pootle.py: Fix serving of .ico properly
+
+2006-08-04 06:43  friedelwolff
+
+	* projects.py: Rework terminology code to store the matcher and its
+	  modification time to elimiate unnecessary reconstruction. More
+	  work left (see TODO)
+
+2006-08-03 15:53  friedelwolff
+
+	* pootle.py: Enable caching for favicon
+
+2006-08-03 09:28  friedelwolff
+
+	* pootle.prefs: Use native language names in most cases
+
+2006-08-02 15:52  friedelwolff
+
+	* pootle.py: Mandate new enough version of toolkit
+
+2006-08-02 15:51  friedelwolff
+
+	* __version__.py, trunk/translate/__version__.py: Version 0.10rc1
+
+2006-08-02 15:50  friedelwolff
+
+	* pootle.prefs, users.prefs: [forwardport] Updates for
+	  configuration files from 0.9 branch
+
+2006-08-02 15:34  friedelwolff
+
+	* README: Add more information about external packages and debian
+	  (Cecilia Saltori)
+
+2006-08-02 14:30  friedelwolff
+
+	* templates/fileindex.html, templates/translatepage.html: Make
+	  search field smaller (narrower)
+
+2006-08-02 14:10  friedelwolff
+
+	* projects.py: Fix bug with uninitialised stats
+
+2006-08-02 08:34  friedelwolff
+
+	* README: [fowardport] Updates from 0.9 branch
+
+2006-08-01 20:19  friedelwolff
+
+	* indexpage.py: Localisation note about 'Checks'
+
+2006-08-01 19:56  friedelwolff
+
+	* projects.py: Tweak initialisation codes regarding quick stats
+
+2006-08-01 19:55  friedelwolff
+
+	* indexpage.py: Don't use quick stats for editing interface
+
+2006-08-01 10:39  friedelwolff
+
+	* users.py: Add full stops to messages that are complete sentences
+
+2006-08-01 10:27  friedelwolff
+
+	* users.py: Internationalise the activation email and some error
+	  messages
+
+2006-08-01 10:09  friedelwolff
+
+	* indexpage.py: Remove two messages for translation. Add
+	  localisation comments
+
+2006-08-01 10:00  friedelwolff
+
+	* adminpages.py: Provide localisation notes
+
+2006-08-01 09:46  friedelwolff
+
+	* indexpage.py, pagelayout.py, pootlefile.py, projects.py: Store
+	  and get fuzzy stats from quickstats. Use quickstats again.
+
+2006-07-28 08:53  friedelwolff
+
+	* pootle.py: Make sure we run if psyco is not installed
+
+2006-07-28 07:23  friedelwolff
+
+	* __version__.py, trunk/translate/__version__.py: version 0.10beta3
+
+2006-07-28 07:05  friedelwolff
+
+	* templates/home.html: Don't loop twice through languages
+
+2006-07-28 06:56  friedelwolff
+
+	* translatepage.py: Factor out fancy spaces, escape comments
+	  without showing fancy spaces. This fixes a bug with xml tags in
+	  comments
+
+2006-07-27 15:15  friedelwolff
+
+	* translatepage.py: Annotate translation text with comments
+
+2006-07-27 13:05  friedelwolff
+
+	* pootlefile.py: Search in sourceindex using the singular msgid
+	  only, to avoid problems with multistrings from PO xliff
+
+2006-07-27 12:05  friedelwolff
+
+	* pootlefile.py: Fix the case where there are no plurals or not
+	  enough plurals in msgstr
+
+2006-07-27 11:45  friedelwolff
+
+	* indexpage.py, pootlefile.py, projects.py: Implement XLIFF
+	  uploading. Renaming of some pofile -> file, etc.
+
+2006-07-27 11:43  friedelwolff
+
+	* test_client.py: Test xliff upload
+
+2006-07-26 12:51  friedelwolff
+
+	* pootlefile.py: Update with comments
+
+2006-07-25 20:14  dwaynebailey
+
+	* pootle.py: Add psyco to Pootle.
+
+2006-07-25 19:52  dwaynebailey
+
+	* html/pootle.css: Some styling fixes
+
+2006-07-25 19:46  dwaynebailey
+
+	* TODO: Clear up some cruft
+
+2006-07-25 07:19  friedelwolff
+
+	* translatepage.py: Correct end of line logic for view and edit
+	  mode. Fix for bug 170
+
+2006-07-24 09:48  friedelwolff
+
+	* __version__.py, trunk/translate/__version__.py: Version up to
+	  0.10beta2
+
+2006-07-24 09:18  friedelwolff
+
+	* templates/translatepage.html, translatepage.py: Internationalise
+	  the TM and terminology heading (related)
+
+2006-07-21 14:30  friedelwolff
+
+	* translatepage.py: Correct number of rows in view and translate
+	  mode. Fix for bug 156
+
+2006-07-20 10:09  friedelwolff
+
+	* templates/navbar.html: Remove duplicate ids for valid xhtml
+
+2006-07-20 09:56  friedelwolff
+
+	* templates/pootlepage.html: Set banner language to Undetermined
+	  (und) for valid xhtml
+
+2006-07-20 09:55  friedelwolff
+
+	* templates/fileindex.html, templates/language.html,
+	  templates/project.html: Extra right-to-left (rtl) support where
+	  inheritence fails
+
+2006-07-20 09:39  friedelwolff
+
+	* templates/fileindex.html, templates/language.html,
+	  templates/navbar.html, templates/project.html,
+	  templates/translatepage.html: Alt tags for all icons. Move hidden
+	  field to avoid duplicate searchform. Better xhtml compliance.
+
+2006-07-20 09:24  friedelwolff
+
+	* html/pootle.css: Fix a few non-standard compliant values. Now
+	  valid CSS.
+
+2006-07-20 08:53  friedelwolff
+
+	* projects.py, translatepage.py: Display terminology from a file
+	  called pootle-terminology.po
+
+2006-07-19 15:24  friedelwolff
+
+	* pootle.py, templates/login.html, users.py: Support introtext on
+	  login page, use for failed login, show introtext for register
+	  page
+
+2006-07-19 14:13  friedelwolff
+
+	* templates/fileindex.html, templates/navbar.html,
+	  templates/pootlepage.html, templates/translatepage.html: Extra
+	  right-to-left (rtl) support where inheritence fails
+
+2006-07-19 14:09  friedelwolff
+
+	* html/pootle.css: Styling information to support right-to-left
+	  (rtl)
+
+2006-07-19 09:06  friedelwolff
+
+	* tools/updatetm.py, trunk/translate/search/match.py,
+	  trunk/translate/search/test_match.py,
+	  trunk/translate/services/lookupservice.py: Adapt matcher to
+	  return real units rather tuples, adapt users
+
+2006-07-18 21:20  dwaynebailey
+
+	* indexpage.py, pootle.py: Add version info for kid and elementree
+	  to the about page of Pootle and to
+	  the --version option of PootleServer.
+
+2006-07-18 11:39  dwaynebailey
+
+	* html/js/sorttable.js: Add the ability to correctly paint odd and
+	  even lines after sorting. Its
+	  currently hackish and should be made more generic. Plus it
+	  suffers from
+	  screen flicker which should be fixed.
+
+2006-07-18 09:27  friedelwolff
+
+	* CREDITS: Add some contributors
+
+2006-07-18 08:37  friedelwolff
+
+	* adminpages.py: Add l10n note
+
+2006-07-18 08:20  friedelwolff
+
+	* pagelayout.py: Also use right-to-left (rtl) for Yiddish
+
+2006-07-17 20:45  friedelwolff
+
+	* templates/about.html, templates/activate.html,
+	  templates/adminindex.html, templates/adminlanguages.html,
+	  templates/adminprojects.html, templates/adminusers.html,
+	  templates/fileindex.html, templates/home.html,
+	  templates/index.html, templates/language.html,
+	  templates/languages.html, templates/login.html,
+	  templates/options.html, templates/pootlepage.html,
+	  templates/project.html, templates/projectadmin.html,
+	  templates/projectlangadmin.html, templates/projects.html,
+	  templates/redirect.html, templates/register.html,
+	  templates/translatepage.html: Support for right-to-left (rtl)
+	  layout
+
+2006-07-17 07:00  friedelwolff
+
+	* projects.py: [forwardport] Don't print search text to console (to
+	  avoid encoding problems)
+
+2006-07-17 06:17  friedelwolff
+
+	* pagelayout.py, translatepage.py: Send language and directionality
+	  to templates for rtl support
+
+2006-07-12 14:11  friedelwolff
+
+	* translatepage.py: Deal with the case where no plural information
+	  is available
+
+2006-07-11 20:01  friedelwolff
+
+	* __version__.py, trunk/translate/__version__.py: Version 0.10beta
+	  (for testing)
+
+2006-07-10 14:21  friedelwolff
+
+	* html/pootle.css: Show gray left border on fuzzy messages
+
+2006-07-10 14:17  friedelwolff
+
+	* html/pootle.css, templates/translatepage.html: Restyle action
+	  link (now reflowing of text necessary)
+
+2006-07-10 14:13  friedelwolff
+
+	* tools/updatetm, tools/updatetm.py: Tool to generate and update
+	  translation memory files for Pootle
+
+2006-07-10 13:56  friedelwolff
+
+	* tools, tools/__init__.py: Tools to be used with Pootle
+
+2006-07-10 13:51  friedelwolff
+
+	* pootle.py: Import kid, so we know if it is not installed
+
+2006-07-07 12:07  friedelwolff
+
+	* translatepage.py: Remove slightly incorrect comment
+
+2006-07-07 11:57  friedelwolff
+
+	* html/pootle.css, translatepage.py: Show very visible fancy
+	  spaces.
+	  * More than one consecutive space
+	  * Space at beginning of message or after newline
+	  * Space at end of message
+
+2006-07-06 15:44  friedelwolff
+
+	* templates/adminlanguages.html, templates/adminprojects.html,
+	  templates/adminusers.html: Improve layout of admin pages.
+	  This improves the layout problem caused by the empty cell in the
+	  last row
+	  (the row where a new entry can be entered). A better solution
+	  might still
+	  be needed.
+
+2006-07-05 09:23  friedelwolff
+
+	* translatepage.py: Always show correct number of plurals
+
+2006-07-04 14:56  friedelwolff
+
+	* templates/translatepage.html, translatepage.py: Only edit on
+	  double click if allowed to
+
+2006-07-04 14:54  friedelwolff
+
+	* translatepage.py: Show TM when viewing unit after search
+
+2006-07-04 14:46  friedelwolff
+
+	* html/pootle.css: Make navigation bar big enough to always enclose
+	  search box
+
+2006-07-04 12:29  friedelwolff
+
+	* html/pootle.css, templates/fileindex.html: Improve layout of file
+	  upload
+
+2006-07-04 12:27  friedelwolff
+
+	* html/pootle.css, templates/translatepage.html: Improve layout of
+	  translatepage, particularly with high zoom levels and/or long
+	  strings without spaces (like URLs). Reported by Clytie Siddall
+
+2006-07-04 06:41  friedelwolff
+
+	* pootle.py: Disable client/proxy caching of generated files
+
+2006-07-03 13:06  friedelwolff
+
+	* templates/translatepage.html: Display TM-suggestion comments.
+	  Edit unit on double click
+
+2006-07-03 09:56  friedelwolff
+
+	* html/js/autoexpand.js: Display edit link for longer
+
+2006-07-02 19:38  dwaynebailey
+
+	* storage: Remove 'pootle-api' files accidently commited to HEAD.
+
+2006-06-30 14:31  gintautasm
+
+	* storage, storage/__init__.py, storage/api.py, storage/memory.py,
+	  storage/test_memory.py: - Added the Pootle backend API
+	  declarations.
+	  - Added a proof-of-concept nonpersistent implementation for the
+	  proposed API.
+	  By the way, this can be easily made persistent by using pickle.
+	  - Added some tests for the sample implementation. They are far
+	  from exhaustive,
+	  but touch some areas to weed out the worst of the bugs.
+
+2006-06-30 08:05  friedelwolff
+
+	* html/pootle.css: Only underline real hyperlinks, fix pseudo
+	  classes order, fix typo
+
+2006-06-28 15:18  friedelwolff
+
+	* templates/translatepage.html: Remove debugging JavaScript at tm
+
+2006-06-28 15:16  friedelwolff
+
+	* templates/translatepage.html: Go back by means of JavaScript
+
+2006-06-28 13:31  friedelwolff
+
+	* html/pootle.css, templates/pootlepage.html: Move account
+	  information (login, register, etc.) to top right, apply styling
+
+2006-06-28 09:15  friedelwolff
+
+	* templates/fileindex.html, templates/pootlepage.html,
+	  templates/translatepage.html: Move search form to translatepage
+	  and fileindex
+
+2006-06-28 09:14  friedelwolff
+
+	* html/pootle.css: Styling for search form
+
+2006-06-28 02:50  dwaynebailey
+
+	* projects.py, test_pootlefile.py: Remove last remnants of
+	  elementclass. The one prevented uploading of files and the other
+	  caused a test to fail.
+
+2006-06-27 16:58  dwaynebailey
+
+	* templates/translatepage.html, translatepage.py: Add a back button
+	  for review suggestion mode.
+
+2006-06-27 15:44  friedelwolff
+
+	* html/pootle.css: Style information for translation memory, adapt
+	  links for uniformity
+
+2006-06-27 15:43  friedelwolff
+
+	* templates/translatepage.html: Display TM if editing
+
+2006-06-27 15:41  friedelwolff
+
+	* translatepage.py: Provide TM information to translatepage
+	  template
+
+2006-06-27 15:40  friedelwolff
+
+	* projects.py: Supply tm matches for given item and file
+
+2006-06-27 15:39  friedelwolff
+
+	* pootlefile.py: Support for .po.tm files with pregenerated TM
+	  matches
+
+2006-06-27 15:06  dwaynebailey
+
+	* templates/translatepage.html, translatepage.py: Add a back button
+	  to allow you to move backwards through the work.
+	  Still need to add a back button to review suggestion mode.
+
+2006-06-27 14:17  friedelwolff
+
+	* html/pootle.css: Move links to top righthand corner, adapt banner
+	  accordingly
+
+2006-06-26 15:04  friedelwolff
+
+	* templates/translatepage.html: Remove textarea from div to fix
+	  javascript. Put buttons in div in case of narrow layout
+
+2006-06-26 14:13  friedelwolff
+
+	* indexpage.py, translatepage.py: Always pass real instance title
+	  to template.
+	  Use instance title in page titles instead of hardcoded "Pootle".
+
+2006-06-26 12:00  friedelwolff
+
+	* templates/about.html, templates/index.html,
+	  templates/languages.html, templates/projects.html: Always use
+	  variable pagetitle as title of page
+
+2006-06-26 09:42  friedelwolff
+
+	* html/pootle.css, templates/translatepage.html: Improve layout
+	  with comments and plurals
+
+2006-06-26 07:18  friedelwolff
+
+	* templates/translatepage.html: Fix layout bug with original cells
+
+2006-06-23 13:26  friedelwolff
+
+	* html/pootle.css: Visual styling for fuzzy translations
+
+2006-06-23 13:25  friedelwolff
+
+	* templates/translatepage.html, translatepage.py: Support for
+	  indicating state (like fuzzy) with CSS class
+
+2006-06-23 10:27  friedelwolff
+
+	* html/pootle.css: Update styling for suggestions and comments
+
+2006-06-23 10:08  friedelwolff
+
+	* templates/translatepage.html, translatepage.py: Add support for
+	  displaying comments and locations
+
+2006-06-23 10:05  friedelwolff
+
+	* pagelayout.py: Check that arguments were passed for navigation
+	  bar
+
+2006-06-23 10:00  friedelwolff
+
+	* indexpage.py: Don't show link for checks in statistics mode
+
+2006-06-23 09:59  friedelwolff
+
+	* indexpage.py, pagelayout.py: Maintain state more consistently in
+	  navigation bar
+
+2006-06-23 09:32  friedelwolff
+
+	* translatepage.py: Maintain editing mode when returning from end
+	  of batch
+
+2006-06-22 14:33  friedelwolff
+
+	* templates/translatepage.html: Only shade suggestion, not the
+	  heading too
+
+2006-06-22 14:24  friedelwolff
+
+	* html/pootle.css: Don't make focusbox bold, othewise headings
+	  don't show clearly
+
+2006-06-22 13:49  friedelwolff
+
+	* html/pootle.css: Add class translate-suggestion to distinguish
+	  suggestions
+
+2006-06-22 13:42  friedelwolff
+
+	* templates/translatepage.html: Add accesskey=k for all skip
+	  buttons, improve review layout (especially for reviewing plurals)
+
+2006-06-22 12:30  friedelwolff
+
+	* templates/translatepage.html: Replace some spans with divs. +Some
+	  HTML comments
+
+2006-06-22 09:56  friedelwolff
+
+	* indexpage.py, pagelayout.py: Keep editing mode when navigating
+	  into goals and projects
+
+2006-06-22 09:31  friedelwolff
+
+	* indexpage.py: Fix typos, remain in editing mode after update and
+	  commit
+
+2006-06-22 09:31  friedelwolff
+
+	* projects.py: Give a commit message
+
+2006-06-22 08:03  friedelwolff
+
+	* indexpage.py, projects.py: Add support for commiting to version
+	  control on new right: commit
+
+2006-06-21 12:18  friedelwolff
+
+	* versioncontrol.py: Add functions for doing CVS and SVN commit
+
+2006-06-21 10:12  friedelwolff
+
+	* versioncontrol.py: Minor improvements to two comments
+
+2006-06-20 14:50  friedelwolff
+
+	* README: Mention PootleServer to run Pootle, rather than running
+	  .py file directly
+
+2006-06-20 14:48  friedelwolff
+
+	* pootlefile.py: Make pootlefile work with renaming of elementclass
+	  -> unitclass
+
+2006-06-20 08:27  friedelwolff
+
+	* ChangeLog: Update ChangeLog with HEAD entries since 2006-04-26
+
 2006-06-20 08:45  dwaynebailey
 
 	* README: [Forwardport] update dependencies
