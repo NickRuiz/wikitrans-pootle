@@ -35,9 +35,10 @@ addEvent(window, "load", sortables_init);
 
 var SORT_COLUMN_INDEX;
 
-var arrowUp = "/images/up.png";
-var arrowDown = "/images/down.png";
-var arrowBlank = "/images/none.png";
+/* the variable "baseurl" must be defined in any page including sorttable.js */
+var arrowUp = baseurl + "images/up.png";
+var arrowDown = baseurl + "images/down.png";
+var arrowBlank = baseurl + "images/none.png";
 
 function trim(str) {
     return str.replace(/^\s*|\s*$/g, "");
