@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # 
-# Copyright 2004, 2005 Zuza Software Foundation
+# Copyright 2004, 2005, 2008 Zuza Software Foundation
 # 
 # This file is part of translate.
 #
@@ -19,7 +19,7 @@
 # along with translate; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-"""pootle is a web portal for localisation"""
+"""Pootle is a web portal for localization"""
 
 __all__ = ["pootle"]
 
