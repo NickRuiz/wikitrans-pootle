@@ -70,6 +70,6 @@ class TestCmdlineServer(test_create.NoReuse):
                 sleep += 0.05
                 if waited >= max_wait:
                     raise RuntimeError("webserver failed to stop in %0.1f seconds" % (waited))
-	finally:
-            test_create.NoReuse.teardown_method(self, method)
+        finally:
+                test_create.NoReuse.teardown_method(self, method)
 
