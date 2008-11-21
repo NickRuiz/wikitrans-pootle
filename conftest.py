@@ -1,6 +1,9 @@
 # customization of py.test collection
 
+import sys, os
 import py.test.collect
+
+sys.path.append(os.path.realpath('.'))
 
 class PootleDirectory(py.test.collect.Directory):
     def recfilter(self, path):
