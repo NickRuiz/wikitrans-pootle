@@ -26,7 +26,7 @@ ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 import sys
 sys.path.append(ROOT_DIR)
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'Pootle.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'pootle.settings'
 
 import django.core.handlers.wsgi
 

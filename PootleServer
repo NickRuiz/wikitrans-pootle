@@ -20,7 +20,7 @@
 
 """This is just a simple script that runs the pootle main program"""
 
-from Pootle import pootle
+from pootle import pootle
 
 pootle.main()
 
