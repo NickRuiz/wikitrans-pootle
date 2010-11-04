@@ -37,14 +37,15 @@ ADMINS = (
 MANAGERS = ADMINS
 
 # dummy translate function so we can extract text
-_ = lambda x: x
+_ = lambda x : x
 
-TITLE = _("Pootle Demo")
+TITLE = _("WikiTrans")
 
 #l10n: Change the language code (en) to your language code, and replace ltr with rtl if you language is written from right to left.
 DESCRIPTION = _("""<div dir="ltr" lang="en">
-<h2 class="title">This is a demo installation of Pootle.</h2>
-<p class="about">You can also visit the official <a class="external" href="http://pootle.locamotion.org">Pootle server</a>. The server administrator has not provided contact information or a description of this server. If you are the administrator for this server, edit this description in your preference file or in the administration interface.</p>
+<h2 class="title">Welcome to WikiTrans</h2>
+<p class="about"><b>WikiTrans</b> is a web-based system for enabling cross-lingual human / machine translations of documents, along with a full audit trail. We intend to begin by enabling easy user based translation	of articles found on wikipedia from English to other languages to generate pairs of sentences representing the same idea in multiple languages. Upon successful completion the project will move focus to statistical based language translations.</p>
+                <p>For more information about WikiTrans, see <a href="http://www.cs.jhu.edu/~ccb/">Chris Callison-Burch</a>.</p>
 </div>""")
 
 # Local time zone for this installation. Choices can be found here:
@@ -52,7 +53,7 @@ DESCRIPTION = _("""<div dir="ltr" lang="en">
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'Africa/Johannesburg'
+TIME_ZONE = 'Europe/Berlin'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -89,23 +90,23 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'pootle_misc.middleware.baseurl.BaseUrlMiddleware', # resolves paths
-    'django.middleware.transaction.TransactionMiddleware', # needs to be before anything that writes to the db
-    'pootle_misc.middleware.siteconfig.SiteConfigMiddleware', # must be early to detect the need to install or update schema, but must precede the cache middleware
-    'django.middleware.cache.UpdateCacheMiddleware', # must be as high as possible (see above)
-    'django.middleware.http.ConditionalGetMiddleware', # support for e-tag
-    'django.middleware.gzip.GZipMiddleware', # compress responses
-    'django.contrib.csrf.middleware.CsrfMiddleware', # protection against cross-site request forgery
-    'django.contrib.sessions.middleware.SessionMiddleware', # must be before authentication
-    'django.contrib.auth.middleware.AuthenticationMiddleware', # must be before anything user-related
-    'django.middleware.locale.LocaleMiddleware', # user-related
-    'pootle.middleware.setlocale.SetLocale', # sets Python's locale based on request's locale for sorting, etc.
-    'pootle_misc.middleware.errorpages.ErrorPagesMiddleware', # nice 500 and 403 pages (must be after locale to have translated versions)
+    'pootle_misc.middleware.baseurl.BaseUrlMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
+    'pootle_misc.middleware.siteconfig.SiteConfigMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware', # THIS MUST BE FIRST
+    'django.middleware.http.ConditionalGetMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'django.contrib.csrf.middleware.CsrfMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'pootle.middleware.setlocale.SetLocale',
+    'pootle_misc.middleware.errorpages.ErrorPagesMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'pootle.middleware.check_cookies.CheckCookieMiddleware',
-    'pootle.middleware.captcha.CaptchaMiddleware', # must be early in the response cycle (close to bottom)
+    'pootle.middleware.check_cookies.CheckCookieMiddleware',
+    'pootle.middleware.captcha.CaptchaMiddleware',
     #'pootle.middleware.profile.ProfilerMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware' # must be last in the request cycle (at the bottom)
+    'django.middleware.cache.FetchFromCacheMiddleware' # THIS MUST BE LAST
 )
 
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
@@ -130,6 +131,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sites',
+    'django.contrib.humanize',
     'django.contrib.admin',
     'pootle_app',
     'pootle_misc',
@@ -147,6 +149,13 @@ INSTALLED_APPS = (
     'djblets.siteconfig',
     'djblets.util',
     'contact_form_i18n',
+    
+    'uni_form',
+    
+    'wt_languages',
+    'wt_articles',
+    'wt_managing',
+    'mturk_manager'
 )
 
 AUTH_PROFILE_MODULE = "pootle_profile.PootleProfile"
@@ -172,14 +181,6 @@ USE_CAPTCHA = False
 AUTOSYNC = False
 MT_BACKENDS = ()
 CAN_CONTACT = True
-
-# By default Pootle sends only text emails. If your organization would
-# prefer to send mixed HTML/TEXT emails, set this to True, and update
-# activation_email.txt and activation_email.html in the templates/registration/
-# directory.
-# NOTE: Password reset emails will still be sent in plain text. This is a limitation
-# of the underlying system.
-EMAIL_SEND_HTML = False
 
 execfile(config_path("localsettings.py"))
 
@@ -237,14 +238,14 @@ if TEMPLATE_DEBUG:
 
 if DEBUG:
     logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(asctime)s %(levelname)s %(message)s',
+            level = logging.DEBUG,
+            format =  '%(asctime)s %(levelname)s %(message)s',
             )
 else:
     # Will log only CRITICAL errors to the console
     logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s %(levelname)s %(message)s',
+            level = logging.INFO,
+            format =  '%(asctime)s %(levelname)s %(message)s',
             )
 
 

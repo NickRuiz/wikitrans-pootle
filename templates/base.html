@@ -77,6 +77,12 @@
                         {% block menu %}
                         <ul class="first-of-type">
                             <!--<li class="menubaritem"><a href='{{ "/"|l }}'>{% trans "Home" %}</a></li>-->
+                            <!-- 
+                            ################
+                            # WikiTrans - Add article view
+                            ################
+                             -->
+                            <li class="menubaritem"><a href='{{"/articles/list/"|l }}'>{% trans "Articles" %}</a></li>
                             <li class="menubaritem"><a href='{{ "/projects/"|l }}'>{% trans "Projects" %}</a></li>
                             {% if user.is_superuser %}
                             <li class="menubaritem"><a class="admin" href='{{ "/admin/"|l }}'>{% trans "Admin" %}</a></li>

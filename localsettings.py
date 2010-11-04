@@ -94,7 +94,7 @@ CACHE_MIDDLEWARE_SECONDS = 600
 
 # Set this to False. DEBUG mode is only needed when testing beta's or
 # hacking Pootle.
-DEBUG = False
+DEBUG = True
 
 
 # Use the commented definition to authenticate first with an LDAP system and
@@ -153,3 +153,11 @@ MT_BACKENDS = [
 #        ('APERTIUM', ''),
 #        ('GOOGLE_TRANSLATE', ''),
 ]
+# MT Serverland Configuration
+SERVERLAND_TOKEN = '7594f0db'
+# SERVERLAND_HOST = 'http://localhost'
+# SERVERLAND_PORT = 8000
+# TODO: Currently the Serverland protocol uses a XML-RPC server to issue a translation request.
+# We need to verify that this works properly.
+SERVERLAND_XMLRPC = 'http://0.0.0.0:6666'
+
