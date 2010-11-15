@@ -37,6 +37,7 @@
                 <th class="stats sorttable_numeric">{{ statsheadings.summary }}</th>
                 <th class="stats">{{ statsheadings.totalwords }}</th>
                 <th>{% trans 'Last Activity' %}</th>
+                <th>{% trans 'Request Machine Translation' %} </th>
             </tr>
         </thead>
         <tbody class="stats">
@@ -44,6 +45,7 @@
             <tr class="item {% cycle 'even' 'odd' %}">
             {% include "language/item_summary.html" %}
 	    <td>{{ item.lastactivity }}</td>
+	    <td>BingWorker</td>
             </tr>
         {% endfor %}
         </tbody>

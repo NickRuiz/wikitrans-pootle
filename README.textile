@@ -8,3 +8,15 @@ systems.
 
 h2. Documentation
  * See [[license]] for more information.
+
+h2. Required Packages
+ 
+h2. Quick Setup Guide
+
+Before retrieving this project from GitHub, try to use the installation script provided in @dependencies/install.sh@.
+The following information needs to be updated:
+@GIT_PARENT_DIRECTORY="/home/nick/workspace/"@
+
+1. Install Python 2.6.x.
+
+2. An installation script has been created to attempt to simplify the installation process. 

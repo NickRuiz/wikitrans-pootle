@@ -357,66 +357,88 @@ def source_to_po(request, aid, template_name="wt_articles/source_export_po.html"
         "title": article.title
     }, context_instance=RequestContext(request))
 
-def _source_to_pootle_project(article): 
-    import logging
-    from django.utils.encoding import smart_str
-    from pootle_app.models.signals import post_template_update
+# # Deprecated. Added to SourceArticle class in models.py.
+#def _source_to_pootle_project(article): 
+#    import logging
+#    from django.utils.encoding import smart_str
+#    from pootle_app.models.signals import post_template_update
+#
+#
+#    # Fetch the source_language
+#    sl_set = Language.objects.filter(code = article.language)
+#    
+#    if len(sl_set) < 1:
+#        return false
+#
+#    source_language = sl_set[0]
+#        
+#     # Construct the project
+#    project = Project()
+#    project.fullname = u"%s:%s" % (article.language, article.title)
+#    project.code = project.fullname.replace(" ", "_").replace(":", "_")
+#    # PO filetype
+#    #project.localfiletype = "po" # filetype_choices[0]
+#    
+#    project.source_language = source_language
+#  # Save the project
+#    project.save()
+#    
+#    templates_language = Language.objects.filter(code='templates')[0]
+#    
+#    # Check to see if the templates language exists. If not, add it.
+#    #if not project.language_exists(templates_language):
+#    if len(TranslationProject.objects.filter(language = templates_language, id=project.id)) == 0:
+#        project.add_language(templates_language)
+#        project.save()
+#    
+#    #code copied for wr_articles
+#    logging.debug ( "project saved")
+#    # Export the article to .po and store in the templates "translation project". This will be used to generate translation requests for other languages.
+#    templatesProject = project.get_template_translationproject()
+#    po = article.sentences_to_po()
+#    poFilePath = "%s/article.pot" % (templatesProject.abs_real_path)
+#    
+#    oldstats = templatesProject.getquickstats()
+#    
+#    # Write the file
+#    with open(poFilePath, 'w') as f:
+#        f.write(smart_str(po.__str__()))
+#    
+#    # Force the project to scan for changes.
+#    templatesProject.scan_files()
+#    templatesProject.update(conservative=False)
+#    
+#    # Log the changes
+#    newstats = templatesProject.getquickstats()
+#    post_template_update.send(sender=templatesProject, oldstats=oldstats, newstats=newstats)
+#        
+#    
+#    
+#    return project
 
-
-    # Fetch the source_language
-    sl_set = Language.objects.filter(code = article.language)
-    
-    if len(sl_set) < 1:
-        return false
-
-    source_language = sl_set[0]
-        
-     # Construct the project
-    project = Project()
-    project.fullname = u"%s:%s" % (article.language, article.title)
-    project.code = project.fullname.replace(" ", "_").replace(":", "_")
-    # PO filetype
-    #project.localfiletype = "po" # filetype_choices[0]
-    
-    project.source_language = source_language
-  # Save the project
-    project.save()
-    
-    templates_language = Language.objects.filter(code='templates')[0]
-    
-    # Check to see if the templates language exists. If not, add it.
-    #if not project.language_exists(templates_language):
-    if len(TranslationProject.objects.filter(language = templates_language, id=project.id)) == 0:
-        project.add_language(templates_language)
-        project.save()
-    
-    #code copied for wr_articles
-    logging.debug ( "project saved")
-    # Export the article to .po and store in the templates "translation project". This will be used to generate translation requests for other languages.
-    templatesProject = project.get_template_translationproject()
-    po = article.sentences_to_po()
-    poFilePath = "%s/article.pot" % (templatesProject.abs_real_path)
-    
-    oldstats = templatesProject.getquickstats()
-    
-    # Write the file
-    with open(poFilePath, 'w') as f:
-        f.write(smart_str(po.__str__()))
-    
-    # Force the project to scan for changes.
-    templatesProject.scan_files()
-    templatesProject.update(conservative=False)
-    
-    # Log the changes
-    newstats = templatesProject.getquickstats()
-    post_template_update.send(sender=templatesProject, oldstats=oldstats, newstats=newstats)
-        
-    
-    
-    return project
-    
 @login_required
-def source_to_pootle_project(request, aid, template_name="wt_articles/source_export_project.html"):
+def delete_pootle_project(request, aid):
+# TODO: Display notification on page that the project has been deleted.
+    """
+    Deletes a pooble Project by id (aid).
+    """
+    # Fetch the article
+    no_match = False
+    
+    sa_set = SourceArticle.objects.filter(id=aid)
+    if len(sa_set) < 1:
+        no_match = True
+    else:
+        article = sa_set[0]
+        article.delete_pootle_project()
+     
+    # Display the article list.   
+    return article_list(request)
+            
+@login_required
+def create_pootle_project(request, aid):
+# TODO: Display notification on page that the project has been created.
+# def create_pootle_project(request, aid, template_name="wt_articles/source_export_project.html"):
     """
     Converts an article to a Pootle project by id (aid).
     """
@@ -428,13 +450,16 @@ def source_to_pootle_project(request, aid, template_name="wt_articles/source_exp
         no_match = True
     else:
         article = sa_set[0]
-        project = _source_to_pootle_project(article)
+        project = article.create_pootle_project()
     
-    if no_match or project == False:
-        return render_to_response(template_name,
-                                  {"no_match": True},
-                                  context_instance=RequestContext(request))
-    else:
-        return render_to_response(template_name,
-                                  {"project_name": project.fullname},
-                                  context_instance=RequestContext(request))
+    # Display the article list
+    return article_list(request)
+    
+#    if no_match or project == False:
+#        return render_to_response(template_name,
+#                                  {"no_match": True},
+#                                  context_instance=RequestContext(request))
+#    else:
+#        return render_to_response(template_name,
+#                                  {"project_name": project.fullname},
+#                                  context_instance=RequestContext(request))

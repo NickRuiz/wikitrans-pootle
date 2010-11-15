@@ -100,6 +100,19 @@ class SourceArticle(models.Model):
                 sentence.save()
         super(SourceArticle, self).save()
         
+    def delete(self):
+        # First, try to delete the associated pootle project.
+        try:
+            self.delete_pootle_project()
+        except Exception:
+            # No need to do anything.
+            pass
+        
+        # TODO: Do we also need to delete all of the translations?
+        
+        # Then delete the article.
+        super(SourceArticle, self).delete()
+        
     def delete_sentences(self):
         for sentence in self.sourcesentence_set.all():
             SourceSentence.delete(sentence)
@@ -202,35 +215,58 @@ class SourceArticle(models.Model):
         """
         return len(Project.objects.filter(code = self.get_project_code())) > 0
     
-    def notusedsource_to_pootle_project(self):
-        """
-        Constructs a Pootle project from the article, if a project doesn't already exist.
-        """
-
-        logging.debug ( "source_to_pootle_project" )
+    def create_translation_request(self, language_id):
+        '''
+        Creates a translation request for the given Pootle project.
+        '''
+        pass
+    
+    def delete_pootle_project(self):
+        '''
+        Deletes the associated Pootle project.
+        '''
+        self.get_pootle_project().delete()
+        
+    def create_pootle_project(self):
+        '''
+        Creates a project to be used in Pootle. A templates language is created and a .pot
+        template is generated from the SourceSentences in the article.
+        ''' 
+        import logging
+        from django.utils.encoding import smart_str
         from pootle_app.models.signals import post_template_update
-        
-        if self.pootle_project_exists():
-            raise Exception("Project %s already exists!" % self.get_project_name())
-        
+    
+    
         # Fetch the source_language
         sl_set = Language.objects.filter(code = self.language)
         
         if len(sl_set) < 1:
-            raise Exception("Language code %s does not exist!" % self.language)
-        
+            return false
+    
         source_language = sl_set[0]
-        logging.debug ( "source language" +  source_language )
-        # Construct the project
+            
+        # 1. Construct the project
         project = Project()
-        project.fullname = self.get_project_name()
-        project.code = self.get_project_code()
-        project.source_language = source_language
+        project.fullname = u"%s:%s" % (self.language, self.title)
+        project.code = project.fullname.replace(" ", "_").replace(":", "_")
+        # PO filetype
+        #project.localfiletype = "po" # filetype_choices[0]
         
-        # Save the project
+        project.source_language = source_language
+      # Save the project
         project.save()
+        
+        templates_language = Language.objects.filter(code='templates')[0]
+        
+        # Check to see if the templates language exists. If not, add it.
+        #if not project.language_exists(templates_language):
+        if len(project.translationproject_set.filter(language=templates_language)) == 0:
+            project.add_language(templates_language)
+            project.save()
+        
+        #code copied for wt_articles
         logging.debug ( "project saved")
-        # Export the article to .po and store in the templates "translation project". This will be used to generate translation requests for other languages.
+        # 2. Export the article to .po and store in the templates "translation project". This will be used to generate translation requests for other languages.
         templatesProject = project.get_template_translationproject()
         po = self.sentences_to_po()
         poFilePath = "%s/article.pot" % (templatesProject.abs_real_path)
@@ -239,7 +275,7 @@ class SourceArticle(models.Model):
         
         # Write the file
         with open(poFilePath, 'w') as f:
-            f.write(po.__str__())
+            f.write(smart_str(po.__str__()))
         
         # Force the project to scan for changes.
         templatesProject.scan_files()
@@ -248,7 +284,7 @@ class SourceArticle(models.Model):
         # Log the changes
         newstats = templatesProject.getquickstats()
         post_template_update.send(sender=templatesProject, oldstats=oldstats, newstats=newstats)
-        
+            
         return project
     
     def get_pootle_project(self):
@@ -272,9 +308,14 @@ class SourceArticle(models.Model):
         """
         Gets the url for the page which creates a new Pootle project out of a source article
         """
-        
-        url = '/articles/source/export/project/%s' % self.id;
-        
+        url = '/articles/source/export/project/%s' % self.id
+        return iri_to_uri(url)
+    
+    def get_delete_pootle_project_url(self):
+        """
+        Gets the url for the page which deletes the Pootle project associated with the source article.
+        """
+        url = '/articles/source/delete/project/%s' % self.id
         return iri_to_uri(url)
 
 class SourceSentence(models.Model):
