@@ -4,8 +4,8 @@ from wt_articles.models import TranslatedArticle, TranslatedSentence, MTurkTrans
 from django.contrib import admin
 
 class ArticleOfInterestAdmin(admin.ModelAdmin):
-    list_display = ('title', 'title_language', 'target_language',)
-    search_fields = ('title', 'title_language', 'target_language',)
+    list_display = ('title', 'title_language',)
+    search_fields = ('title', 'title_language',)
 
 class TranslationRequestAdmin(admin.ModelAdmin):
     list_display = ('article', 'target_language', 'translator',)

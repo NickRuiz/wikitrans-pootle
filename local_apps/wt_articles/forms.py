@@ -23,7 +23,7 @@ class TranslatedSentenceMappingForm(forms.ModelForm):
         super(TranslatedSentenceMappingForm, self).__init__(*args, **kwargs)
 
 
-class TranslationRequestForm(forms.ModelForm):
+class ArticleRequestForm(forms.ModelForm):
     class Meta:
         model = ArticleOfInterest
         

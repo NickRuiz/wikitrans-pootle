@@ -1,0 +1,37 @@
+{% extends "wt_articles/articles_base.html" %}
+
+{% load i18n %}
+{% load theme_tags %}
+
+{% block head_title %}{% blocktrans %}Fix Article List{% endblocktrans %}{% endblock %}
+
+{% block subbody %}
+  
+    <h1>{% block list-title %}{% trans "Fix Article List" %}{% endblock %}</h1>
+    
+    {% if articles %}
+        <table cellpadding="5" cellspacing="0" border="0" class="lc-list" width="100%">
+            <th>Title</th>
+			<th>Translated</th>
+			<th>Import Date</th>
+			<th>Language</th>
+			{% if translatable %}
+			<th>Method</th>
+			{% endif %}
+            {% for article in articles %}
+                <tr class="{% cycle odd,even %}">
+                    <td><b><a href="{{ article.id }}">{{ article.title }}</a></b></td>
+					<td>Translated</td>
+					<td nowrap>{{ article.timestamp|date:"d F Y" }}</td>
+					<td>{{ article.language }}</td>
+					{% if translatable %}
+					<td><a href="{{ article.link }}">{{ article.target }}</a></td>
+					{% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <br>{% trans "No articles match your language settings" %}
+    {% endif %}
+    
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "user_profile_base.html" %}
+{% load i18n baseurl %}
+
+{% block title %}
+{{ block.super }} » {% trans "Articles" %} » {{ title }}
+{% endblock %}
+
+{% block bodyclass %}articles{% endblock %}
+
+{% block breadcrumb_content %}
+    {{ block.super }} » {% trans "Articles" %} » {{ title }}
+{% endblock %}
+
+{% block content %}
+    <div id="featured_translation">
+	<h2>{{ title }}</h2>
+	{{ article_text }}
+    </div>
+    
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+	// Set all spans to be editable and highlightable.
+	var spanLocation = '#featured_translation p span';	
+	$(spanLocation).addClass('highlightable');
+	//$(spanLocation).addClass('editable-area');
+	
+    </script>
+    <!-- <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/highlightable.js"></script> -->
+    <!--<script type="text/javascript" src="{{ STATIC_URL }}pinax/js/textEditing.js"></script>-->
+{% endblock %}

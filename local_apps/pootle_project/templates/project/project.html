@@ -45,7 +45,9 @@
             <tr class="item {% cycle 'even' 'odd' %}">
             {% include "language/item_summary.html" %}
 	    <td>{{ item.lastactivity }}</td>
-	    <td>BingWorker</td>
+	    	{% if item.code != templates_code %}
+	    	<td>BingWorker</td>
+	    	{% endif %}
             </tr>
         {% endfor %}
         </tbody>

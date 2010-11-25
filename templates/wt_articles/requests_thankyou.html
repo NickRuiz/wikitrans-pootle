@@ -1,0 +1,21 @@
+{% extends "user_profile_base.html" %}
+{% load i18n baseurl %}
+
+{% block title %}
+  {{ block.super }} » {% trans "Articles" %} » {% trans "Request" %} » {% trans "Confirm" %}
+{% endblock %}
+
+{% block bodyclass %}request{% endblock %}
+
+{% block breadcrumb_content %}
+  {{ block.super }} » {% trans "Articles" %} » {% trans "Request" %} » {% trans "Confirm" %}
+{% endblock %}
+
+{% block content %}
+
+    <h2>{% trans "Request Confirmation" %}</h2>
+
+    <h3>Thank you!</h3>
+    <p>Your translation will be completed shortly. In the future, we will send you an email notification but we're not there yet...</p>
+    
+{% endblock %}

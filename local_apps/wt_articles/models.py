@@ -37,21 +37,20 @@ else:
 
 class ArticleOfInterest(models.Model):
     title = models.CharField(_('Title'), max_length=255)
-    title_language = models.CharField(_('Title language'),
-                                      max_length=2,
-                                      choices=LANGUAGE_CHOICES)
-    target_language = models.CharField(_('Target language'),
-                                       max_length=2,
-                                       choices=LANGUAGE_CHOICES)
+#    title_language = models.CharField(_('Title language'),
+#                                      max_length=2,
+#                                      choices=LANGUAGE_CHOICES)
+    title_language = models.ForeignKey(Language, db_index=True)
 
     def __unicode__(self):
-        return u"%s :: %s" % (self.title, self.target_language)
+        return u"%s :: %s" % (self.title, self.title_language)
 
 class SourceArticle(models.Model):
     title = models.CharField(_('Title'), max_length=255)
-    language = models.CharField(_('Source Language'),
-                                max_length=2,
-                                choices=LANGUAGE_CHOICES)
+#    language = models.CharField(_('Source Language'),
+#                                max_length=2,
+#                                choices=LANGUAGE_CHOICES)
+    language = models.ForeignKey(Language, db_index=True)
     #version = models.IntegerField(_('Version')) # @@@ try django-versioning
     timestamp = models.DateTimeField(_('Import Date'), default=datetime.now())
     doc_id = models.CharField(_('Document ID'), max_length=512)
@@ -71,7 +70,7 @@ class SourceArticle(models.Model):
             sentences = list()
             segment_id = 0
             soup = BeautifulSoup(self.source_text)
-            sentence_splitter = determine_splitter(self.language)
+            sentence_splitter = determine_splitter(self.language.code)
             # initial save for foreign key based saves to work
             # save should occur after sent_detector is loaded
             super(SourceArticle, self).save()
@@ -118,14 +117,14 @@ class SourceArticle(models.Model):
             SourceSentence.delete(sentence)
     
     def get_absolute_url(self):
-        url = '/articles/source/%s/%s/%s' % (self.language,
+        url = '/articles/source/%s/%s/%s' % (self.language.code,
                                              quote_plus(self.title.encode('utf-8')),
                                              self.id)
         return iri_to_uri(url)
 
     def get_relative_url(self, lang_string=None):
         if lang_string == None:
-            lang_string = self.language
+            lang_string = self.language.code
         url = '%s/%s/%s' % (lang_string,
                             quote_plus(self.title.encode('utf-8')),
                             self.id)
@@ -147,7 +146,7 @@ class SourceArticle(models.Model):
         po.metadata = {
             'Source-Article': self.doc_id,
             'Article-Title': self.title,
-            'Article-Language': self.language,
+            'Article-Language': self.language.code,
             'Project-Id-Version': '1.0',
             'Report-Msgid-Bugs-To': 'eisele@dfki.de',
             'POT-Creation-Date': datetime.utcnow().isoformat(),
@@ -204,10 +203,10 @@ class SourceArticle(models.Model):
         return source_sentences
     
     def get_project_name(self):
-        return u"%s:%s" % (self.language, self.title)
+        return u"%s:%s" % (self.language.code, self.title)
     
     def get_project_code(self):
-        return u"%s_%s" % (self.language, self.title.replace(" ", "_"))
+        return u"%s_%s" % (self.language.code, self.title.replace(" ", "_"))
     
     def pootle_project_exists(self):
         """
@@ -238,7 +237,7 @@ class SourceArticle(models.Model):
     
     
         # Fetch the source_language
-        sl_set = Language.objects.filter(code = self.language)
+        sl_set = Language.objects.filter(code = self.language.code)
         
         if len(sl_set) < 1:
             return false
@@ -247,7 +246,7 @@ class SourceArticle(models.Model):
             
         # 1. Construct the project
         project = Project()
-        project.fullname = u"%s:%s" % (self.language, self.title)
+        project.fullname = u"%s:%s" % (self.language.code, self.title)
         project.code = project.fullname.replace(" ", "_").replace(":", "_")
         # PO filetype
         #project.localfiletype = "po" # filetype_choices[0]
@@ -335,9 +334,10 @@ class SourceSentence(models.Model):
 
 class TranslationRequest(models.Model):
     article = models.ForeignKey(SourceArticle)
-    target_language = models.CharField(_('Target Language'),
-                                       max_length=2,
-                                       choices=LANGUAGE_CHOICES)
+#    target_language = models.CharField(_('Target Language'),
+#                                       max_length=2,
+#                                       choices=LANGUAGE_CHOICES)
+    target_language = models.ForeignKey(Language, db_index=True)
     date = models.DateTimeField(_('Request Date'))
     translator = models.CharField(_('Translator type'),
                                   max_length=512,
@@ -360,7 +360,8 @@ class TranslatedSentence(models.Model):
     source_sentence = models.ForeignKey(SourceSentence)
     text = models.CharField(_('Translated Text'), blank=True, max_length=2048)
     translated_by = models.CharField(_('Translated by'), blank=True, max_length=255)
-    language = models.CharField(_('Language'), blank=True, max_length=2)
+#    language = models.CharField(_('Language'), blank=True, max_length=2)
+    language = models.ForeignKey(Language, db_index=True)
     translation_date = models.DateTimeField(_('Import Date'))
     approved = models.BooleanField(_('Approved'), default=False)
     end_of_paragraph = models.BooleanField(_('Paragraph closer'))
@@ -376,9 +377,11 @@ class TranslatedArticle(models.Model):
     parent = models.ForeignKey('self', blank=True, null=True, related_name='parent_set')
     title = models.CharField(_('Title'), max_length=255)
     timestamp = models.DateTimeField(_('Timestamp'))
-    language = models.CharField(_('Language'),
-                                max_length=2,
-                                choices=LANGUAGE_CHOICES)
+#    language = models.CharField(_('Language'),
+#                                max_length=2,
+#                                choices=LANGUAGE_CHOICES)
+    language = models.ForeignKey(Language, db_index=True)
+#    language = models.ForeignKey(Language, db_index=True)
     sentences = models.ManyToManyField(TranslatedSentence)
     approved = models.BooleanField(_('Approved'), default=False)
 
@@ -401,8 +404,8 @@ class TranslatedArticle(models.Model):
 
     #@models.permalink
     def get_absolute_url(self):
-        source_lang = self.article.language
-        target_lang = self.language
+        source_lang = self.article.language.code
+        target_lang = self.language.code
         lang_pair = "%s-%s" % (source_lang, target_lang)
         url = '/articles/translated/%s/%s/%s' % (lang_pair,
                                                  quote_plus(self.title.encode('utf-8')),
@@ -410,8 +413,8 @@ class TranslatedArticle(models.Model):
         return iri_to_uri(url)
 
     def get_relative_url(self):
-        source_lang = self.article.language
-        target_lang = self.language
+        source_lang = self.article.language.code
+        target_lang = self.language.code
         lang_pair = "%s-%s" % (source_lang, target_lang)
         url = '%s/%s/%s' % (lang_pair,
                             quote_plus(self.title.encode('utf-8')),

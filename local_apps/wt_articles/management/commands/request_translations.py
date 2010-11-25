@@ -49,7 +49,9 @@ class Command(NoArgsCommand):
         # Initiate a serverland request for each pending translation request
         for request in pendingRequests:
             source_language = self.get_iso639_2(request.article.language)
-            target_language = self.get_iso639_2(request.target_language)
+            
+            # TODO: Fix target_language
+            target_language = '' #self.get_iso639_2(request.target_language)
             request_id = "%s-%s-%s" % (request.article.doc_id, source_language, target_language)
             worker = request.get_translator_display()
             source_file_id = request_id

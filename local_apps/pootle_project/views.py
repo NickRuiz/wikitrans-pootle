@@ -103,6 +103,7 @@ def project_language_index(request, project_code):
         'description': project.description,
         'adminlink': _('Admin'),
         'languages': items,
+        'templates_code': Language.objects.filter(code='templates')[0].code,
         'instancetitle': pagelayout.get_title(),
         'topstats': topstats,
         'statsheadings': get_stats_headings(),

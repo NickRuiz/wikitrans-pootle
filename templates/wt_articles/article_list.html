@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% load i18n baseurl %}
+
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% block title %}
+{{ block.super }}: {% trans "Articles" %}
+{% endblock %}
+
+{% block breadcrumb_content %}
+{{ block.super }} » <span>{% trans "Articles" %}</span>
+{% endblock %}
+
+{% block body.id %}projectsindex{% endblock body.id %}
+
+{% block content %}
+<div class="module first" lang="{{ LANGUAGE_CODE }}">
+    <div class="hd">
+        <h2>{% trans "Source Articles" %}</h2>
+    </div>
+    <div class="bd">
+	{% if articles %}
+	    <table class="sortable">
+	    <tr>
+				<th>Title</th>
+			    <th>Translated</th>
+			    <th>Import Date</th>
+			    <th>Language</th>
+			    <th>Fix</th>
+			    {% if translatable %}
+			    <th>Method</th>
+			    {% endif %}
+<!--			    <th>Export</th>-->
+			    <th>Project</th>
+		</tr>
+		{% for article in articles %}
+		    <tr class="{% cycle odd,even %}">
+			<td><b><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></b></td>
+					    <td>Translated</td>
+					    <td nowrap>{{ article.timestamp|date:"d F Y" }}</td>
+					    <td>{{ article.language }}</td>
+					    <td><a href="{{ article.get_fix_url }}">{% trans "Fix Article" %}</a></td>
+					    {% if translatable %}
+					    <td><a href="{{ article.link }}">{{ article.target }}</a></td>
+					    {% endif %}
+<!--					    <td><a href="{{ article.get_export_po_url }}">{% trans "Generate .po" %}</a></td>-->
+					    <td>
+						{% if article.pootle_project_exists %}
+						<a href="{{ article.get_pootle_project_url }}">{{ article.get_project_name }}</a>
+						|
+						<a href="{{ article.get_delete_pootle_project_url }}">{% trans "Delete" %}</a>
+						{% else %}
+						<a href="{{ article.get_create_pootle_project_url }}">{% trans "Create new Project" %}</a>
+						{% endif %}
+					    </td>
+		    </tr>
+		{% endfor %}
+	    </table>
+	{% else %}
+	    <br>{% trans "No articles match your language settings" %}
+	{% endif %}
+    </div>
+</div>
+{% endblock content %}
+
+{% block postcontent %}
+{% include "wt_articles/request_form.html" %}
+{% endblock postcontent %}

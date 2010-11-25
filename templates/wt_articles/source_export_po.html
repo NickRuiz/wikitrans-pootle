@@ -1,0 +1,20 @@
+{% extends "user_profile_base.html" %}
+{% load i18n baseurl %}
+
+{% load uni_form_tags %}
+
+{% block title %}
+  {{ block.super }} » {% trans "Articles" %} » {{ title }} » {% trans "Export" %}
+{% endblock %}
+
+{% block bodyclass %}articles{% endblock %}
+
+{% block breadcrumb_content %}
+  {{ block.super }} » {% trans "Articles" %} » {{ title }} » {% trans "Export" %}
+{% endblock %}
+
+{% block content %}
+<pre>
+  {{ po }}
+</pre>
+{% endblock %}

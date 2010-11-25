@@ -14,7 +14,7 @@ from wt_articles.models import SourceArticle,TranslatedArticle
 from wt_articles.models import SourceSentence,TranslatedSentence
 from wt_articles.models import FeaturedTranslation, latest_featured_article
 from wt_articles.models import ArticleOfInterest
-from wt_articles.forms import TranslatedSentenceMappingForm,TranslationRequestForm, FixArticleForm, DummyFixArticleForm
+from wt_articles.forms import TranslatedSentenceMappingForm, ArticleRequestForm, FixArticleForm, DummyFixArticleForm
 from wt_articles.utils import sentences_as_html, sentences_as_html_span, target_pairs_by_user
 from wt_articles.utils import user_compatible_articles
 from wt_articles.utils import user_compatible_target_articles
@@ -102,10 +102,12 @@ def article_list(request, template_name="wt_articles/article_list.html"):
     # articles = user_compatible_articles(request.user)
     articles = all_source_articles()
     from django.utils.encoding import smart_unicode
+    
+    content_dict = { "articles": articles, }
+    content_dict.update(request_translation(request))
 
-    return render_to_response(template_name, {
-        "articles": articles,
-    }, context_instance=RequestContext(request))
+    return render_to_response(template_name, content_dict, 
+                              context_instance=RequestContext(request))
 
 @login_required
 def fix_article_list(request, template_name="wt_articles/fix_article_list.html"):
@@ -309,7 +311,7 @@ def fix_article(request, aid, form_class=FixArticleForm, template_name="wt_artic
     }, context_instance=RequestContext(request))
 
 @login_required
-def request_translation(request, form_class=TranslationRequestForm, template_name="wt_articles/request_form.html"):
+def request_translation(request, form_class=ArticleRequestForm, template_name="wt_articles/request_form.html"):
     """
     aid in this context is the source article id
     """
@@ -318,22 +320,28 @@ def request_translation(request, form_class=TranslationRequestForm, template_nam
         if request_form.is_valid():
             title = request_form.cleaned_data['title']
             title_language = request_form.cleaned_data['title_language']
-            target_language = request_form.cleaned_data['target_language']
+#            target_language = request_form.cleaned_data['target_language']
             exists = ArticleOfInterest.objects.filter(title__exact=title,
-                                                      title_language__exact=title_language,
-                                                      target_language__exact=target_language)
+                                                      title_language__exact=title_language)
+#                                                      target_language__exact=target_language)
             if len(exists) < 1:
                 translation_request = request_form.save(commit=False)
                 translation_request.date = datetime.now()
                 translation_request.save()
-            return render_to_response("wt_articles/requests_thankyou.html", {},
-                                      context_instance=RequestContext(request))
+#            return render_to_response("wt_articles/requests_thankyou.html", {},
+#                                      context_instance=RequestContext(request))
+
+                request_form = form_class()
+                
+                return {"article_requested": True,
+                        "request_form": request_form}
     else:
         request_form = form_class()
         
-    return render_to_response(template_name, {
-        "request_form": request_form,
-    }, context_instance=RequestContext(request))
+#    return render_to_response(template_name, {
+#        "request_form": request_form,
+#    }, context_instance=RequestContext(request))
+        return {"request_form": request_form}
 
 @login_required
 def source_to_po(request, aid, template_name="wt_articles/source_export_po.html"):

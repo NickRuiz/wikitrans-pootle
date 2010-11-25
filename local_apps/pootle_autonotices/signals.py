@@ -42,6 +42,10 @@ def new_language(sender, instance, created=False, **kwargs):
 def new_project(sender, instance, created=False, **kwargs):
     message = 'New project <a href="%s">%s</a> created.' % (instance.get_absolute_url(), instance.fullname)
     new_object(created, message, parent=Directory.objects.root)
+    
+def delete_project(sender, instance, created=False, **kwargs):
+    message = 'Project <i>%s</i> deleted.' % (instance.fullname)
+    new_object(created, message, parent=Directory.objects.root)
 
 def new_user(sender, instance, created=False, **kwargs):
     # new user needs to be wrapped in a try block because it might be

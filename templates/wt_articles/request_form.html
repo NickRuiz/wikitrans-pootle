@@ -1,0 +1,26 @@
+{% load i18n baseurl %}
+{% load uni_form_tags %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block article_request_form %}
+<div class="module" lang="{{ LANGUAGE_CODE }}">
+	<div class="hd">
+		<h2>{% trans "Request Article" %}</h2>
+	</div>
+	<div class="bd">
+		<h2>{{ title }}</h2>
+	  <form class="uniForm" method="POST" action="">
+		<fieldset class="inlineLabels">
+		  {{ request_form|as_uni_form }}
+		  {% include "uni_form/uni_form.html" %}
+	      <input type="submit" />
+		</fieldset>
+	  </form>
+	</div>
+	
+	{% if article_requested %}
+	<p>Article Requested!</p>
+	{% endif %}
+</div>
+{% endblock article_request_form %}

@@ -1,5 +1,5 @@
 HUMAN = 'Human'
-GOOGLE = 'GoogleWooker'
+GOOGLE = 'GoogleWorker'
 BING = 'BingWorker'
 APERTIUM = 'ApertiumWorker'
 LUCY = 'LucyWorker'
