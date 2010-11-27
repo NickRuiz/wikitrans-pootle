@@ -4,9 +4,9 @@ from django.utils.encoding import iri_to_uri
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from wt_languages.models import LANGUAGE_CHOICES
-from wt_languages.models import TARGET_LANGUAGE,SOURCE_LANGUAGE,BOTH
-from wt_languages.models import LanguageCompetancy
+#from wt_languages.models import LANGUAGE_CHOICES
+#from wt_languages.models import TARGET_LANGUAGE,SOURCE_LANGUAGE,BOTH
+#from wt_languages.models import LanguageCompetancy
 from wt_articles import TRANSLATORS, TRANSLATION_STATUSES
 from wt_articles.splitting import determine_splitter
 
@@ -447,4 +447,37 @@ class MTurkTranslatedSentence(TranslatedSentence):
 
     def __unicode__(self):
         return u'%s' % (self.id)
+ 
+# TODO: Do I need this?   
+class LanguagePair(models.Model):
+    source_language = models.ForeignKey(Language, related_name="source_language_ref")
+    target_language = models.ForeignKey(Language, related_name="target_language_ref")
+    
+    def __unicode__(self):
+        return u"%s :: %s" % (self.source_language.code, self.target_language.code)
+    
+    class Meta:
+        unique_together = (("source_language", "target_language"),)
 
+
+class MachineTranslator(models.Model):
+    shortname = models.CharField(_('Name'), max_length=50)
+    supported_languages = models.ManyToManyField(LanguagePair)
+    description = models.TextField(_('Description'))
+    timestamp = models.DateTimeField(_('Refresh Date'), default=datetime.now())
+    is_alive = models.BooleanField()
+    
+    def __unicode__(self):
+        return u"%s :: %s" % (self.shortname, self.timestamp)
+    
+class ServerlandHost(models.Model):
+    shortname = models.CharField(_('Short Name'), max_length=100)
+    description = models.TextField(_('Description'))
+    url = models.URLField(_('URL Location'), verify_exists=True, max_length=255, unique=True)
+    token = models.CharField(_('Auth Token'), max_length=8)
+    timestamp = models.DateTimeField(_('Refresh Date'), default=datetime.now())
+    
+    translators = models.ManyToManyField(MachineTranslator)
+    
+    def __unicode__(self):
+        return u"%s" % (self.url)
