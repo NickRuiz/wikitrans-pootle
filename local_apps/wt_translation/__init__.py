@@ -1,0 +1,5 @@
+SERVERLAND = "Serverland"
+
+TRANSLATOR_TYPES = (
+    (SERVERLAND, SERVERLAND),
+)
