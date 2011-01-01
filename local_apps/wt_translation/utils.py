@@ -8,7 +8,7 @@ def get_iso639_2(language):
     Gets the iso-639-2 language format.
     """
     # TODO: Need to handle the case where a language isn't valid.
-    print "Language:", language
+    # print "Language:", language
     
     language_length = len(language)
     

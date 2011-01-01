@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 #from wt_languages.models import LanguageCompetancy
 from wt_articles import TRANSLATORS, TRANSLATION_STATUSES
 from wt_articles.splitting import determine_splitter
+from wt_translation.models import MachineTranslator
 
 # Pootle-related imports
 from pootle_project.models import Project
@@ -29,6 +30,7 @@ from urllib import quote_plus, unquote_plus
 from urllib import quote_plus, unquote_plus
 
 import re
+from aifc import Error
 
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
@@ -102,7 +104,7 @@ class SourceArticle(models.Model):
     def delete(self):
         # First, try to delete the associated pootle project.
         try:
-            self.delete_pootle_project()
+            self.delete_pootle_project(delete_local=True)
         except Exception:
             # No need to do anything.
             pass
@@ -220,11 +222,21 @@ class SourceArticle(models.Model):
         '''
         pass
     
-    def delete_pootle_project(self):
+    def delete_pootle_project(self, delete_local=False):
         '''
         Deletes the associated Pootle project.
         '''
-        self.get_pootle_project().delete()
+        project = self.get_pootle_project()
+        
+        # Get the project's directory
+        proj_abs_path = project.get_real_path()
+        
+        # Delete the project    
+        project.delete()
+        
+        if delete_local and len(proj_abs_path) > 3:
+            import shutil
+            shutil.rmtree(proj_abs_path)
         
     def create_pootle_project(self):
         '''
@@ -316,6 +328,19 @@ class SourceArticle(models.Model):
         """
         url = '/articles/source/delete/project/%s' % self.id
         return iri_to_uri(url)
+    
+    def has_translation_request(self, target_language, translator):
+        return self.translationrequest_set.filter(target_language=target_language,
+                                                  translator=translator).exists()
+    
+    def create_translation_request(self, target_language, translator):
+        # Try to create the translation request. An exception may be thrown.
+        translation_request = TranslationRequest()
+        translation_request.article = self
+        translation_request.target_language = target_language
+        translation_request.translator = translator
+        
+        translation_request.save()
 
 class SourceSentence(models.Model):
     article = models.ForeignKey(SourceArticle)
@@ -339,9 +364,7 @@ class TranslationRequest(models.Model):
 #                                       choices=LANGUAGE_CHOICES)
     target_language = models.ForeignKey(Language, db_index=True)
     date = models.DateTimeField(_('Request Date'))
-    translator = models.CharField(_('Translator type'),
-                                  max_length=512,
-                                  choices=TRANSLATORS)
+    translator = models.ForeignKey(MachineTranslator)
     status = models.CharField(_('Request Status'),
                               max_length=32,
                               choices=TRANSLATION_STATUSES)
@@ -354,7 +377,28 @@ class TranslationRequest(models.Model):
         Retrieves all of the TranslationRequests that have a specific status
         """
         return TranslationRequest.objects.filter(status=requestStatus)
-
+    
+    def send_request(self):
+        """
+        Sends the translation request to the machine translator.
+        """
+        pass
+    
+#    def save(self):
+#        """
+#        A temporary extension of the save method, because unique_together isn't accepting
+#        translator as a valid field.
+#        """
+#        if self.article.has_translation_request(self.target_language, self.translator):
+#            raise RuntimeException("A translation request already exists for article %s.") % self.article
+#        
+#        # Call the super.save()
+#        super(TranslationRequest, self).save()
+    
+    class Meta:
+        unique_together = ("article", "target_language", "translator")
+        # unique_together = ("article", "target_language") #, "translator")
+        
 class TranslatedSentence(models.Model):
     segment_id = models.IntegerField(_('Segment ID'))
     source_sentence = models.ForeignKey(SourceSentence)
@@ -447,37 +491,3 @@ class MTurkTranslatedSentence(TranslatedSentence):
 
     def __unicode__(self):
         return u'%s' % (self.id)
- 
-# TODO: Do I need this?   
-class LanguagePair(models.Model):
-    source_language = models.ForeignKey(Language, related_name="source_language_ref")
-    target_language = models.ForeignKey(Language, related_name="target_language_ref")
-    
-    def __unicode__(self):
-        return u"%s :: %s" % (self.source_language.code, self.target_language.code)
-    
-    class Meta:
-        unique_together = (("source_language", "target_language"),)
-
-
-class MachineTranslator(models.Model):
-    shortname = models.CharField(_('Name'), max_length=50)
-    supported_languages = models.ManyToManyField(LanguagePair)
-    description = models.TextField(_('Description'))
-    timestamp = models.DateTimeField(_('Refresh Date'), default=datetime.now())
-    is_alive = models.BooleanField()
-    
-    def __unicode__(self):
-        return u"%s :: %s" % (self.shortname, self.timestamp)
-    
-class ServerlandHost(models.Model):
-    shortname = models.CharField(_('Short Name'), max_length=100)
-    description = models.TextField(_('Description'))
-    url = models.URLField(_('URL Location'), verify_exists=True, max_length=255, unique=True)
-    token = models.CharField(_('Auth Token'), max_length=8)
-    timestamp = models.DateTimeField(_('Refresh Date'), default=datetime.now())
-    
-    translators = models.ManyToManyField(MachineTranslator)
-    
-    def __unicode__(self):
-        return u"%s" % (self.url)

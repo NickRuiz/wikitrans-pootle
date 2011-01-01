@@ -3,3 +3,17 @@ SERVERLAND = "Serverland"
 TRANSLATOR_TYPES = (
     (SERVERLAND, SERVERLAND),
 )
+
+OK = 0
+INVALID_URL = 1
+INVALID_TOKEN = 2
+UNAVAILABLE = 3
+MISCONFIGURED_HOST = 4
+
+SERVERLAND_HOST_STATUSES = (
+    (OK, "OK"),
+    (INVALID_URL, "Invalid URL"),
+    (INVALID_TOKEN, "Invalid Token"),
+    (UNAVAILABLE, "Unavailable"),
+    (MISCONFIGURED_HOST, "Misconfigured Host")
+)

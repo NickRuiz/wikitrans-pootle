@@ -428,7 +428,7 @@ def source_to_po(request, aid, template_name="wt_articles/source_export_po.html"
 def delete_pootle_project(request, aid):
 # TODO: Display notification on page that the project has been deleted.
     """
-    Deletes a pooble Project by id (aid).
+    Deletes a pootle Project by id (aid).
     """
     # Fetch the article
     no_match = False
@@ -438,7 +438,7 @@ def delete_pootle_project(request, aid):
         no_match = True
     else:
         article = sa_set[0]
-        article.delete_pootle_project()
+        article.delete_pootle_project(delete_local=True)
      
     # Display the article list.   
     return article_list(request)

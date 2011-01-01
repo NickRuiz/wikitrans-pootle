@@ -153,6 +153,7 @@ INSTALLED_APPS = (
     'uni_form',
     
     'wt_languages',
+    'wt_translation',
     'wt_articles',
     'wt_managing',
     'mturk_manager'
