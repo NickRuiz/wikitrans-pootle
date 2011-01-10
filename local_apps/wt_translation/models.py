@@ -121,8 +121,8 @@ class ServerlandHost(models.Model):
                     for language_pair in workers[i]['language_pairs']:
                         try:
                             # Get the ISO639-1 format
-                            language_code1 = pycountry.languages.get(terminology=language_pair[0]).alpha2
-                            language_code2 = pycountry.languages.get(terminology=language_pair[1]).alpha2
+                            language_code1 = pycountry.languages.get(bibliographic=language_pair[0]).alpha2
+                            language_code2 = pycountry.languages.get(bibliographic=language_pair[1]).alpha2
                             
                             # Find the corresponding Pootle languages
                             l1 = Language.objects.get_by_natural_key(language_code1)
@@ -207,6 +207,12 @@ class ServerlandConfigError(TranslatorConfigError):
             host.save()
         else:
             super(TranslatorsConfigError, self).__init__(host)
+            
+def get_eligible_translators(source_language, target_language):
+    return MachineTranslator.objects.filter(
+                            supported_languages__source_language = source_language,
+                            supported_languages__target_language = target_language                                                   
+                        )
     
 def request_translation(translator, sentences, source_language, target_language):
     """

@@ -46,7 +46,14 @@
             {% include "language/item_summary.html" %}
 	    <td>{{ item.lastactivity }}</td>
 	    	{% if item.code != templates_code %}
-	    	<td>BingWorker</td>
+	    	<td>{{ item.translator_form }}
+	    		<select id="ddlTranslators_{{ item.id }}">
+	    			<option id="_blank" selected="selected"></option>
+	    			{% for translator in item.translators %}
+	    			<option id="translator.id">{{ translator }}</option>
+	    			{% endfor %}
+	    		</select>
+	    	</td>
 	    	{% endif %}
             </tr>
         {% endfor %}

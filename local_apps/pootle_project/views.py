@@ -47,6 +47,8 @@ from pootle_app.models.permissions import get_matching_permissions, check_permis
 from pootle_app.views.admin.permissions import admin_permissions
 from pootle_app.models import Directory
 
+#from wt_translation.forms import MachineTranslatorSelectorForm
+from wt_translation.models import MachineTranslator, LanguagePair, get_eligible_translators
 
 def limit(query):
     return query[:5]
@@ -57,7 +59,7 @@ def get_last_action(translation_project):
     except Submission.DoesNotExist:
         return ''
 
-def make_language_item(request, translation_project):
+def make_language_item(request, source_language, translation_project):
     href = '/%s/%s/' % (translation_project.language.code, translation_project.project.code)
     projectstats = add_percentages(translation_project.getquickstats())
     info = {
@@ -68,6 +70,8 @@ def make_language_item(request, translation_project):
         'lastactivity': get_last_action(translation_project),
         'tooltip': _('%(percentage)d%% complete',
                      {'percentage': projectstats['translatedpercentage']}),
+        #'translator_form': MachineTranslatorSelectorForm(source_language, translation_project.language)
+        'translators': get_eligible_translators(source_language, translation_project.language)
     }
     errors = projectstats.get('errors', 0)
     if errors:
@@ -84,7 +88,7 @@ def project_language_index(request, project_code):
         raise PermissionDenied
 
     translation_projects = project.translationproject_set.all()
-    items = [make_language_item(request, translation_project) for translation_project in translation_projects.iterator()]
+    items = [make_language_item(request, project.source_language, translation_project) for translation_project in translation_projects.iterator()]
     items.sort(lambda x, y: locale.strcoll(x['title'], y['title']))
     languagecount = len(translation_projects)
     totals = add_percentages(project.getquickstats())

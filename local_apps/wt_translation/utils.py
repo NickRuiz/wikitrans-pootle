@@ -13,7 +13,7 @@ def get_iso639_2(language):
     language_length = len(language)
     
     if language_length == 2:
-        return pycountry.languages.get(alpha2=language).terminology
+        return pycountry.languages.get(alpha2=language).bibliographic
     elif language_length == 3:
         return language
     else:
