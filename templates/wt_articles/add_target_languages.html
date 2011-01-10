@@ -1,0 +1,38 @@
+{% extends "user_profile_base.html" %}
+{% load i18n baseurl %}
+{% load uni_form_tags %}
+
+{% block title %}
+{{ block.super }} » {% trans "Articles" %} » {{ article.title }} » {% trans "Add Languages" %}
+{% endblock %}
+
+{% block bodyclass %}articles{% endblock %}
+
+{% block breadcrumb_content %}
+    {{ block.super }} » {% trans "Articles" %} » {{ article.title }} » {% trans "Add Languages" %}
+{% endblock %}
+
+{% block content %}
+<div id="request_block">
+  <!-- <h2>{{ article.title }}</h2> -->
+  {% if no_match %}
+  
+  {% blocktrans %}
+  <p>No matching article was found.</p>
+  {% endblocktrans %}
+  
+  {% else %}
+  
+  <form method="POST" action="">
+	<!--<fieldset class="inlineLabels">-->
+	<div class="fulltext">
+	  {{ target_language_form|as_uni_form }}
+	</div>
+	  {% include "uni_form/uni_form.html" %}
+	<br />
+	<input type="submit" value='{% trans "Submit Changes" %}'/>
+	<!--</fieldset>-->
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

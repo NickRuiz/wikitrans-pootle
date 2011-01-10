@@ -36,7 +36,8 @@ urlpatterns = patterns('wt_articles.views',
         'translate_from_scratch', name="translate_from_scratch"),
     url(r'^translate/postedit/(?P<source>\w+)-(?P<target>\w+)/(?P<title>[^/]+)/(?P<aid>\d+)',
         'translate_post_edit', name="translate_post_edit"),
+    url(r'^translate/languages/add/(?P<aid>\d+)', 'add_target_languages', name="add_target_languages"),
 
     ### Translation request related stuff
-    url(r'^request_translation/', 'request_translation', name="request_translation")
+    url(r'^request/', 'request_article', name="request_article")
 )

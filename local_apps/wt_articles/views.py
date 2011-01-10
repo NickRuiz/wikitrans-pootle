@@ -14,7 +14,7 @@ from wt_articles.models import SourceArticle,TranslatedArticle
 from wt_articles.models import SourceSentence,TranslatedSentence
 from wt_articles.models import FeaturedTranslation, latest_featured_article
 from wt_articles.models import ArticleOfInterest
-from wt_articles.forms import TranslatedSentenceMappingForm, ArticleRequestForm, FixArticleForm, DummyFixArticleForm
+from wt_articles.forms import TranslatedSentenceMappingForm, ArticleRequestForm, FixArticleForm, DummyFixArticleForm, AddTargetLanguagesForm
 from wt_articles.utils import sentences_as_html, sentences_as_html_span, target_pairs_by_user
 from wt_articles.utils import user_compatible_articles
 from wt_articles.utils import user_compatible_target_articles
@@ -104,7 +104,7 @@ def article_list(request, template_name="wt_articles/article_list.html"):
     from django.utils.encoding import smart_unicode
     
     content_dict = { "articles": articles, }
-    content_dict.update(request_translation(request))
+    content_dict.update(request_article(request))
 
     return render_to_response(template_name, content_dict, 
                               context_instance=RequestContext(request))
@@ -311,7 +311,7 @@ def fix_article(request, aid, form_class=FixArticleForm, template_name="wt_artic
     }, context_instance=RequestContext(request))
 
 @login_required
-def request_translation(request, form_class=ArticleRequestForm, template_name="wt_articles/request_form.html"):
+def request_article(request, form_class=ArticleRequestForm, template_name="wt_articles/request_form.html"):
     """
     aid in this context is the source article id
     """
@@ -341,7 +341,8 @@ def request_translation(request, form_class=ArticleRequestForm, template_name="w
 #    return render_to_response(template_name, {
 #        "request_form": request_form,
 #    }, context_instance=RequestContext(request))
-        return {"request_form": request_form}
+        return {"article_requested": False,
+                "request_form": request_form}
 
 @login_required
 def source_to_po(request, aid, template_name="wt_articles/source_export_po.html"):
@@ -471,3 +472,36 @@ def create_pootle_project(request, aid):
 #        return render_to_response(template_name,
 #                                  {"project_name": project.fullname},
 #                                  context_instance=RequestContext(request))
+
+@login_required
+def add_target_languages(request, aid, template_name="wt_articles/add_target_languages.html"):
+    """
+    Adds one or more target language translations to a source article. 
+    """
+    content_dict = {}
+    
+    # Fetch the article
+    no_match = False
+    
+    sa_set = SourceArticle.objects.filter(id=aid)
+    if len(sa_set) < 1:
+        no_match = True
+        content_dict['no_match'] = no_match
+    else:
+        article = sa_set[0]
+        content_dict['article'] = article
+        
+        if request.method == "POST":
+            target_language_form = AddTargetLanguagesForm(article, request.POST)
+            
+            if target_language_form.is_valid():
+                languages = target_language_form.cleaned_data['languages']
+                
+                article.add_target_languages(languages)
+                return HttpResponseRedirect('/articles/list')
+        else:
+            target_language_form = AddTargetLanguagesForm(article)
+        
+        content_dict['target_language_form'] = target_language_form
+    return render_to_response(template_name, content_dict, 
+                              context_instance=RequestContext(request))

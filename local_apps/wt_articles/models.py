@@ -58,6 +58,7 @@ class SourceArticle(models.Model):
     doc_id = models.CharField(_('Document ID'), max_length=512)
     source_text = models.TextField(_('Source Text'))
     sentences_processed = models.BooleanField(_('Sentences Processed'))
+    pootle_project = models.ForeignKey(Project, null=True)
 
     # hook into mturk manager
     #hits = generic.GenericRelation(HITItem)
@@ -214,7 +215,7 @@ class SourceArticle(models.Model):
         """
         Determines if a Pootle project already exists for this article
         """
-        return len(Project.objects.filter(code = self.get_project_code())) > 0
+        return Project.objects.filter(code = self.get_project_code()).exists()
     
     def create_translation_request(self, language_id):
         '''
@@ -226,17 +227,23 @@ class SourceArticle(models.Model):
         '''
         Deletes the associated Pootle project.
         '''
+        import os
         project = self.get_pootle_project()
         
         # Get the project's directory
         proj_abs_path = project.get_real_path()
+        
+        # Remove the project reference in the SourceArticle
+        self.pootle_project = None
+        self.save()
         
         # Delete the project    
         project.delete()
         
         if delete_local and len(proj_abs_path) > 3:
             import shutil
-            shutil.rmtree(proj_abs_path)
+            if os.path.exists(proj_abs_path):
+                shutil.rmtree(proj_abs_path)
         
     def create_pootle_project(self):
         '''
@@ -295,6 +302,10 @@ class SourceArticle(models.Model):
         # Log the changes
         newstats = templatesProject.getquickstats()
         post_template_update.send(sender=templatesProject, oldstats=oldstats, newstats=newstats)
+        
+        # Add a reference to the project in the SourceArticle
+        self.pootle_project = project
+        self.save()
             
         return project
     
@@ -302,10 +313,39 @@ class SourceArticle(models.Model):
         """
         Gets a handle of the Pootle project, if it exists.
         """
-        if not self.pootle_project_exists():
-            raise Exception("Project does not exist!")
+        # First, check to see if the project is already bound to the SourceArticle
+        if self.pootle_project == None:
+            # Otherwise, look it up
+            queryset = Project.objects.filter(code = self.get_project_code()) 
+            if not queryset.exists():
+                raise Exception("Project does not exist!")
+            
+            # If it's found, save its reference to the SourceArticle
+            self.pootle_project = queryset[0]
+            self.save()
         
-        return Project.objects.filter(code = self.get_project_code())[0]
+        return self.pootle_project
+    
+    def get_target_languages(self):
+        """
+        Gets the languages of the translation projects (excluding templates) under the corresponding Pootle project.
+        """
+        try:
+            translation_projects = self.get_pootle_project().translationproject_set.exclude(
+                                                language__code = "templates")
+            return Language.objects.filter(id__in = [tp.language.id for tp in translation_projects])
+        except Exception:
+            return []
+        
+    def add_target_languages(self, languages):
+        try:
+            pootle_project = self.get_pootle_project()
+        except Exception:
+            # Create the project if it doesn't exist
+            pootle_project = self.create_pootle_project()
+            
+        for language in languages:
+            pootle_project.add_language(language)
     
     def get_pootle_project_url(self):
         """
@@ -313,6 +353,20 @@ class SourceArticle(models.Model):
         """
         url = '/projects/%s/' % self.get_project_code()
         
+        return iri_to_uri(url)
+    
+    def get_pootle_project_language_url(self, language):
+        """
+        Gets the url corresponding to a Pootle TranslationProject (language).
+        """
+        url = '/%s/%s/' % (language.code, self.get_project_code())
+        return iri_to_uri(url)
+    
+    def get_add_target_language_url(self):
+        """
+        Gets the url that allows the user to add additional target languages.
+        """
+        url = '/articles/translate/languages/add/%s' % self.id    
         return iri_to_uri(url)
     
     def get_create_pootle_project_url(self):
@@ -368,6 +422,8 @@ class TranslationRequest(models.Model):
     status = models.CharField(_('Request Status'),
                               max_length=32,
                               choices=TRANSLATION_STATUSES)
+    external_id = models.CharField(_('External Request ID'),
+                                   max_length=32)
 
     def __unicode__(self):
         return u"%s: %s" % (self.target_language, self.article)
