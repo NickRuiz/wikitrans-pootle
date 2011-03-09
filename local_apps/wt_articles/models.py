@@ -57,7 +57,7 @@ class SourceArticle(models.Model):
     timestamp = models.DateTimeField(_('Import Date'), default=datetime.now())
     doc_id = models.CharField(_('Document ID'), max_length=512)
     source_text = models.TextField(_('Source Text'))
-    sentences_processed = models.BooleanField(_('Sentences Processed'))
+    sentences_processed = models.BooleanField(_('Sentences Processed', default=False))
     pootle_project = models.ForeignKey(Project, null=True)
 
     # hook into mturk manager
@@ -68,38 +68,39 @@ class SourceArticle(models.Model):
         return u"%s :: %s :: %s" % (self.id, self.doc_id, self.title)
 
     def save(self, manually_splitting=False, source_sentences=()):       
-        if not manually_splitting:
-            # Tokenize the HTML that is fetched from a wiki article
-            sentences = list()
-            segment_id = 0
-            soup = BeautifulSoup(self.source_text)
-            sentence_splitter = determine_splitter(self.language.code)
-            # initial save for foreign key based saves to work
-            # save should occur after sent_detector is loaded
-            super(SourceArticle, self).save()
-            # find all paragraphs
-            for p in soup.findAll('p'):
-                only_p = p.findAll(text=True)
-                p_text = ''.join(only_p)
-                # split all sentences in the paragraph
-                
-                sentences = sentence_splitter(p_text.strip())
-                # TODO: remove bad sentences that were missed above
-                sentences = [s for s in sentences if not re.match("^\**\[\d+\]\**$", s)]
+        if not self.sentences_processed:
+            if not manually_splitting:
+                # Tokenize the HTML that is fetched from a wiki article
+                sentences = list()
+                segment_id = 0
+                soup = BeautifulSoup(self.source_text)
+                sentence_splitter = determine_splitter(self.language.code)
+                # initial save for foreign key based saves to work
+                # save should occur after sent_detector is loaded
+                super(SourceArticle, self).save()
+                # find all paragraphs
+                for p in soup.findAll('p'):
+                    only_p = p.findAll(text=True)
+                    p_text = ''.join(only_p)
+                    # split all sentences in the paragraph
                     
-                for sentence in sentences:
-                    # Clean up bad spaces (&#160;)
-                    sentence = sentence.replace("&#160;", " ")
-                    
-                    s = SourceSentence(article=self, text=sentence, segment_id=segment_id)
-                    segment_id += 1
+                    sentences = sentence_splitter(p_text.strip())
+                    # TODO: remove bad sentences that were missed above
+                    sentences = [s for s in sentences if not re.match("^\**\[\d+\]\**$", s)]
+                        
+                    for sentence in sentences:
+                        # Clean up bad spaces (&#160;)
+                        sentence = sentence.replace("&#160;", " ")
+                        
+                        s = SourceSentence(article=self, text=sentence, segment_id=segment_id)
+                        segment_id += 1
+                        s.save()
+                    s.end_of_paragraph = True
                     s.save()
-                s.end_of_paragraph = True
-                s.save()
-            self.sentences_processed = True
-        else:
-            for sentence in source_sentences:
-                sentence.save()
+                self.sentences_processed = True
+            else:
+                for sentence in source_sentences:
+                    sentence.save()
         super(SourceArticle, self).save()
         
     def delete(self):
@@ -274,7 +275,7 @@ class SourceArticle(models.Model):
       # Save the project
         project.save()
         
-        templates_language = Language.objects.filter(code='templates')[0]
+        templates_language = Language.objects.get_by_natural_key('templates')
         
         # Check to see if the templates language exists. If not, add it.
         #if not project.language_exists(templates_language):
