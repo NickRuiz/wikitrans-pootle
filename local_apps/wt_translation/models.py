@@ -6,8 +6,11 @@ from django.contrib.auth.models import User
 from datetime import datetime
 
 from pootle_language.models import Language
+from pootle_translationproject.models import TranslationProject
+from pootle_store.models import Store, Unit, Suggestion
 
 from wt_translation import TRANSLATOR_TYPES, SERVERLAND
+from wt_translation import TRANSLATION_STATUSES, STATUS_PENDING, STATUS_IN_PROGRESS, STATUS_FINISHED, STATUS_ERROR, STATUS_CANCELLED
 from wt_translation import SERVERLAND_HOST_STATUSES, OK, INVALID_URL, INVALID_TOKEN, UNAVAILABLE, MISCONFIGURED_HOST
 import utils
 
@@ -19,10 +22,16 @@ import json
 import pycountry
 import errno
 
+class LanguagePairManager(models.Manager):
+    def get_by_natural_key(self, source_language, target_language):
+        return LanguagePair.objects.get(source_language=source_language, target_language=target_language)
+    
 # TODO: Do I need this?   
 class LanguagePair(models.Model):
     source_language = models.ForeignKey(Language, related_name="source_language_ref")
     target_language = models.ForeignKey(Language, related_name="target_language_ref")
+    
+    objects = LanguagePairManager()
     
     def __unicode__(self):
         return u"%s :: %s" % (self.source_language.code, self.target_language.code)
@@ -31,15 +40,16 @@ class LanguagePair(models.Model):
         unique_together = (("source_language", "target_language"),)
 
 # Get or create a language pair
-def get_or_create_language_pair(l1, l2):
+def get_or_create_language_pair(source_language, target_language):
     try:
         # Try to get the language pair
-        language_pair = LanguagePair.objects.filter(source_language = l1, target_language = l2)[0]
+        language_pair = LanguagePair.objects.get_by_natural_key(source_language, target_language)
+#        language_pair = LanguagePair.objects.filter(source_language = source_language, target_language = target_language)[0]
     except (LanguagePair.DoesNotExist, IndexError):
         # The language pair doesn't exist. Create it.
         language_pair = LanguagePair()
-        language_pair.source_language = l1
-        language_pair.target_language = l2
+        language_pair.source_language = source_language
+        language_pair.target_language = target_language
         language_pair.save()
         
     return language_pair
@@ -57,7 +67,28 @@ class MachineTranslator(models.Model):
     def is_language_pair_supported(self, source_language, target_language):
         return self.supported_languages.filter(source_language = source_language, 
                                                target_language = target_language).exists()
+                                               
+    def create_translation_request(self, translation_project):
+        '''
+        Creates a translation request
+        '''
+        request = TranslationRequest()
+        request.translator = self
+        request.translation_project = translation_project
+        request.save()
+        
+        return request
     
+    @staticmethod                                           
+    def get_eligible_translators(source_language, target_language):
+        """
+        Get a list of translators that can be used to translate this language pair.
+        """
+        return MachineTranslator.objects.filter(
+                                supported_languages__source_language = source_language,
+                                supported_languages__target_language = target_language                                                   
+                            )
+                                               
 class ServerlandHost(models.Model):
     shortname = models.CharField(_('Short Name'), max_length=100)
     description = models.TextField(_('Description'))
@@ -154,6 +185,97 @@ class ServerlandHost(models.Model):
             raise ServerlandConfigError(self, ex)
         except xmlrpclib.ProtocolError as ex:
             raise ServerlandConfigError(self, ex)
+    
+    def fetch_translations(self):
+        proxy = xmlrpclib.ServerProxy(self.url)
+        
+        # Fetch the translation requests (and make sure the result is a list)
+        requests = utils.cast_to_list(proxy.list_requests(self.token))
+        
+        # Retrieve the translation requests that are "ready"
+        completedRequests = [request for request in requests if request['ready']]
+        
+        # Process the completed requests
+        for completedRequest in completedRequests:
+            # Get the result
+            result = proxy.list_results(self.token, completedRequest['request_id'])
+            
+            # TODO: Save the result
+            print result['shortname'], result['request_id']
+            print result['result']
+            
+            # Get the external request id and sentences
+            external_request_id = completedRequest['shortname']
+            result_sentences = result['result'].split('\n')
+            
+            # FIXME: Add exception handling when the translation request is not found.
+            try:
+                # Look up the original translation request
+                request = TranslationRequest.objects.get_by_external_id(external_request_id)
+                
+                # Fetch the Pootle store for the corresponding translation project and fill in the translations.
+                store = Store.objects.get(translation_project = request.translation_project)
+                
+                # Get all of the units
+                units = store.unit_set.all()
+                
+                # Make sure that len(units) matches len(result)
+                
+                
+            except DoesNotExist as ex:
+                pass
+            
+            # Get all of the sentences; store.unit_set.all() returns the sentences in order.
+            sentences = [unicode(unit) for unit in store.unit_set.all()]
+ 
+class TranslationRequestManager(models.Manager):
+    def get_by_external_id(self, external_id):
+        return TranslationRequest.objects.get(external_id = external_id)
+       
+class TranslationRequest(models.Model):
+    translation_project = models.ForeignKey(TranslationProject)
+    translator = models.ForeignKey(MachineTranslator, related_name='requested_translator')
+    status = models.CharField(_('Request Status'),
+                              max_length=32,
+                              choices=TRANSLATION_STATUSES,
+                              default = STATUS_PENDING)
+    external_id = models.CharField(_('External ID'), max_length=32, editable=False, null=True) 
+    timestamp = models.DateTimeField(_('Last Updated'), default=datetime.now())
+    
+    objects = TranslationRequestManager()
+    
+    class Meta:
+        unique_together = ("translation_project", "translator")
+        
+    def __unicode__(self):
+        return u"%s - %s" % (self.translator.shortname, self.translation_project)
+    
+    def save(self):
+        # Last step, call the normal save method
+        super(TranslationRequest, self).save()
+
+def send_translation_requests(request_status=STATUS_PENDING):
+    '''
+    Requests a batch of machine translation requests.
+    '''
+    pending_requests = TranslationRequest.objects.filter(status = request_status)
+    for request in pending_requests:
+        # Get the .po store for the file to be translated.
+        store = Store.objects.get(translation_project = request.translation_project)
+        
+        # Get all of the sentences; store.unit_set.all() returns the sentences in order.
+        sentences = [unicode(unit) for unit in store.unit_set.all()]
+        
+        # Request the translation
+        external_request_id = request_translation(request.translator, 
+                                sentences, 
+                                request.translation_project.project.source_language, 
+                                request.translation_project.language)
+        
+        # Update the status of the record
+        request.external_id = external_request_id
+        request.status = STATUS_IN_PROGRESS
+        request.save()
             
 class UndefinedTranslator(Exception):
     def __init__(self, value):
@@ -181,12 +303,14 @@ class TranslatorConfigError(Exception):
 class ServerlandConfigError(TranslatorConfigError):
     def __init__(self, host, error):
         
+        self.errorCode = UNAVAILABLE
+        
         if isinstance(host, ServerlandHost):
             # Inspect the XML-RPC error type. It can either be a Fault or a ProtocolError
-            if isinstance(error, ProtocolError):
+            if isinstance(error, xmlrpclib.ProtocolError):
                 self.errorCode = INVALID_URL
                 self.msg = "Invalid Serverland host URL: '%s'." % host.url 
-            elif isinstance(error, Fault):
+            elif isinstance(error, xmlrpclib.Fault):
                 # Inspect the faultCode and faultString to determine the error
                 if re.search("[Errno 111] Connection refused", error.faultString) != None:
                     self.errorCode = INVALID_TOKEN
@@ -196,23 +320,17 @@ class ServerlandConfigError(TranslatorConfigError):
                 elif re.search("takes exactly \d+ arguments", error.faultString) != None:
                     self.errorCode = MISCONFIGURED_HOST
                     self.msg = "Serverland host '%s' is misconfigured." % host.shortname
-            else:
-                self.errorCode = UNAVAILABLE
+                else:
+                    self.msg = error.faultString
             
-            if self.errorCode == UNAVAILABLE:
-                self.msg = "Serverland host '%s' is unavailable." % host.shortname
+#            if self.errorCode == UNAVAILABLE:
+#                self.msg = "Serverland host '%s' is unavailable." % host.shortname
             
             # TODO: Should updating the ServerlandHost instance go here? And if the host is unavailable, should we update the status as such? For now, assume yes.
             host.status = self.errorCode
             host.save()
         else:
             super(TranslatorsConfigError, self).__init__(host)
-            
-def get_eligible_translators(source_language, target_language):
-    return MachineTranslator.objects.filter(
-                            supported_languages__source_language = source_language,
-                            supported_languages__target_language = target_language                                                   
-                        )
     
 def request_translation(translator, sentences, source_language, target_language):
     """
@@ -232,20 +350,23 @@ def request_translation(translator, sentences, source_language, target_language)
     if not translator.is_language_pair_supported(source_language, target_language):
         raise UnsupportedLanguagePair(translator, source_language, target_language)
     
-    # Create a request id
+    # Generate a request id
     request_id = utils.generate_request_id()
     
-    # Make sure that there is more than one sentence.
-    if not isinstance(sentences, list):
-        print "Retrieved only one sentence."
-        sentences = [sentences]
+    # Make sure that sentences is a list.
+    sentences = utils.cast_to_list(sentences)
+#    if not isinstance(sentences, list):
+#        print "Retrieved only one sentence."
+#        sentences = [sentences]
     
+    # One sentence per line, to make it easier for the translator to do its job.
     text = "\n".join(sentence for sentence in sentences)
         
     # Determine the machine translator type.
     if translator.type == SERVERLAND:
         # Get the ServerlandHost
         try:
+            # TODO: Change this host reference. Currently, only one ServerLand host is allowed.
             serverland_host = translator.serverlandhost_set.all()[0]
         except IndexError:
             raise UndefinedTranslator(translator)
@@ -253,21 +374,21 @@ def request_translation(translator, sentences, source_language, target_language)
         source_file_id = "%s-%s-%s" % (request_id, source_language.code, target_language.code)
         
         try:
-            print "Requesting the translation"
-            print serverland_host.token, request_id, translator.shortname
-            print utils.get_iso639_2(source_language.code), utils.get_iso639_2(target_language.code)
-            print source_file_id
-            print text
+#            print "Requesting the translation"
+#            print serverland_host.token, request_id, translator.shortname
+#            print utils.get_iso639_2(source_language.code), utils.get_iso639_2(target_language.code)
+#            print source_file_id
+#            print text
             
             # Request the translation.
             proxy = xmlrpclib.ServerProxy(serverland_host.url)
-            result = proxy.create_translation(serverland_host.token, 
-                                     request_id, 
-                                     translator.shortname,
-                                     utils.get_iso639_2(source_language.code),
-                                     utils.get_iso639_2(target_language.code),
-                                     source_file_id,
-                                     text)
+            result = proxy.create_translation(serverland_host.token,            # Authentication token
+                                     request_id,                                # Custom request ID
+                                     translator.shortname,                      # MT ServerLand worker
+                                     utils.get_iso639_2(source_language.code),  # Source language (in bibliographic)
+                                     utils.get_iso639_2(target_language.code),  # Target language (in bibliographic)
+                                     source_file_id,                            # Composite id
+                                     text)                                      # Sentence(s) to translate
             
             # TODO: For now, just print the results.
             print result

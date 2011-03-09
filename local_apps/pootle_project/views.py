@@ -23,7 +23,7 @@ import locale
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, HttpResponseRedirect
 from django.template import RequestContext
 from django import forms
 from django.forms.models import BaseModelFormSet
@@ -48,7 +48,8 @@ from pootle_app.views.admin.permissions import admin_permissions
 from pootle_app.models import Directory
 
 #from wt_translation.forms import MachineTranslatorSelectorForm
-from wt_translation.models import MachineTranslator, LanguagePair, get_eligible_translators
+from wt_translation.models import MachineTranslator, LanguagePair
+from wt_translation.forms import TranslationRequestForm
 
 def limit(query):
     return query[:5]
@@ -62,7 +63,10 @@ def get_last_action(translation_project):
 def make_language_item(request, source_language, translation_project):
     href = '/%s/%s/' % (translation_project.language.code, translation_project.project.code)
     projectstats = add_percentages(translation_project.getquickstats())
+    mt_request_form = TranslationRequestForm(translation_project, initial={'translation_project': translation_project})
     info = {
+        'project_id': translation_project.id,
+        'mt_request_form': mt_request_form,
         'code': translation_project.language.code,
         'href': href,
         'title': tr_lang(translation_project.language.fullname),
@@ -71,7 +75,7 @@ def make_language_item(request, source_language, translation_project):
         'tooltip': _('%(percentage)d%% complete',
                      {'percentage': projectstats['translatedpercentage']}),
         #'translator_form': MachineTranslatorSelectorForm(source_language, translation_project.language)
-        'translators': get_eligible_translators(source_language, translation_project.language)
+        'translators': MachineTranslator.get_eligible_translators(source_language, translation_project.language)
     }
     errors = projectstats.get('errors', 0)
     if errors:
@@ -86,6 +90,20 @@ def project_language_index(request, project_code):
     request.permissions = get_matching_permissions(get_profile(request.user), project.directory)
     if not check_permission('view', request):
         raise PermissionDenied
+    
+    # Check for form post (MT request)
+    if request.method == "POST":
+        # TODO: This is not the correct way to handle one of many forms. How do I do it better?
+        # TODO: This is not save against injection attacks.
+        
+        # translation_request_form = TranslationRequestForm(None, request.POST)
+        # Get the project
+        translator = MachineTranslator.objects.get(pk = request.POST['translator'])
+        translation_project = TranslationProject.objects.get(
+                                    pk = request.POST['translation_project'])
+        translator.create_translation_request(translation_project)
+        
+        return HttpResponseRedirect("?translator=%s&project=%s" % (translator, translation_project))
 
     translation_projects = project.translationproject_set.all()
     items = [make_language_item(request, project.source_language, translation_project) for translation_project in translation_projects.iterator()]
@@ -107,7 +125,7 @@ def project_language_index(request, project_code):
         'description': project.description,
         'adminlink': _('Admin'),
         'languages': items,
-        'templates_code': Language.objects.filter(code='templates')[0].code,
+        'templates_code': Language.objects.get_by_natural_key('templates').code,
         'instancetitle': pagelayout.get_title(),
         'topstats': topstats,
         'statsheadings': get_stats_headings(),

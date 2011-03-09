@@ -22,3 +22,12 @@ def get_iso639_2(language):
     
 def generate_request_id():
     return uuid.uuid1().hex
+
+def cast_to_list(input):
+    """
+    If the input isn't a list, cast it to a list
+    """
+    if not isinstance(input, list):
+        input = [input]
+        
+    return input
