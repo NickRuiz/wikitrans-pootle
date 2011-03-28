@@ -1,5 +1,6 @@
 import pycountry
 import uuid
+from BeautifulSoup import BeautifulStoneSoup
 
 from pootle_language.models import Language 
 
@@ -31,3 +32,6 @@ def cast_to_list(input):
         input = [input]
         
     return input
+
+def clean_string(input):
+    return BeautifulStoneSoup(input, convertEntities=BeautifulStoneSoup.ALL_ENTITIES).contents[0]

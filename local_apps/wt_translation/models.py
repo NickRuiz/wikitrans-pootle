@@ -4,10 +4,12 @@ from django.utils.encoding import iri_to_uri
 from django.conf import settings
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.core.exceptions import ObjectDoesNotExist
 
 from pootle_language.models import Language
 from pootle_translationproject.models import TranslationProject
 from pootle_store.models import Store, Unit, Suggestion
+import pootle_store.util
 
 from wt_translation import TRANSLATOR_TYPES, SERVERLAND
 from wt_translation import TRANSLATION_STATUSES, STATUS_PENDING, STATUS_IN_PROGRESS, STATUS_FINISHED, STATUS_ERROR, STATUS_CANCELLED
@@ -200,13 +202,9 @@ class ServerlandHost(models.Model):
             # Get the result
             result = proxy.list_results(self.token, completedRequest['request_id'])
             
-            # TODO: Save the result
-            print result['shortname'], result['request_id']
-            print result['result']
-            
             # Get the external request id and sentences
             external_request_id = completedRequest['shortname']
-            result_sentences = result['result'].split('\n')
+            result_sentences = utils.clean_string(result['result'].strip()).split('\n')
             
             # FIXME: Add exception handling when the translation request is not found.
             try:
@@ -220,13 +218,33 @@ class ServerlandHost(models.Model):
                 units = store.unit_set.all()
                 
                 # Make sure that len(units) matches len(result)
+#                print units[0].source
+#                print result_sentences[0]
+#                print "----"
+#                print units[len(units) - 1].source
+#                print result_sentences[len(result_sentences)-1]
+#                print result_sentences[len(result_sentences)-2]
                 
+                # If the sentence length doesn't match, then we don't have a one-to-one correspondence
+                # between sentences. Mark the translation request with an error
+                if (len(units) != len(result_sentences)):
+                    request.status = STATUS_ERROR
+                    print "An error occurred with request %s" % request
+                else:
+                    # Start adding the translations to Pootle (lazy).
+                    for i in range(0, len(units)):
+#                        units[i].target = multistring(result_sentences[i])
+                        units[i].target = result_sentences[i]
+                        units[i].state = pootle_store.util.FUZZY
+                        units[i].save()
+                        
+                    # Set the status of the current TranslationRequest as completed
+                    request.status = STATUS_FINISHED
+                    
+                request.save()
                 
-            except DoesNotExist as ex:
+            except ObjectDoesNotExist as ex:
                 pass
-            
-            # Get all of the sentences; store.unit_set.all() returns the sentences in order.
-            sentences = [unicode(unit) for unit in store.unit_set.all()]
  
 class TranslationRequestManager(models.Manager):
     def get_by_external_id(self, external_id):

@@ -68,39 +68,39 @@ class SourceArticle(models.Model):
         return u"%s :: %s :: %s" % (self.id, self.doc_id, self.title)
 
     def save(self, manually_splitting=False, source_sentences=()):       
-        if not self.sentences_processed:
-            if not manually_splitting:
-                # Tokenize the HTML that is fetched from a wiki article
-                sentences = list()
-                segment_id = 0
-                soup = BeautifulSoup(self.source_text)
-                sentence_splitter = determine_splitter(self.language.code)
-                # initial save for foreign key based saves to work
-                # save should occur after sent_detector is loaded
-                super(SourceArticle, self).save()
-                # find all paragraphs
-                for p in soup.findAll('p'):
-                    only_p = p.findAll(text=True)
-                    p_text = ''.join(only_p)
-                    # split all sentences in the paragraph
+        if not self.sentences_processed and not manually_splitting:
+            # Tokenize the HTML that is fetched from a wiki article
+            sentences = list()
+            segment_id = 0
+            soup = BeautifulSoup(self.source_text)
+            sentence_splitter = determine_splitter(self.language.code)
+            # initial save for foreign key based saves to work
+            # save should occur after sent_detector is loaded
+            super(SourceArticle, self).save()
+            # find all paragraphs
+            for p in soup.findAll('p'):
+                only_p = p.findAll(text=True)
+                p_text = ''.join(only_p)
+                # split all sentences in the paragraph
+                
+                sentences = sentence_splitter(p_text.strip())
+                # TODO: remove bad sentences that were missed above
+                sentences = [s for s in sentences if not re.match("^\**\[\d+\]\**$", s)]
                     
-                    sentences = sentence_splitter(p_text.strip())
-                    # TODO: remove bad sentences that were missed above
-                    sentences = [s for s in sentences if not re.match("^\**\[\d+\]\**$", s)]
-                        
-                    for sentence in sentences:
-                        # Clean up bad spaces (&#160;)
-                        sentence = sentence.replace("&#160;", " ")
-                        
-                        s = SourceSentence(article=self, text=sentence, segment_id=segment_id)
-                        segment_id += 1
-                        s.save()
-                    s.end_of_paragraph = True
+                for sentence in sentences:
+                    # Clean up bad spaces (&#160;)
+                    sentence = sentence.replace("&#160;", " ")
+                    
+                    s = SourceSentence(article=self, text=sentence, segment_id=segment_id)
+                    segment_id += 1
                     s.save()
-                self.sentences_processed = True
-            else:
-                for sentence in source_sentences:
-                    sentence.save()
+                s.end_of_paragraph = True
+                s.save()
+            self.sentences_processed = True
+        else:
+            for sentence in source_sentences:
+                sentence.save()
+                
         super(SourceArticle, self).save()
         
     def delete(self):
