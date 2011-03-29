@@ -211,6 +211,11 @@ class ServerlandHost(models.Model):
                 # Look up the original translation request
                 request = TranslationRequest.objects.get_by_external_id(external_request_id)
                 
+                # TODO: Should we delete the translations, or filter them some way in Serverland to prevent re-retrieving translations? This could get expensive...
+                if requst.status == STATUS_FINISHED:
+                    # Only update if the translation isn't marked as finished.
+                    continue
+                
                 # Fetch the Pootle store for the corresponding translation project and fill in the translations.
                 store = Store.objects.get(translation_project = request.translation_project)
                 
