@@ -14,27 +14,14 @@
         <meta content="text/html; charset=utf-8" http-equiv="content-type" />
         <meta name="description" content="{{ settings.DESCRIPTION|striptags }}" />
         <meta name="keywords" content="{{ keywords|join:", " }}" />
-
-        <meta name="application-name" content="{{ settings.TITLE }}" />
-        <link rel="icon" href="{{ "images/app-32x32.png"|m }}" sizes="32x32" />
-        <link rel="icon" href="{{ "images/app-64x64.png"|m }}" sizes="64x64" />
-
         {% endblock meta %}
         {% block css %}
         <link rel="stylesheet" type="text/css" href='{{ "style.css"|m }}' />
-        <!--[if IE]>
-	<link rel="stylesheet" type="text/css" href='{{ "ie.css"|m }}' />
-        <![endif]-->
         {% endblock css %}
         {% block favicon %}
         <link rel="shortcut icon" href="{{ "favicon.ico"|m }}" />
         {% endblock favicon %}
         {% block js %}
-        <script type="text/javascript" src="{{ "js/jquery/jquery.min.js"|m }}"></script>
-        <script type="text/javascript" src="{{ "js/jquery/jquery.tipsy.js"|m }}"></script>
-        <script type="text/javascript" src="{{ "js/jquery/jquery.cookie.js"|m }}"></script>
-        <script type="text/javascript" src="{{ "js/shortcut.js"|m }}"></script>
-        <script type="text/javascript" src="{{ "js/common.js"|m }}"></script>
         <script type="text/javascript">
           function l(path) {
             var basepath = "{{ settings.SCRIPT_NAME  }}";
@@ -42,15 +29,12 @@
               return basepath + path;
             }
             return path;
-          }
+          };
           function m(path) {
             return l("{{ MEDIA_URL }}" + path);
           }
-        $(document).ready(function() {
-            initZoom();
-            $("[title], [original-title]").tipsy({gravity: $.fn.tipsy.autoNSedge, html: true, fade: true, delayIn: 750, live: true});
-        });
         </script>
+        <script type="text/javascript" src="{{ "js/jquery/jquery.min.js"|m }}"></script>
         {% endblock js %}
         {% block extra_head %}<!-- extra scripts and links -->{% endblock %}
     </head>
@@ -64,28 +48,22 @@
                 <div id="nav-access">
                     <a href="#nav-main">{% trans 'skip to navigation' %}</a>
                 </div>
-                <h1>
-                  <a href='{{"/"|l}}' title='{% trans "Home" %}'>{{ settings.TITLE }}</a>
-                  {% block breadcrumbs %}
-                  <span id="breadcrumbs">
-                      {% block breadcrumb_content %}{% endblock %}
-                  </span>
-                  {% endblock %}
-                </h1>
+                <h1><a href='{{"/"|l}}' title='{% trans "Home" %}'>{{ settings.TITLE }}</a></h1>
                 <div id="nav-main" class="menubar" lang="{{ LANGUAGE_CODE }}">
                     <div class="bd">
                         {% block menu %}
                         <ul class="first-of-type">
                             <!--<li class="menubaritem"><a href='{{ "/"|l }}'>{% trans "Home" %}</a></li>-->
-                            <!-- 
-                            ################
+							<!--
+							################
                             # WikiTrans - Add article view
                             ################
                              -->
                             <li class="menubaritem"><a href='{{"/articles/list/"|l }}'>{% trans "Articles" %}</a></li>
                             <li class="menubaritem"><a href='{{ "/projects/"|l }}'>{% trans "Projects" %}</a></li>
+                            <li class="menubaritem"><a href='{{ "/docs/index.html"|l }}'>{% trans "Help" %}</a></li>
                             {% if user.is_superuser %}
-                            <li class="menubaritem"><a class="admin" href='{{ "/admin/"|l }}'>{% trans "Admin" %}</a></li>
+                            <li class="menubaritem"><a href='{{ "/admin/"|l }}'>{% trans "Admin" %}</a></li>
                             {% endif %}
                             {% if user.is_authenticated %}
                             <li class="menubaritem"><a href='{% filter l %}/accounts/{{ user.username }}/{% endfilter %} '>{% trans "My Account" %}</a></li>
@@ -100,23 +78,29 @@
                         {% endblock menu %}
                     </div>
                 </div>
-                <div id="zoom">
-                    <a id="zoom-out" title="{% trans "Zoom out (Ctrl+Shift+Insert)" %}" href="javascript:zoom(-1)">&ndash;</a><a id="zoom-reset" title="{% trans "Reset zoom (Ctrl+Shift+Home)" %}" href="javascript:zoom(0)">T</a><a id="zoom-in" title="{% trans "Zoom in (Ctrl+Shift+Page Up)" %}" href="javascript:zoom(1)">+</a>
-                </div>
                 {% block header_extra %}{% endblock %}
                 {% endblock header %}
             </div><!-- header -->
 
             <div id="body">
-                <div id="xhr-activity" class="xhr-message hide">
-                  <span>{% trans "Loading..." %}</span>
-                </div>
-                <div id="xhr-error" class="xhr-message hide">
-                  <span> </span>
-                </div>
+                {% if message or error_message or messages %}
+                <div id="site-message" lang="{{ LANGUAGE_CODE }}">
+                    {% block message %}
+                    <div class="info">{{ message }}</div>
+                    <div class="error">{{ error_message }}</div>
+                        {% for msg in messages %}
+                        <p class="info">
+                        {{ msg }}
+                        </p>
+                        {% endfor %}
+                    {% endblock message %}
+                </div><!--site-message-->
+                {% endif %}
+
                 <div id="nav-secondary" lang="{{ LANGUAGE_CODE }}">
                   {% block nav-secondary %}
                       {% block search %}{% endblock %}
+                      {% block breadcrumbs %}{% endblock %}
                   {% endblock nav-secondary %}
                 </div><!--nav-secondary-->
 
@@ -132,25 +116,10 @@
                 <div id="postcontent">
                     {% block postcontent %}{% endblock %}
                 </div><!-- postcontent -->
-                {% block extra_content %}{% endblock %}
             </div> <!--body-->
 
-            {% if message or error_message or messages %}
-            <div class="form message{% if error_message %} error{% endif %}" lang="{{ LANGUAGE_CODE }}">
-                {% block message %}
-                <div class="info">{{ message }}</div>
-                <div class="error">{{ error_message }}</div>
-                    {% for msg in messages %}
-                    <p class="info">
-                    {{ msg }}
-                    </p>
-                    {% endfor %}
-                {% endblock message %}
-            </div>
-            {% endif %}
-
-            {% block footer %}
             <div id="footer" lang="{{ LANGUAGE_CODE }}">
+                {% block footer %}
                 <ul class="nav">
                     <li><a href='{{ "/docs/index.html"|l }}'>{% trans "Help" %}</a></li>
                     {% if settings.CAN_CONTACT %}
@@ -158,8 +127,8 @@
                     {% endif %}
                     <li><a href='{{ "/about.html"|l }}'>{% trans "About this Pootle Server" %}</a></li>
                 </ul>
+                {% endblock footer %}
             </div><!--footer-->
-            {% endblock footer %}
         </div> <!--wrapper-->
         {% block scripts %}
         <!--[if lt IE 7.]>

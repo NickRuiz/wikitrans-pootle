@@ -22,7 +22,7 @@
 <div class="settings-container centered">
   <p class="message"><a href='{{ "terminology_extract.html"|l }}'>{% trans "You can regenerate the glossary from scratch." %}</a></p>
 
-  <div class="pagination-control">
+  <div class="translation-nav">
   {{ objects|render_pager }}
   </div>
 
@@ -44,18 +44,18 @@
       </tr>
       {% endfor %}
       </table>
-      <p class="buttons">
+      <p class="common-buttons-block">
         <input type="submit" class="save" name="submit" value="{% trans "Save Changes" %}" />
       </p>
     </form>
   </div>
 
-  <div class="pagination-control">
+  <div class="translation-nav">
   {{ objects|render_pager }}
   </div>
 </div>
 {% else %}
-<div class="form message" lang="{{ LANGUAGE_CODE }}">
+<div class="general-message" lang="{{ LANGUAGE_CODE }}">
   <h2>{% trans "Glossary is Empty" %}</h2>
   <p><a href="{{ "terminology_extract.html"|l }}">{% trans "Generate Glossary" %}</a></p>
 </div>

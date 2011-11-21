@@ -28,7 +28,7 @@ from pootle_app.project_tree import get_translated_name, get_translated_name_gnu
 from pootle_language.models import Language
 from pootle_app.management import require_english
 from pootle_store.util import OBSOLETE
-from pootle_store.models import Store
+
 
 class GnuTests(PootleTestCase):
     """Tests for Gnu Style projects"""
@@ -94,6 +94,26 @@ msgstr "2adim"
         pofile = file(os.path.join(gnu, "zu.po"), 'w')
         pofile.write(self.target_text)
         pofile.close()
+        pofile = file(os.path.join(gnu, "pt_br.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        gnusub = os.path.join(gnu, "subdir")
+        os.mkdir(gnusub)
+        potfile = file(os.path.join(gnusub, "test.pot"), 'w')
+        potfile.write(self.template_text)
+        potfile.close()
+        pofile = file(os.path.join(gnusub, "ar.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        pofile = file(os.path.join(gnusub, "af.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        pofile = file(os.path.join(gnusub, "zu.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        pofile = file(os.path.join(gnusub, "pt_br.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
 
     def setUp(self):
         super(GnuTests, self).setUp()
@@ -116,23 +136,23 @@ msgstr "2adim"
     def test_file_detection(self):
         """test correct language detection when a project is added"""
         lang_count = self.project.translationproject_set.count()
-        self.assertEqual(lang_count, 4)
+        self.assertEqual(lang_count, 5)
 
         store_count = Store.objects.filter(translation_project__project=self.project).count()
-        self.assertEqual(store_count, 4)
+        self.assertEqual(store_count, 10)
 
         lang_list = list(self.project.translationproject_set.values_list('language__code', flat=True).order_by('language__code'))
-        self.assertEqual(lang_list, [u'af', u'ar', u'templates', u'zu'])
+        self.assertEqual(lang_list, [u'af', u'ar', u'pt_BR', u'templates', u'zu'])
 
     def test_template_detection(self):
         """test that given a template the correct target file name is generated"""
         template_tp = self.project.get_template_translationproject()
-        template_store = template_tp.stores.get(name='test.pot')
-        for tp in self.project.translationproject_set.exclude(language__code='templates').iterator():
-            new_pootle_path, new_path = get_translated_name_gnu(tp, template_store)
-            store = tp.stores.all()[0]
-            self.assertEqual(new_pootle_path, store.pootle_path)
-            self.assertEqual(new_path, store.abs_real_path)
+        for template_store in template_tp.stores.iterator():
+            for tp in self.project.translationproject_set.exclude(language__code='templates').iterator():
+                new_pootle_path, new_path = get_translated_name_gnu(tp, template_store)
+                store = tp.stores.get(pootle_path=new_pootle_path)
+                self.assertEqual(new_pootle_path, store.pootle_path)
+                self.assertEqual(new_path, store.abs_real_path)
 
     def test_new(self):
         """test initializing a new file from templates"""
@@ -140,7 +160,7 @@ msgstr "2adim"
         new_tp = self.project.translationproject_set.create(language=fr)
         new_tp.update_from_templates()
         store_count = new_tp.stores.count()
-        self.assertEqual(store_count, 1)
+        self.assertEqual(store_count, 2)
         store = new_tp.stores.all()[0]
         dbunit_count = store.units.count()
         self.assertEqual(dbunit_count, 3)
@@ -153,7 +173,7 @@ msgstr "2adim"
         tp.update_from_templates()
 
         store_count = tp.stores.count()
-        self.assertEqual(store_count, 1)
+        self.assertEqual(store_count, 2)
 
         store = tp.stores.all()[0]
         dbunit_count = store.units.count()
@@ -202,6 +222,27 @@ class PrefixGnuTests(GnuTests):
         pofile = file(os.path.join(gnu, "test_zu.po"), 'w')
         pofile.write(self.target_text)
         pofile.close()
+        pofile = file(os.path.join(gnu, "test_pt_br.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        gnusub = os.path.join(gnu, "subdir")
+        os.mkdir(gnusub)
+        potfile = file(os.path.join(gnusub, "test.pot"), 'w')
+        potfile.write(self.template_text)
+        potfile.close()
+        pofile = file(os.path.join(gnusub, "test_ar.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        pofile = file(os.path.join(gnusub, "test_af.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        pofile = file(os.path.join(gnusub, "test_zu.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        pofile = file(os.path.join(gnusub, "test_pt_br.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+
 
 class NonGnuTests(GnuTests):
     """tests for Non-Gnu style projects"""
@@ -217,6 +258,8 @@ class NonGnuTests(GnuTests):
         os.mkdir(nongnu_af)
         nongnu_zu = os.path.join(nongnu, "zu")
         os.mkdir(nongnu_zu)
+        nongnu_pt_br = os.path.join(nongnu, "pt_BR")
+        os.mkdir(nongnu_pt_br)
 
         potfile = file(os.path.join(nongnu_templates, "test.pot"), 'w')
         potfile.write(self.template_text)
@@ -230,6 +273,36 @@ class NonGnuTests(GnuTests):
         pofile = file(os.path.join(nongnu_zu, "test.po"), 'w')
         pofile.write(self.target_text)
         pofile.close()
+        pofile = file(os.path.join(nongnu_pt_br, "test.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+
+        nongnusub_templates = os.path.join(nongnu_templates, "subdir")
+        os.mkdir(nongnusub_templates)
+        nongnusub_ar = os.path.join(nongnu_ar, "subdir")
+        os.mkdir(nongnusub_ar)
+        nongnusub_af = os.path.join(nongnu_af, "subdir")
+        os.mkdir(nongnusub_af)
+        nongnusub_zu = os.path.join(nongnu_zu, "subdir")
+        os.mkdir(nongnusub_zu)
+        nongnusub_pt_br = os.path.join(nongnu_pt_br, "subdir")
+        os.mkdir(nongnusub_pt_br)
+
+        potfile = file(os.path.join(nongnusub_templates, "test.pot"), 'w')
+        potfile.write(self.template_text)
+        potfile.close()
+        pofile = file(os.path.join(nongnusub_ar, "test.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        pofile = file(os.path.join(nongnusub_af, "test.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        pofile = file(os.path.join(nongnusub_zu, "test.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+        pofile = file(os.path.join(nongnusub_pt_br, "test.po"), 'w')
+        pofile.write(self.target_text)
+        pofile.close()
 
     def test_realpath(self):
         """test that physical path is calculated correctly"""
@@ -240,12 +313,12 @@ class NonGnuTests(GnuTests):
     def test_template_detection(self):
         """test that given a template the correct target file name is generated"""
         template_tp = self.project.get_template_translationproject()
-        template_store = template_tp.stores.get(name='test.pot')
-        for tp in self.project.translationproject_set.exclude(language__code='templates').iterator():
-            new_pootle_path, new_path = get_translated_name(tp, template_store)
-            store = tp.stores.all()[0]
-            self.assertEqual(new_pootle_path, store.pootle_path)
-            self.assertEqual(new_path, store.abs_real_path)
+        for template_store in template_tp.stores.iterator():
+            for tp in self.project.translationproject_set.exclude(language__code='templates').iterator():
+                new_pootle_path, new_path = get_translated_name(tp, template_store)
+                store = tp.stores.get(pootle_path=new_pootle_path)
+                self.assertEqual(new_pootle_path, store.pootle_path)
+                self.assertEqual(new_path, store.abs_real_path)
 
     def test_treestyle(self):
         """test treestyle detection"""
@@ -398,6 +471,33 @@ X-Generator: Pootle Tests
         self.assertEqual(unit.source, u'obsolete')
         self.assertEqual(unit.target, u'2adim')
 
+        pofile = open(store.abs_real_path, 'w')
+        pofile.write(self.target_text)
+        pofile.close()
+
+        store.update(update_structure=True, update_translation=True, conservative=False)
+        unit = store.findunit('obsolete')
+        self.assertEqual(unit.target, u'2adim')
+        self.assertFalse(unit.isobsolete())
+
+class CsvTests(XliffTests):
+    """Tests for CSV projects"""
+    template_text = r'''id, source, target, location, fuzzy
+"Exact", "Exact", "", "fish.c:1", "False"
+"Fuzzy", "Fuzzy", "", "test.c:1", "False"
+"%d new", "%d new", "", "fish.c:2", "False"
+'''
+    target_text = r'''id, source, target, location, fuzzy
+"Exact", "Exact", "Belzabt", "fish.c:1", "False"
+"fuzzy", "fuzzy", "ta2riban", "test.c:1", "False"
+"obsolete", "obsolete", "2adim", "fish.c:2", "False"
+'''
+    ext = 'csv'
+    nontrans_count = 0
+
+    def test_plural(self):
+        # csv files don't do plurals, suppress
+        pass
 
 class TsTests(XliffTests):
     """Tests for Qt ts projects"""
@@ -405,7 +505,7 @@ class TsTests(XliffTests):
 <TS version="2.0">
     <context>
         <name>header</name>
-        <message><source></source><translation>some headers</translation></message>
+        <message><source></source><translatorcomment>some headers</translatorcomment></message>
     </context>
     <context>
         <name>fish.c</name>

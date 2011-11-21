@@ -48,7 +48,7 @@ def required_depcheck():
         text = _('Translate Toolkit version %s installed.', version)
         state = 'good'
     else:
-        text = _('Translate Toolkit version %(installed)s installed. Pootle requires at least version %(required)s.', {'installed': version, 'required': ".".join(depcheck.translate_required_ver)})
+        text = _('Translate Toolkit version %(installed)s installed. Pootle requires version %(required)s.', {'installed': version, 'required': "1.8.0"})
         state = 'error'
     required.append({'dependency': 'translate', 'state': state, 'text': text})
 
@@ -66,7 +66,7 @@ def required_depcheck():
         text = _('lxml version %s is installed.', version)
         state = 'good'
     elif version is not None:
-        text = _('lxml version %(installed)s is installed. Pootle requires at least version %(required)s for XML format support.', {'installed': version, 'required': ".".join(depcheck.lxml_required_ver)})
+        text = _('lxml version %(installed)s is installed. Pootle requires version %(required)s for XML format support.', {'installed': version, 'required': "2.1.4"})
         state = 'error'
     else:
         text = _('lxml is not installed. Pootle requires lxml for XML format support.')
@@ -153,7 +153,7 @@ def optimal_depcheck():
 
 def _format_numbers(dict):
     for k in dict.keys():
-        dict[k] = locale.format("%d", dict[k], grouping=True)
+        dict[k] = locale.format("%d", dict[k], 1)
 
 def server_stats():
     result = cache.get("server_stats")
@@ -196,8 +196,6 @@ def server_stats_more(request):
     response = []
     for k in result.keys():
         response.append((stat_strings[k], result[k]))
-    print response
-    print locale.getlocale()
     response = simplejson.dumps(response)
     return HttpResponse(response, mimetype="application/json")
 

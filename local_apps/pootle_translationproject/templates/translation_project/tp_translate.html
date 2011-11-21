@@ -6,15 +6,7 @@
 {{ block.super }} » {% trans "Translate" %}
 {% endblock %}
 
-{% block breadcrumb_content %}
-{{ block.super }} » <span>{% trans "Translate" %}</span>
-{% endblock %}
-
 {% block bodyclass %}tptranslate{% endblock bodyclass %}
-
-{% block precontent %}
-{{ block.super }}
-{% endblock precontent %}
 
 {% block content %}
 <!-- The editing view -->
@@ -24,6 +16,7 @@
         {% if item.isdir or item.isfile %}
         <div class="item {% cycle 'even' 'odd' %}">
         {% include "language/item_block.html" %}
+        {% include "language/item_stats.html" %}
         </div>
         {% endif %}
     </div>
@@ -32,7 +25,6 @@
 {% endblock content %}
 
 {% block postcontent %}
-{% include "translation_project/translate_offline_notice.html" %}
 {% include "translation_project/fileop_forms.html" %}
 {% include "top_contributers_table.html" %}
 {% endblock postcontent %}

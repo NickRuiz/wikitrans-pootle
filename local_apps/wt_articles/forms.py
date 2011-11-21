@@ -33,12 +33,12 @@ class ArticleRequestForm(forms.ModelForm):
     class Meta:
         model = ArticleOfInterest
         
-class FixArticleForm(forms.ModelForm):
-    sentences = forms.CharField(widget=forms.Textarea())
-    
-    class Meta:
-        model = SourceArticle
-        fields = ('title')
+#class FixArticleForm(forms.ModelForm):
+#    sentences = forms.CharField(widget=forms.Textarea())
+#    
+#    class Meta:
+#        model = SourceArticle
+#        fields = ('title')
         
 class DummyFixArticleForm(forms.Form):
     title = forms.CharField()

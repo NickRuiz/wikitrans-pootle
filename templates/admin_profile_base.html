@@ -2,18 +2,19 @@
 {% load i18n baseurl %}
 
 {% block title %}
-{{ block.super }} » {% trans "Administration" %}
-{% endblock %}
-
-{% block breadcrumb_content %}
-  {{ block.super }} »
-  <span><a class="admin" href='{{ "/admin/"|l }}'>{% trans "Administration" %}</a></span>
+{{ block.super }}: {% trans "Administration" %}
 {% endblock %}
 
 {% block css %}
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href='{{ "admin.css"|m }}' />
 {% endblock css %}
+
+{% block breadcrumbs %}
+<div id="breadcrumbs">
+    <h2 class="title">{% block breadcrumb_content %}{% trans "Administration" %}{% endblock %}</h2>
+</div>
+{% endblock %}
 
 {% block precontent %}
 {% include "admin_profile_menu.html" %}

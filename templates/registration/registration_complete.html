@@ -2,16 +2,10 @@
 
 {% load i18n baseurl %}
 
-{% block title %}
-{{ block.super }} » {% trans "Registration Complete" %}
-{% endblock %}
-
-{% block breadcrumb_content %}
-{{ block.super }} » <span>{% trans "Registration Complete" %}</span>
-{% endblock %}
+{% block title %}{{ block.super }}: {% trans "Registration Complete" %}{% endblock %}
  
 {% block content %}
-<div class="form message success">
+<div class="general-message">
     <h2>{% trans "Registration Complete" %}</h2>
     <p>{% trans "Please check your email to activate your account." %}
 </div>

@@ -1,16 +1,10 @@
 {% extends "tp_base_extended.html" %}
-{% load i18n render_pager baseurl store_tags translation_project_tags cache %}
+{% load i18n baseurl store_tags translation_project_tags cache %}
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_language_bidi as LANGUAGE_BIDI %}
 
 {% block title %}
-{{ block.super }} » {{ store.name }}
-{% endblock %}
-
-{% block breadcrumb_content %}
-{% cache settings.CACHE_TIMEOUT store_bread store.id LANGUAGE_CODE %}
-{{ block.super }} » <span><a href="{{ store.pootle_path|l}}/translate">{{ store.name }}</a></span>
-{% endcache %}
+{{ block.super }} » {% trans "Translate" %} » {{ store }}
 {% endblock %}
 
 {% block body.id %}translatepage{% endblock body.id %}
@@ -20,31 +14,17 @@
 {% block css %}
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href='{{ "translate.css"|m }}' />
-{% if not user.is_authenticated %}
-<link rel="stylesheet" type="text/css" href='{{ "fancybox-captcha.css"|m }}' />
-{% endif %}
 {% endblock css %}
 
 {% block extra_head %}
-<script src='{{ "js/jquery/jquery.history.js"|m }}' type="text/javascript"></script>
-<script src='{{ "js/jquery/jquery.tmpl.js"|m }}' type="text/javascript"></script>
 <script src='{{ "js/jquery/jquery.textarea-expander.js"|m }}' type="text/javascript"></script>
-<script src='{{ "js/editor.js"|m }}' type="text/javascript"></script>
+<script src='{{ "js/jquery/jquery.scrollTo.min.js"|m }}' type="text/javascript"></script>
 <script type="text/javascript">
-$(document).ready (function() {
-  var options = {};
-  {% if request.is_secure %}options.secure = true;{% endif %}
-  {% if cansuggest or cantranslate %}
-  options.mt = [];
-    {% for backend, apikey in MT_BACKENDS %}
-    options.mt.push({name: "{{ backend|lower }}", key: "{{ apikey }}"});
-    {% endfor %}
-  {% endif %}
-  PTL.editor.init(options);
-});
-</script>
-<script id="view_unit" type="text/x-jquery-template">
-{% include_raw "unit/xhr-view.html" %}
+  $(document).ready (function() {
+     var maxheight = $(window).height() * 0.3;
+     $('textarea.expanding').TextAreaExpander('10', maxheight);
+     $.scrollTo('td.translate-full', {offset: {top:-100}});
+  });
 </script>
 {% endblock extra_head %}
 
@@ -52,17 +32,34 @@ $(document).ready (function() {
 {% render_search search_form "?" %}
 {% endblock %}
 
+{% block breadcrumbs_content %}
+{% cache settings.CACHE_TIMEOUT store_bread store.id LANGUAGE_CODE %}
+{{ block.super }} {% if not directory.trail.count %} » {% endif %}
+ <a href="{{ store.pootle_path|l}}/translate">{{ store.name }}</a>
+{% endcache %}
+{% endblock %}
+
 {% block innernav %}
 <!--! Navigation bar -->
 <div id="innernav" class="navbar">
-  <div class="item-statistics" lang="{{ LANGUAGE_CODE }}">
-    <!--{{ store|stat_summary }}-->
+  <div class="item-statistics small" lang="{{ LANGUAGE_CODE }}">
+    <p> {{ store|stat_summary }}</p>
   </div>
 </div><!--innernav-->
 {% endblock innernav %}
 
 {% block precontent %}
 {{ block.super }}
+{% if checks %}
+<div class="check">
+  {% for check in checks %}
+  <p>
+    <img src='{{ "images/help.png"|m }}' class="checkinfo" />
+    {{ check|safe }}
+  </p>
+  {% endfor %}
+</div>
+{% endif %}
 {% endblock precontent %}
 
 {% block content %}
@@ -73,77 +70,23 @@ $(document).ready (function() {
 </form>
 {% endblock %}
 
-{% block extra_content %}
-<div id="toolbar">
-
-  {% if checks %}
-  <!--
-  <div class="check">
-    {% for check in checks %}
-    <p>
-      <img src='{{ "images/help.png"|m }}' class="checkinfo" />
-      {{ check|safe }}
-    </p>
-    {% endfor %}
-  </div>
-  -->
-  {% endif %}
-
-  <div class="label">Search:</div>
-  <div id="__search" lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
-    <form action="{{ search_action }}" method="get" id="searchform" title="Search (Ctrl+Shift+S)<br/>Type in, then press Enter to search">
-      <label class="inputHint" for="id_search">{% trans "Search" %}</label>{{ search_form.search }}
-      <!--
-      <a class="advancedlink">
-        {% if LANGUAGE_BIDI %}
-        <img src='{{ "images/sarrow_down_rtl.png"|m }}' alt="{{ advanced_search_title }}" title="{{ advanced_search_title }}" class="togglesearch" />
-        <img src='{{ "images/sarrow_up_rtl.png"|m }}' alt="{{ advanced_search_title }}" title="{{ advanced_search_title }}" class="togglesearch" style="display: none;"/>
-        {% else %}
-        <img src='{{ "images/sarrow_down.png"|m }}' alt="{{ advanced_search_title }}" title="{{ advanced_search_title }}" class="togglesearch" />
-        <img src='{{ "images/sarrow_up.png"|m }}' alt="{{ advanced_search_title }}" title="{{ advanced_search_title }}" class="togglesearch" style="display: none;"/>
-        {% endif %}
-      </a>
-      -->
-      <div class="advancedsearch">
-        {{ search_form.sfields }}
-      </div>
-    </form>
-  </div>
-
-  <div class="label">Filter by:</div>
-  <div id="filter-status" class="toolbar-item">
-    <select name="filter-status">
-      <option selected="selected" value="all">{% trans "All" %}</option>
-      <option value="incomplete">{% trans "Incomplete" %}</option>
-      <option value="untranslated">{% trans "Untranslated" %}</option>
-      <option value="fuzzy">{% trans "Fuzzy" %}</option>
-      <option value="suggestions">{% trans "Suggestions" %}</option>
-      <option value="checks">{% trans "Checks" %}</option>
-    </select>
-  </div>
-
-  <div id="prevnext" lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
-    <input type="submit" class="previous" name="back" accesskey="b" value="{% trans 'Previous unit' %}" title="{% trans 'Go to the previous unit (Ctrl+Up)<br/><br/>Also:<br/>10 units up: Ctrl+Page&nbsp;Up<br/>First unit: Ctrl+Home' %}" />
-    <span id="item-navigation">
-      <input id="item-number" type="text" value="1" size="1" title="{% trans 'Current page number (Ctrl+Shift+U)<br/><br/>Type in the number and press Enter<br/>to go to any position' %}" />
-      /
-      <span id="items-count" title="{% trans 'Total pages' %}"></span>
-    </span>
-    <input type="submit" class="next" name="skip" accesskey="k" value="{% trans 'Next unit' %}" title="{% trans 'Go to the next unit (Ctrl+Down)<br/><br/>Also:<br/>10 units down: Ctrl+Page&nbsp;Down<br/>Last unit: Ctrl+End' %}" />
-  </div>
-</div>
-{% endblock %}
-
 {% block scripts_extra %}
 {{ block.super }}
 <script src='{{ "js/json2.min.js"|m }}' type="text/javascript"></script>
+<script src='{{ "js/translatepage.js"|m }}' type="text/javascript"></script>
+<script src='{{ "js/jquery/jquery.cookie.js"|m }}' type="text/javascript"></script>
 <script src='{{ "js/jquery/jquery.fieldselection.js"|m }}' type="text/javascript"></script>
 <script src='{{ "js/jquery/jquery.caret.js"|m }}' type="text/javascript"></script>
-{% if not user.is_authenticated %}
-<script src='{{ "js/jquery/jquery.fancybox.min.js"|m }}' type="text/javascript"></script>
+{% if cansuggest or cantranslate %}
+  {% for backend, apikey in MT_BACKENDS %}
+    {% ifequal backend 'GOOGLE_TRANSLATE' %}
+      <script src="{% if request.is_secure %}https://{% else %}http://{% endif %}www.google.com/jsapi" type="text/javascript"></script>
+      <script src='{{ "js/mt/google-translate.js"|m }}' type="text/javascript"></script>
+    {% endifequal %}
+    {% ifequal backend 'APERTIUM' %}
+      <script src="http://api.apertium.org/JSLibrary.js{% if apikey %}?key={{ apikey }}{% endif %}" type="text/javascript"></script>
+      <script src='{{ "js/mt/apertium.js"|m }}' type="text/javascript"></script>
+    {% endifequal %}
+  {% endfor %}
 {% endif %}
 {% endblock scripts_extra %}
-
-{% block footer %}
-<div id="translate-footer"></div>
-{% endblock footer %}

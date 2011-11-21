@@ -52,7 +52,11 @@ def get_supported_formats():
         formats.append(('catkeys', _('Haiku catkeys'), CatkeysFile, 'bilingual'))
     except ImportError:
         pass
-
+    try:
+        from translate.storage.csvl10n  import csvfile
+        formats.append(('csv', _('Excel CSV'), csvfile, 'bilingual'))
+    except ImportError:
+        pass
     # Monolingual formats
     try:
         from translate.storage.properties import javafile
@@ -60,6 +64,11 @@ def get_supported_formats():
     except ImportError:
         from translate.storage.properties import propfile
         formats.append(('properties', _('Java Properties'), propfile, 'monolingual'))
+    try:
+        from translate.storage.properties import javautf8file
+        formats.append(('properties', _('Java Properties (UTF-8)'), javautf8file, 'monolingual'))
+    except ImportError:
+        pass
     try:
         from translate.storage.properties import stringsfile
         #l10n: Don't translate "strings" unless you are sure these files have

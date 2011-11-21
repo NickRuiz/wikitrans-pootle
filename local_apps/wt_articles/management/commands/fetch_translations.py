@@ -25,7 +25,7 @@ class Command(NoArgsCommand):
         
         for host in hosts:
             try:
-                self.host.fetch_translations()
+                host.fetch_translations()
             except UnsupportedLanguagePair as ex:
                 self.handle_error(host, ex)
             except UndefinedTranslator as ex:

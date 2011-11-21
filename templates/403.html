@@ -2,15 +2,11 @@
 {% load i18n baseurl %}
 
 {% block title %}
-{{ block.super }} » {% trans "Permission Denied" %}
-{% endblock %}
-
-{% block breadcrumb_content %}
-{{ block.super }} » <span>{% trans "Permission Denied" %}</span>
+{{ block.super }}: {% trans "Permission Denied" %}
 {% endblock %}
 
 {% block content %}
-<div class="form message error" lang="{{ LANGUAGE_CODE }}">
+<div class="general-message" lang="{{ LANGUAGE_CODE }}">
     <h2>{% trans 'Permission Denied' %}</h2>
     {% if permission_error %}
     <p>{{ permission_error }}</p>

@@ -30,9 +30,8 @@ import time
 import logging
 from random import randint
 
-from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from django.template import loader, RequestContext
+from django.template import RequestContext
 from django import forms
 from django.utils.translation import ugettext as _
 from django.utils import simplejson
@@ -224,13 +223,4 @@ class CaptchaMiddleware:
             'url': request.path,
             'post_data': request.POST,
             }
-        if request.is_ajax():
-            type_class = request.path.endswith('/submit') and 'submit' or 'suggest'
-            ec['type_class'] = type_class
-            t = loader.get_template('captcha-xhr.html')
-            c = RequestContext(request, ec)
-            json = {'captcha': t.render(c)}
-            response = simplejson.dumps(json)
-            return HttpResponse(response, mimetype="application/json")
-        else:
-            return render_to_response('captcha.html', ec, context_instance=RequestContext(request))
+        return render_to_response('captcha.html', ec, context_instance=RequestContext(request))

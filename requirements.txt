@@ -4,7 +4,9 @@
 
 python-dateutil>=1.4.1
 python-openid>=2.2.4
-python-yadis>=1.1.0
+# Temporary fix to python-yadis, since it doesn't appear in PyPI
+#python-yadis>=1.1.0
+http://static.crossway.org/_tmp/python-yadis-1.1.0.tar.gz
 simplejson>=2.0.9
 pytz>=2009l
 

@@ -1,13 +1,14 @@
 {% extends "base.html"  %}
-{% load i18n baseurl %}
+{% load i18n %}
 
 {% block title %}
-{{ block.super }} » {% trans "My Account" %}
+{{ block.super }}: {% trans "My Account" %}
 {% endblock %}
 
-{% block breadcrumb_content %}
-    {{ block.super }} »
-    <span><a href="{% filter l %}/accounts/{{ user.username }}/{% endfilter %}">{% trans "My Account" %}</a></span>
+{% block breadcrumbs %}
+<div id="breadcrumbs">
+    <h2 class="title">{% block breadcrumb_content %}{% trans "My Account" %}{% endblock %}</h2>
+</div>
 {% endblock %}
 
 {% block precontent %}

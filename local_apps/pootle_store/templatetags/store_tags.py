@@ -18,12 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
+from difflib import SequenceMatcher
 from django.utils.safestring import mark_safe
 
 from django import template
 from django.utils.translation import ugettext as _
 from django.core.exceptions import  ObjectDoesNotExist
-from django.template.loaders.app_directories import load_template_source
 
 from pootle_store.fields import list_empty
 from pootle_store.models import Unit
@@ -60,34 +60,7 @@ def call_highlight(old, new):
     else:
         return highlight_diffs(old, new)
 
-def _google_highlight_diffs(old, new):
-    """Highlights the differences between old and new."""
-
-    textdiff = u"" # to store the final result
-    removed = u"" # the removed text that we might still want to add
-    diff = differencer.diff_main(old, new)
-    differencer.diff_cleanupSemantic(diff)
-    for op, text in diff:
-        if op == 0: # equality
-            if removed:
-                textdiff += '<span class="translate-diff-delete">%s</span>' % fancy_escape(removed)
-                removed = u""
-            textdiff += fancy_escape(text)
-        elif op == 1: # insertion
-            if removed:
-                # this is part of a substitution, not a plain insertion. We
-                # will format this differently.
-                textdiff += '<span class="translate-diff-replace">%s</span>' % fancy_escape(text)
-                removed = u""
-            else:
-                textdiff += '<span class="translate-diff-insert">%s</span>' % fancy_escape(text)
-        elif op == -1: # deletion
-            removed = text
-    if removed:
-        textdiff += '<span class="translate-diff-delete">%s</span>' % fancy_escape(removed)
-    return mark_safe(textdiff)
-
-def _difflib_highlight_diffs(old, new):
+def highlight_diffs(old, new):
     """Highlights the differences between old and new. The differences
     are highlighted such that they show what would be required to
     transform old into new.
@@ -106,14 +79,6 @@ def _difflib_highlight_diffs(old, new):
             #textdiff += "<span>%s</span>" % fance_escape(a[i1:i2])}
             textdiff += '<span class="translate-diff-replace">%s</span>' % fancy_escape(new[j1:j2])
     return mark_safe(textdiff)
-
-try:
-    from translate.misc.diff_match_patch import diff_match_patch
-    differencer = diff_match_patch()
-    highlight_diffs = _google_highlight_diffs
-except ImportError, e:
-    from difflib import SequenceMatcher
-    highlight_diffs = _difflib_highlight_diffs
 
 def get_sugg_list(unit):
     """get suggested translations for given unit with the localized
@@ -152,7 +117,16 @@ def stat_summary(store):
 @register.filter('pluralize_source')
 def pluralize_source(unit):
     if unit.hasplural():
-        return [(0, unit.source.strings[0], _('Singular')), (1, unit.source.strings[1], _('Plural'))]
+        count = len(unit.source.strings)
+        if count == 1:
+            return [(0, unit.source.strings[0], "%s+%s" % (_('Singular'), _('Plural')))]
+        elif count == 2:
+            return [(0, unit.source.strings[0], _('Singular')), (1, unit.source.strings[1], _('Plural'))]
+        else:
+            forms = []
+            for i, source in enumerate(unit.source.strings):
+                forms.append((i, source, _('Plural Form %d', i)))
+            return forms
     else:
         return [(0, unit.source, None)]
 
@@ -230,22 +204,3 @@ def translate_table(context):
     """encapsulate translate_table in a tag to avoid parsing template
     when cache will be used"""
     return context
-
-def do_include_raw(parser, token):
-    """
-    Performs a template include without parsing the context, just dumps
-    the template in.
-    Source: http://djangosnippets.org/snippets/1684/
-    """
-    bits = token.split_contents()
-    if len(bits) != 2:
-        raise TemplateSyntaxError, "%r tag takes one argument: the name of the template to be included" % bits[0]
-
-    template_name = bits[1]
-    if template_name[0] in ('"', "'") and template_name[-1] == template_name[0]:
-        template_name = template_name[1:-1]
-
-    source, path = load_template_source(template_name)
-
-    return template.TextNode(source)
-register.tag("include_raw", do_include_raw)

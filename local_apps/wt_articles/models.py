@@ -218,12 +218,6 @@ class SourceArticle(models.Model):
         """
         return Project.objects.filter(code = self.get_project_code()).exists()
     
-    def create_translation_request(self, language_id):
-        '''
-        Creates a translation request for the given Pootle project.
-        '''
-        pass
-    
     def delete_pootle_project(self, delete_local=False):
         '''
         Deletes the associated Pootle project.
@@ -260,7 +254,7 @@ class SourceArticle(models.Model):
         sl_set = Language.objects.filter(code = self.language.code)
         
         if len(sl_set) < 1:
-            return false
+            return False
     
         source_language = sl_set[0]
             
@@ -491,12 +485,12 @@ class TranslatedArticle(models.Model):
         source_segment_ids = [s.segment_id for s in source_sentences]
         translated_segment_ids = [s.segment_id for s in translated_sentences]
         if len(source_segment_ids) != len(translated_segment_ids):
-            raise ValueException('Number of translated sentences doesn\'t match number of source sentences')
+            raise ValueError('Number of translated sentences doesn\'t match number of source sentences')
         if source_segment_ids != translated_segment_ids:
-            ValueException('Segment id lists do not match')
+            ValueError('Segment id lists do not match')
         translated_article_list = [ts.source_sentence.article for ts in translated_sentences]
         if len(translated_article_list) != 1 and translated_article_list[0] != self.article:
-            raise ValueException('Not all translated sentences derive from the source article')
+            raise ValueError('Not all translated sentences derive from the source article')
         for ts in translated_sentences:
             self.sentences.add(ts)
 

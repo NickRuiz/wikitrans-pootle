@@ -10,6 +10,10 @@ h2. Documentation
  * See [[license]] for more information.
 
 h2. Required Packages
+In order to use WikiTrans, the following packages are required (in addition to the files in requirements.txt and the attempted installation script mentioned below):
+    Translate Toolkit version 1.9.0.
+    Django version 1.3.1.
+    lxml version 2.3.2.
  
 h2. Quick Setup Guide
 
@@ -17,6 +21,6 @@ Before retrieving this project from GitHub, try to use the installation script p
 The following information needs to be updated:
 @GIT_PARENT_DIRECTORY="/home/nick/workspace/"@
 
-1. Install Python 2.6.x.
+1. Install Python 2.6.x or 2.7.x.
 
-2. An installation script has been created to attempt to simplify the installation process. 
+2. An installation script has been created to attempt to simplify the installation process. However, it is imperfect.

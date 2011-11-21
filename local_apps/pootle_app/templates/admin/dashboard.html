@@ -2,13 +2,13 @@
 {% load i18n baseurl %}
 
 {% block title %}
-{{ block.super }}
+{{ block.super }} » {% trans "Dashboard" %}
 {% endblock %}
 
 {% block bodyclass %}admindashboard{% endblock %}
 
 {% block breadcrumb_content %}
-{{ block.super }}
+{{ block.super }} » {% trans "Dashboard" %}
 {% endblock %}
 
 {% block section_body %}

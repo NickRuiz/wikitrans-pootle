@@ -30,15 +30,15 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
-from django.template import loader, RequestContext
+from django.template import RequestContext
 from django.utils.translation import to_locale, ugettext as _
-from django.utils.translation import ungettext
 from django.utils.translation.trans_real import parse_accept_lang_header
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.cache import cache
 from django.utils import simplejson
 from django.utils.html import escape
 from django.views.decorators.cache import never_cache
+from django.utils.encoding import iri_to_uri
 
 from pootle_misc.baseurl import redirect
 from pootle_app.models.permissions import get_matching_permissions, check_permission, check_profile_permission
@@ -51,9 +51,10 @@ from pootle_app.project_tree import ensure_target_dir_exists
 
 from pootle_store.models import Store, Unit
 from pootle_store.forms import unit_form_factory, highlight_whitespace
-from pootle_store.templatetags.store_tags import fancy_highlight, find_altsrcs, get_sugg_list, highlight_diffs, pluralize_source, pluralize_target
-from pootle_store.util import UNTRANSLATED, FUZZY, TRANSLATED, absolute_real_path, ajax_required
-
+from pootle_store.templatetags.store_tags import highlight_diffs
+from pootle_store.util import UNTRANSLATED, FUZZY, TRANSLATED, absolute_real_path
+from pootle_store.filetypes import factory_classes, is_monolingual
+from pootle_store.signals import translation_submitted
 
 def export_as_xliff(request, pootle_path):
     """export given file to xliff for offline translation"""
@@ -65,13 +66,38 @@ def export_as_xliff(request, pootle_path):
     export_path = os.path.join('POOTLE_EXPORT', path + os.path.extsep + 'xlf')
     abs_export_path = absolute_real_path(export_path)
 
-    key = "%s:export_as_xliff"
+    key = iri_to_uri("%s:export_as_xliff" % pootle_path)
     last_export = cache.get(key)
     if not (last_export and last_export == store.get_mtime() and os.path.isfile(abs_export_path)):
         ensure_target_dir_exists(abs_export_path)
         outputstore = store.convert(PoXliffFile)
         outputstore.switchfile(store.name, createifmissing=True)
         fd, tempstore = tempfile.mkstemp(prefix=store.name, suffix='.xlf')
+        os.close(fd)
+        outputstore.savefile(tempstore)
+        shutil.move(tempstore, abs_export_path)
+        cache.set(key, store.get_mtime(), settings.OBJECT_CACHE_TIMEOUT)
+    return redirect('/export/' + export_path)
+
+def export_as_type(request, pootle_path, filetype):
+    """export given file to xliff for offline translation"""
+    if pootle_path[0] != '/':
+        pootle_path = '/' + pootle_path
+    store = get_object_or_404(Store, pootle_path=pootle_path)
+    klass = factory_classes.get(filetype, None)
+    if not klass or is_monolingual(klass) or pootle_path.endswith(filetype):
+        raise ValueError
+
+    path, ext = os.path.splitext(store.real_path)
+    export_path = os.path.join('POOTLE_EXPORT', path + os.path.extsep + filetype)
+    abs_export_path = absolute_real_path(export_path)
+
+    key = iri_to_uri("%s:export_as_%s" % (pootle_path, filetype))
+    last_export = cache.get(key)
+    if not (last_export and last_export == store.get_mtime() and os.path.isfile(abs_export_path)):
+        ensure_target_dir_exists(abs_export_path)
+        outputstore = store.convert(klass)
+        fd, tempstore = tempfile.mkstemp(prefix=store.name, suffix=os.path.extsep + filetype)
         os.close(fd)
         outputstore.savefile(tempstore)
         shutil.move(tempstore, abs_export_path)
@@ -183,6 +209,9 @@ def get_search_step_query(translation_project, form, units_queryset):
 
 def get_step_query(request, units_queryset):
     """Narrows down unit query to units matching conditions in GET and POST"""
+    if 'unit' in request.GET or 'page' in request.GET:
+        return units_queryset
+
     if 'unitstates' in request.GET:
         unitstates = request.GET['unitstates'].split(',')
         if unitstates:
@@ -227,8 +256,9 @@ def get_current_units(request, step_queryset, units_queryset):
         # load first unit in a specific page
         profile = get_profile(request.user)
         unit_rows = profile.get_unit_rows()
-        pager = paginate(request, units_queryset, items=unit_rows)
+        pager = paginate(request, units_queryset, items=unit_rows, orphans=0)
         edit_unit = pager.object_list[0]
+
     elif 'id' in request.POST and 'index' in request.POST:
         # GET doesn't specify a unit try POST
         prev_id = int(request.POST['id'])
@@ -341,13 +371,20 @@ def translate_page(request, units_queryset, store=None):
            'suggest' in request.POST and not cansuggest:
             raise PermissionDenied
 
-        form_class = unit_form_factory(language, len(prev_unit.source.strings))
+        if prev_unit.hasplural():
+            snplurals = len(prev_unit.source.strings)
+        else:
+            snplurals = None
+        form_class = unit_form_factory(language, snplurals)
         form = form_class(request.POST, instance=prev_unit)
         if form.is_valid():
             if cantranslate and 'submit' in request.POST:
                 if form.instance._target_updated or form.instance._translator_comment_updated or \
                        form.instance._state_updated:
                     form.save()
+                    translation_submitted.send(sender=translation_project,
+                                               unit=form.instance, profile=profile)
+
                     sub = Submission(translation_project=translation_project,
                                      submitter=get_profile(request.user))
                     sub.save()
@@ -372,7 +409,11 @@ def translate_page(request, units_queryset, store=None):
 
     # only create form for edit_unit if prev_unit was processed successfully
     if form is None or form.is_valid():
-        form_class = unit_form_factory(language, len(edit_unit.source.strings))
+        if edit_unit.hasplural():
+            snplurals = len(edit_unit.source.strings)
+        else:
+            snplurals = None
+        form_class = unit_form_factory(language, snplurals)
         form = form_class(instance=edit_unit)
 
     if store is None:
@@ -393,25 +434,33 @@ def translate_page(request, units_queryset, store=None):
     # the store not for the unit_step query
     if pager is None:
         page = preceding / unit_rows + 1
-        pager = paginate(request, pager_query, items=unit_rows, page=page)
+        pager = paginate(request, pager_query, items=unit_rows, page=page, orphans=0)
 
     # we always display the active unit in the middle of the page to
     # provide context for translators
     context_rows = (unit_rows - 1) / 2
     if store_preceding > context_rows:
         unit_position = store_preceding % unit_rows
-        if unit_position < context_rows:
+        page_length = pager.end_index() - pager.start_index() + 1
+        if page_length < unit_rows:
+            if pager.has_other_pages():
+                units_query = store.units[page_length:]
+            else:
+                units_query = store.units
+            page = store_preceding / unit_rows
+            units = paginate(request, units_query, items=unit_rows, page=page, orphans=0).object_list
+        elif unit_position < context_rows:
             # units too close to the top of the batch
             offset = unit_rows - (context_rows - unit_position)
             units_query = store.units[offset:]
             page = store_preceding / unit_rows
-            units = paginate(request, units_query, items=unit_rows, page=page).object_list
+            units = paginate(request, units_query, items=unit_rows, page=page, orphans=0).object_list
         elif unit_position >= unit_rows - context_rows:
             # units too close to the bottom of the batch
             offset = context_rows - (unit_rows - unit_position - 1)
             units_query = store.units[offset:]
             page = store_preceding / unit_rows + 1
-            units = paginate(request, units_query, items=unit_rows, page=page).object_list
+            units = paginate(request, units_query, items=unit_rows, page=page, orphans=0).object_list
         else:
             units = pager.object_list
     else:
@@ -427,7 +476,7 @@ def translate_page(request, units_queryset, store=None):
 
     # links for quality check documentation
     checks = []
-    for check in request.GET.get('matchnames', '').split(','):
+    for check in request.GET.get('matchnames','').split(','):
         if not check:
             continue
         safe_check = escape(check)
@@ -476,583 +525,109 @@ def translate(request, pootle_path):
 
     return translate_page(request, store.units, store=store)
 
-#
-# Views used with XMLHttpRequest requests.
-#
-
-def _filter_queryset(qdict, qs):
-    """
-    Filters the given C{qs} unit queryset by the criterion specified
-    in the C{qdict} POST/GET parameters.
-
-    @return: A filtered queryset.
-    """
-    filtered = qs
-    if 'filter' in qdict and 'checks' not in qdict:
-        filter_by = qdict['filter']
-        if filter_by == "incomplete":
-            filtered = qs.filter(state=FUZZY) | qs.filter(state=UNTRANSLATED)
-        elif filter_by == "untranslated":
-            filtered = qs.filter(state=UNTRANSLATED)
-        elif filter_by == "fuzzy":
-            filtered = qs.filter(state=FUZZY)
-        elif filter_by == "suggestions":
-            filtered = qs.exclude(suggestion=None)
-
-    if 'checks' in qdict:
-        checks = qdict['checks'].split(',')
-        if checks:
-            filtered = qs.filter(qualitycheck__false_positive=False,
-                                 qualitycheck__name__in=checks)
-
-    return filtered
-
-def _filter_view_units(units_qs, current_page, per_page):
-    """
-    Returns C{per_page} units that are contained within page C{current_page}.
-    """
-    start_index = per_page * (current_page - 1)
-    end_index = start_index + per_page
-    filtered = units_qs[start_index:end_index]
-    return _build_units_list(units_qs, filtered)
-
-def _filter_ctxt_units(units_qs, edit_index, limit, gap=0):
-    """
-    Returns C{limit}*2 units that are before and after C{index}.
-    """
-    bs = 0
-    sindex = edit_index - gap > 0 and edit_index - gap or 0
-    if sindex > limit and sindex != 0:
-        bs = sindex - limit
-    before = units_qs.filter(index__lte=sindex)[bs:sindex]
-    after = units_qs.filter(index__gt=edit_index + gap + 1)[:limit]
-    return {'before': _build_units_list(units_qs, before),
-            'after': _build_units_list(units_qs, after)}
-
-def _get_prevnext_unit_ids(qs, unit):
-    """
-    Gets the previous and next unit ids of C{unit} based on index.
-
-    @return: previous and next units. If previous or next is missing,
-    None will be returned.
-    """
-    current_index = _get_index_in_qs(qs, unit)
-    prev_index = qs.count()
-    next_index = prev_index
-    if current_index is not None:
-        if current_index > 0:
-            prev_index = current_index - 1
-        next_index = current_index + 1
-    try:
-        prev = qs[prev_index].id
-    except IndexError:
-        prev = None
-    try:
-        next = qs[next_index].id
-    except IndexError:
-        next = None
-    return prev, next
-
-def _build_units_list(qs, units):
-    """
-    Given a list/queryset of units, builds a list with the unit data
-    contained in a dictionary ready to be returned as JSON.
-
-    @return: A list with unit id, source, and target texts. In case of
-    having plural forms, a title for the plural form is also provided.
-    """
-    return_units = []
-    for unit in units.iterator():
-        source_unit = []
-        target_unit = []
-        for i, source, title in pluralize_source(unit):
-            unit_dict = {'text': fancy_highlight(source)}
-            if title:
-                unit_dict["title"] = title
-            source_unit.append(unit_dict)
-        for i, target, title in pluralize_target(unit):
-            unit_dict = {'text': fancy_highlight(target)}
-            if title:
-                unit_dict["title"] = title
-            target_unit.append(unit_dict)
-        prev, next = _get_prevnext_unit_ids(qs, unit)
-        return_units.append({'id': unit.id,
-                             'isfuzzy': unit.isfuzzy(),
-                             'prev': prev,
-                             'next': next,
-                             'source': source_unit,
-                             'target': target_unit})
-    return return_units
-
-def _build_pager_dict(pager):
-    """
-    Given a pager object C{pager}, retrieves all the information needed
-    to build a pager.
-
-    @return: A dictionary containing necessary pager information to build
-    a pager.
-    """
-    return {"number": pager.number,
-            "num_pages": pager.paginator.num_pages,
-            "per_page": pager.paginator.per_page
-           }
-
-def _get_index_in_qs(qs, unit):
-    """
-    Given a queryset C{qs}, returns the position (index) of the unit C{unit}
-    within that queryset.
-
-    @return: Integer value representing the position of the unit C{unit}.
-    """
-    return qs.filter(index__lt=unit.index).count()
-
-@ajax_required
-def get_tp_metadata(request, pootle_path, uid=None):
-    """
-    @return: An object in JSON notation that contains the metadata information
-    about the current translation project: source/target language codes,
-    the direction of the text and also a initial pager.
-
-    Success status that indicates if the information has been succesfully
-    retrieved or not is returned as well.
-    """
-    if pootle_path[0] != '/':
-        pootle_path = '/' + pootle_path
-    profile = get_profile(request.user)
-    json = {}
-
-    try:
-        store = Store.objects.select_related('translation_project', 'parent').get(pootle_path=pootle_path)
-        if not check_profile_permission(profile, 'view', store.parent):
-            json["success"] = False
-            json["msg"] = _("You do not have rights to access translation mode.")
-        else:
-            units_qs = _filter_queryset(request.GET, store.units)
-            unit_rows = profile.get_unit_rows()
-
-            try:
-                if uid is None:
-                    try:
-                        current_unit = units_qs[0]
-                        json["uid"] = units_qs[0].id
-                    except IndexError:
-                        current_unit = None
-                else:
-                    current_unit = units_qs.get(id=uid, store__pootle_path=pootle_path)
-                if current_unit is not None:
-                    current_index = _get_index_in_qs(units_qs, current_unit)
-                    preceding = units_qs[:current_index].count()
-                    page = preceding / unit_rows + 1
-                    pager = paginate(request, units_qs, items=unit_rows, page=page)
-                    json["pager"] = _build_pager_dict(pager)
-                tp = store.translation_project
-                json["meta"] = {"source_lang": tp.project.source_language.code,
-                                "source_dir": tp.project.source_language.get_direction(),
-                                "target_lang": tp.language.code,
-                                "target_dir": tp.language.get_direction()}
-                json["success"] = True
-            except Unit.DoesNotExist:
-                json["success"] = False
-                json["msg"] = _("Unit %(uid)s does not exist on %(path)s." %
-                                {'uid': uid, 'path': pootle_path})
-    except Store.DoesNotExist:
-        json["success"] = False
-        json["msg"] = _("Store %(path)s does not exist." %
-                        {'path': pootle_path})
-
-    response = simplejson.dumps(json)
-    return HttpResponse(response, mimetype="application/json")
-
-@ajax_required
-def get_view_units(request, pootle_path, limit=0):
-    """
-    @return: An object in JSON notation that contains the source and target
-    texts for units that will be displayed before and after unit C{uid}.
-
-    Success status that indicates if the unit has been succesfully
-    retrieved or not is returned as well.
-    """
-    if pootle_path[0] != '/':
-        pootle_path = '/' + pootle_path
-    profile = get_profile(request.user)
-    json = {}
-    page = request.GET.get('page', 1)
-
-    try:
-        store = Store.objects.select_related('translation_project', 'parent').get(pootle_path=pootle_path)
-        if not check_profile_permission(profile, 'view', store.parent):
-            json["success"] = False
-            json["msg"] = _("You do not have rights to access translation mode.")
-        else:
-            if not limit:
-                limit = profile.get_unit_rows()
-            units_qs = _filter_queryset(request.GET, store.units)
-            json["units"] = _filter_view_units(units_qs, int(page), int(limit))
-            json["success"] = True
-    except Store.DoesNotExist:
-        json["success"] = False
-        json["msg"] = _("Store %(path)s does not exist." %
-                        {'path': pootle_path})
-
-    response = simplejson.dumps(json)
-    return HttpResponse(response, mimetype="application/json")
-
-@ajax_required
-def get_more_context(request, pootle_path, uid):
-    """
-    @return: An object in JSON notation that contains the source and target
-    texts for units that are in context of unit C{uid}.
-
-    Success status that indicates if the unit has been succesfully
-    retrieved or not is returned as well.
-    """
-    if pootle_path[0] != '/':
-        pootle_path = '/' + pootle_path
-    profile = get_profile(request.user)
-    json = {}
-    gap = int(request.GET.get('gap', 0))
-
-    try:
-        store = Store.objects.select_related('translation_project', 'parent').get(pootle_path=pootle_path)
-        if not check_profile_permission(profile, 'view', store.parent):
-            json["success"] = False
-            json["msg"] = _("You do not have rights to access translation mode.")
-        else:
-            try:
-                units_qs = store.units
-                current_unit = units_qs.get(id=uid, store__pootle_path=pootle_path)
-                edit_index = _get_index_in_qs(units_qs, current_unit)
-                json["ctxt"] = _filter_ctxt_units(units_qs, edit_index, 2, gap)
-                json["success"] = True
-            except Unit.DoesNotExist:
-                json["success"] = False
-                json["msg"] = _("Unit %(uid)s does not exist on %(path)s." %
-                                {'uid': uid, 'path': pootle_path})
-    except Store.DoesNotExist:
-        json["success"] = False
-        json["msg"] = _("Store %(path)s does not exist." %
-                        {'path': pootle_path})
-
-    response = simplejson.dumps(json)
-    return HttpResponse(response, mimetype="application/json")
-
-@ajax_required
-def get_edit_unit(request, pootle_path, uid):
-    """
-    Given a store path C{pootle_path} and unit id C{uid}, gathers all the
-    necessary information to build the editing widget.
-
-    @return: A templatised editing widget is returned within the C{editor}
-    variable and paging information is also returned if the page number has
-    changed.
-    """
-    if pootle_path[0] != '/':
-        pootle_path = '/' + pootle_path
-
-    unit = get_object_or_404(Unit, id=uid, store__pootle_path=pootle_path)
-    translation_project = unit.store.translation_project
-    language = translation_project.language
-    form_class = unit_form_factory(language, len(unit.source.strings))
-    form = form_class(instance=unit)
-    store = unit.store
-    directory = store.parent
-    profile = get_profile(request.user)
-    alt_src_langs = get_alt_src_langs(request, profile, translation_project)
-    project = translation_project.project
-    template_vars = {'unit': unit,
-                     'form': form,
-                     'store': store,
-                     'profile': profile,
-                     'user': request.user,
-                     'language': language,
-                     'source_language': translation_project.project.source_language,
-                     'cantranslate': check_profile_permission(profile, "translate", directory),
-                     'cansuggest': check_profile_permission(profile, "suggest", directory),
-                     'canreview': check_profile_permission(profile, "review", directory),
-                     'altsrcs': find_altsrcs(unit, alt_src_langs, store=store, project=project),
-                     'suggestions': get_sugg_list(unit)}
-
-    t = loader.get_template('unit/edit.html')
-    c = RequestContext(request, template_vars)
-    json = {'success': True,
-            'editor': t.render(c)}
-
-    current_page = int(request.GET.get('page', 1))
-    all_units = unit.store.units
-    units_qs = _filter_queryset(request.GET, all_units)
-    unit_rows = profile.get_unit_rows()
-    current_unit = unit
-    if current_unit is not None:
-        current_index = _get_index_in_qs(units_qs, current_unit)
-        preceding = units_qs[:current_index].count()
-        page = preceding / unit_rows + 1
-        if page != current_page:
-            pager = paginate(request, units_qs, items=unit_rows, page=page)
-            json["pager"] = _build_pager_dict(pager)
-        # Return context rows if filtering is applied
-        if 'filter' in request.GET and request.GET.get('filter', 'all') != 'all':
-            edit_index = _get_index_in_qs(all_units, current_unit)
-            json["ctxt"] = _filter_ctxt_units(all_units, edit_index, 2)
-
-    response = simplejson.dumps(json)
-    return HttpResponse(response, mimetype="application/json")
-
-@ajax_required
-def get_failing_checks(request, pootle_path):
-    """
-    Gets a list of failing checks for the current query.
-
-    @return: JSON string representing action status and depending on success,
-    returns an error message or a list containing the the name and number of
-    failing checks.
-    """
-    pass
-    if pootle_path[0] != '/':
-        pootle_path = '/' + pootle_path
-    profile = get_profile(request.user)
-    json = {}
-
-    try:
-        store = Store.objects.select_related('translation_project', 'parent').get(pootle_path=pootle_path)
-        if not check_profile_permission(profile, 'view', store.parent):
-            json["success"] = False
-            json["msg"] = _("You do not have rights to access translation mode.")
-        else:
-            # Borrowed from pootle_app.views.language.item_dict.getcheckdetails
-            checkopts = []
-            try:
-                property_stats = store.getcompletestats()
-                quick_stats = store.getquickstats()
-                total = quick_stats['total']
-                keys = property_stats.keys()
-                keys.sort()
-                for checkname in keys:
-                    checkcount = property_stats[checkname]
-                    if total and checkcount:
-                        stats = ungettext('%(checkname)s (%(checks)d)',
-                                          '%(checkname)s (%(checks)d)', checkcount,
-                                          {"checks": checkcount, "checkname": checkname})
-                        checkopt = {'name': checkname,
-                                    'text': stats}
-                        checkopts.append(checkopt)
-                json["checks"] = checkopts
-                json["success"] = True
-            except IOError:
-                json["success"] = False
-                json["msg"] = _("Input/Output error.")
-    except Store.DoesNotExist:
-        json["success"] = False
-        json["msg"] = _("Store %(path)s does not exist." %
-                        {'path': pootle_path})
-
-    response = simplejson.dumps(json)
-    return HttpResponse(response, mimetype="application/json")
-
-@ajax_required
-def process_submit(request, pootle_path, uid, type):
-    """
-    @return: An object in JSON notation that contains the previous
-    and last units for the unit next to unit C{uid}.
-
-    This object also contains success status that indicates if the submission
-    has been succesfully saved or not.
-    """
-    json = {}
-    if pootle_path[0] != '/':
-        pootle_path = '/' + pootle_path
-
-    try:
-        unit = Unit.objects.get(id=uid, store__pootle_path=pootle_path)
-        directory = unit.store.parent
-        profile = get_profile(request.user)
-        cantranslate = check_profile_permission(profile, "translate", directory)
-        cansuggest = check_profile_permission(profile, "suggest", directory)
-        if type == 'submission' and not cantranslate or \
-           type == 'suggestion' and not cansuggest:
-            json["success"] = False
-            json["msg"] = _("You do not have rights to access translation mode.")
-        else:
-            translation_project = unit.store.translation_project
-            language = translation_project.language
-            form_class = unit_form_factory(language, len(unit.source.strings))
-            form = form_class(request.POST, instance=unit)
-            if form.is_valid():
-                if type == 'submission':
-                    if form.instance._target_updated or \
-                       form.instance._translator_comment_updated or \
-                       form.instance._state_updated:
-                        form.save()
-                        sub = Submission(translation_project=translation_project,
-                                         submitter=get_profile(request.user))
-                        sub.save()
-                elif type == 'suggestion':
-                    if form.instance._target_updated:
-                        #HACKISH: django 1.2 stupidly modifies instance on
-                        # model form validation, reload unit from db
-                        unit = Unit.objects.get(id=unit.id)
-                        sugg = unit.add_suggestion(form.cleaned_data['target_f'], get_profile(request.user))
-                        if sugg:
-                            SuggestionStat.objects.get_or_create(translation_project=translation_project,
-                                                                 suggester=get_profile(request.user),
-                                                                 state='pending', unit=unit.id)
-
-                current_page = int(request.POST.get('page', 1))
-                all_units = unit.store.units
-                units_qs = _filter_queryset(request.POST, all_units)
-                unit_rows = profile.get_unit_rows()
-                current_unit = unit
-                if current_unit is not None:
-                    current_index = _get_index_in_qs(units_qs, current_unit)
-                    preceding = units_qs[:current_index].count()
-                    page = preceding / unit_rows + 1
-                    if page != current_page:
-                        pager = paginate(request, units_qs, items=unit_rows, page=page)
-                        json["pager"] = _build_pager_dict(pager)
-                    try:
-                        new_index = current_index + 1
-                        json["new_uid"] = units_qs[new_index].id
-                    except IndexError:
-                        # End of set: let's assume the new unit is the last we had
-                        new_unit = unit
-                        json["new_uid"] = None
-                    json["success"] = True
-            else:
-                # Form failed
-                json["success"] = False
-                json["msg"] = _("Failed to process submit.")
-    except Store.DoesNotExist:
-        json["success"] = False
-        json["msg"] = _("Store %(path)s does not exist." %
-                        {'path': pootle_path})
-    except Unit.DoesNotExist:
-        json["success"] = False
-        json["msg"] = _("Unit %(uid)s does not exist on %(path)s." %
-                        {'uid': uid, 'path': pootle_path})
-
-    response = simplejson.dumps(json)
-    return HttpResponse(response, mimetype="application/json")
-
-
-@ajax_required
 def reject_suggestion(request, uid, suggid):
-    json = {}
-    try:
-        unit = Unit.objects.get(id=uid)
-        directory = unit.store.parent
-        translation_project = unit.store.translation_project
+    unit = get_object_or_404(Unit, id=uid)
+    directory = unit.store.parent
+    translation_project = unit.store.translation_project
 
-        json["udbid"] = uid
-        json["sugid"] = suggid
-        if request.POST.get('reject'):
-            try:
-                sugg = unit.suggestion_set.get(id=suggid)
-            except ObjectDoesNotExist:
-                sugg = None
+    response = {
+        'udbid': unit.id,
+        'sugid': suggid,
+        }
+    if request.POST.get('reject'):
+        try:
+            sugg = unit.suggestion_set.get(id=suggid)
+        except ObjectDoesNotExist:
+            sugg = None
 
-            profile = get_profile(request.user)
-            if not check_profile_permission(profile, 'review', directory) and \
-                   (not request.user.is_authenticated() or sugg and sugg.user != profile):
-                json["success"] = False
-                json["msg"] = _("You do not have rights to access review mode.")
-            else:
-                json['success'] = unit.reject_suggestion(suggid)
-                if sugg is not None and json['success']:
-                    #FIXME: we need a totally different model for tracking stats, this is just lame
-                    suggstat, created = SuggestionStat.objects.get_or_create(translation_project=translation_project,
-                                                                    suggester=sugg.user,
-                                                                    state='pending',
-                                                                    unit=unit.id)
-                    suggstat.reviewer = get_profile(request.user)
-                    suggstat.state = 'rejected'
-                    suggstat.save()
-    except Unit.DoesNotExist:
-        json["success"] = False
-        json["msg"] = _("Unit %(uid)s does not exist." %
-                        {'uid': uid})
-
-    response = simplejson.dumps(json)
-    return HttpResponse(response, mimetype="application/json")
-
-@ajax_required
-def accept_suggestion(request, uid, suggid):
-    json = {}
-    try:
-        unit = Unit.objects.get(id=uid)
-        directory = unit.store.parent
-        translation_project = unit.store.translation_project
         profile = get_profile(request.user)
+        if not check_profile_permission(profile, 'review', directory) and \
+               (not request.user.is_authenticated() or sugg and sugg.user != profile):
+            raise PermissionDenied
 
-        if not check_profile_permission(profile, 'review', directory):
-            json["success"] = False
-            json["msg"] = _("You do not have rights to access review mode.")
-        else:
-            json["udbid"] = unit.id
-            json["sugid"] = suggid
-            if request.POST.get('accept'):
-                try:
-                    sugg = unit.suggestion_set.get(id=suggid)
-                except ObjectDoesNotExist:
-                    sugg = None
+        response['success'] = unit.reject_suggestion(suggid)
 
-                json['success'] = unit.accept_suggestion(suggid)
-                json['newtargets'] = [highlight_whitespace(target) for target in unit.target.strings]
-                json['newdiffs'] = {}
-                for sugg in unit.get_suggestions():
-                    json['newdiffs'][sugg.id] = [highlight_diffs(unit.target.strings[i], target) \
-                                                     for i, target in enumerate(sugg.target.strings)]
+        if sugg is not None and response['success']:
+            #FIXME: we need a totally different model for tracking stats, this is just lame
+            suggstat, created = SuggestionStat.objects.get_or_create(translation_project=translation_project,
+                                                            suggester=sugg.user,
+                                                            state='pending',
+                                                            unit=unit.id)
+            suggstat.reviewer = get_profile(request.user)
+            suggstat.state = 'rejected'
+            suggstat.save()
 
-                if sugg is not None and json['success']:
-                    #FIXME: we need a totally different model for tracking stats, this is just lame
-                    suggstat, created = SuggestionStat.objects.get_or_create(translation_project=translation_project,
-                                                                    suggester=sugg.user,
-                                                                    state='pending',
-                                                                    unit=unit.id)
-                    suggstat.reviewer = profile
-                    suggstat.state = 'accepted'
-                    suggstat.save()
+    response = simplejson.dumps(response)
+    return HttpResponse(response, mimetype="application/json")
 
-                    sub = Submission(translation_project=translation_project,
-                                     submitter=profile,
-                                     from_suggestion=suggstat)
-                    sub.save()
-    except Unit.DoesNotExist:
-        json["success"] = False
-        json["msg"] = _("Unit %(uid)s does not exist." %
-                        {'uid': uid})
+def accept_suggestion(request, uid, suggid):
+    unit = get_object_or_404(Unit, id=uid)
+    directory = unit.store.parent
+    translation_project = unit.store.translation_project
 
-    response = simplejson.dumps(json)
+    if not check_profile_permission(get_profile(request.user), 'review', directory):
+        raise PermissionDenied
+
+    response = {
+        'udbid': unit.id,
+        'sugid': suggid,
+        }
+
+    if request.POST.get('accept'):
+        try:
+            suggestion = unit.suggestion_set.get(id=suggid)
+        except ObjectDoesNotExist:
+            suggestion = None
+
+        response['success'] = unit.accept_suggestion(suggid)
+        response['newtargets'] = [highlight_whitespace(target) for target in unit.target.strings]
+        response['newdiffs'] = {}
+        for sugg in unit.get_suggestions():
+            response['newdiffs'][sugg.id] = [highlight_diffs(unit.target.strings[i], target) \
+                                             for i, target in enumerate(sugg.target.strings)]
+
+        if suggestion is not None and response['success']:
+            if suggestion.user:
+                translation_submitted.send(sender=translation_project, unit=unit, profile=suggestion.user)
+            #FIXME: we need a totally different model for tracking stats, this is just lame
+            suggstat, created = SuggestionStat.objects.get_or_create(translation_project=translation_project,
+                                                            suggester=suggestion.user,
+                                                            state='pending',
+                                                            unit=unit.id)
+            suggstat.reviewer = get_profile(request.user)
+            suggstat.state = 'accepted'
+            suggstat.save()
+
+            sub = Submission(translation_project=translation_project,
+                             submitter=get_profile(request.user),
+                             from_suggestion=suggstat)
+            sub.save()
+
+    response = simplejson.dumps(response)
     return HttpResponse(response, mimetype="application/json")
 
 
-@ajax_required
 def reject_qualitycheck(request, uid, checkid):
-    json = {}
-    try:
-        unit = Unit.objects.get(id=uid)
-        directory = unit.store.parent
-        if not check_profile_permission(get_profile(request.user), 'review', directory):
-            json["success"] = False
-            json["msg"] = _("You do not have rights to access review mode.")
-        else:
-            json["udbid"] = uid
-            json["checkid"] = checkid
-            if request.POST.get('reject'):
-                try:
-                    check = unit.qualitycheck_set.get(id=checkid)
-                    check.false_positive = True
-                    check.save()
-                    # update timestamp
-                    unit.save()
-                    json['success'] = True
-                except ObjectDoesNotExist:
-                    check = None
-                    json['success'] = False
-                    json["msg"] = _("Check %(checkid)s does not exist." %
-                                    {'checkid': checkid})
-    except Unit.DoesNotExist:
-        json['success'] = False
-        json["msg"] = _("Unit %(uid)s does not exist." %
-                        {'uid': uid})
+    unit = get_object_or_404(Unit, id=uid)
+    directory = unit.store.parent
+    if not check_profile_permission(get_profile(request.user), 'review', directory):
+        raise PermissionDenied
 
-    response = simplejson.dumps(json)
+    response = {
+        'udbid': unit.id,
+        'checkid': checkid,
+        }
+    if request.POST.get('reject'):
+        try:
+            check = unit.qualitycheck_set.get(id=checkid)
+            check.false_positive = True
+            check.save()
+            # update timestamp
+            unit.save()
+            response['success'] = True
+        except ObjectDoesNotExist:
+            check = None
+            response['success'] = False
+
+    response = simplejson.dumps(response)
     return HttpResponse(response, mimetype="application/json")

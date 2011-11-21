@@ -212,7 +212,7 @@ class ServerlandHost(models.Model):
                 request = TranslationRequest.objects.get_by_external_id(external_request_id)
                 
                 # TODO: Should we delete the translations, or filter them some way in Serverland to prevent re-retrieving translations? This could get expensive...
-                if requst.status == STATUS_FINISHED:
+                if request.status == STATUS_FINISHED:
                     # Only update if the translation isn't marked as finished.
                     continue
                 
@@ -279,7 +279,7 @@ class TranslationRequest(models.Model):
 
 def send_translation_requests(request_status=STATUS_PENDING):
     '''
-    Requests a batch of machine translation requests.
+    Sends a batch of machine translation requests.
     '''
     pending_requests = TranslationRequest.objects.filter(status = request_status)
     for request in pending_requests:
@@ -353,7 +353,7 @@ class ServerlandConfigError(TranslatorConfigError):
             host.status = self.errorCode
             host.save()
         else:
-            super(TranslatorsConfigError, self).__init__(host)
+            super(TranslatorConfigError, self).__init__(host)
     
 def request_translation(translator, sentences, source_language, target_language):
     """

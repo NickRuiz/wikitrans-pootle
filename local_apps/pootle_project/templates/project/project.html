@@ -9,23 +9,20 @@
 {{ block.super }} » {{ project.name }}
 {% endblock %}
 
-{% block breadcrumb_content %}
-  {{ block.super }} » 
-  <span><a href="{%filter l%}/projects/{{ project.code }}/{%endfilter%}">{{ project.name }}</a></span>
-{% endblock %}
-
 {% block body.id %}projectindex{% endblock body.id %}
 
 {% block bodyclass %}projectoverview{% endblock %}
+
+{% block breadcrumbs_content %}
+<a href="{%filter l%}/projects/{{ project.code }}/{%endfilter%}">{{ project.name }}</a>
+{% endblock breadcrumbs_content %}
 
 {% block content %}
 <div class="intro">
     {{ description|safe|linebreaks|clean }}
 </div>
 
-<div id="innernav" class="item-statistics">
-  <h2 lang="{{ LANGUAGE_CODE }}">{{ project.stats }}</h2>
-</div>
+<div class="item-statistics" lang="{{ LANGUAGE_CODE }}">{{ project.stats }}</div>
 
 <div class="module-primary" lang="{{ LANGUAGE_CODE }}">
     <div class="bd">

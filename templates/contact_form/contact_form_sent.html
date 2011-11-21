@@ -2,17 +2,10 @@
 
 {% load i18n baseurl %}
 
-{% block title %}
-{{ block.super }} » {% trans "Message Sent" %}
-{% endblock %}
- 
-{% block breadcrumb_content %}
-{{ block.super }} » <span>{% trans "Message Sent" %}</span>
-{% endblock %}
+{% block title %}{{ block.super }}: {% trans "Message Sent" %}{% endblock %}
  
 {% block content %}
-<div class="form message success">
+<div class="general-message">
     <h2>{% trans "Message Sent" %}</h2>
-    <p>{% trans "Thank you for your feedback." %}</p>
 </div>
 {% endblock %}

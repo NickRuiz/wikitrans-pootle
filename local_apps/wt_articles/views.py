@@ -14,7 +14,7 @@ from wt_articles.models import SourceArticle,TranslatedArticle
 from wt_articles.models import SourceSentence,TranslatedSentence
 from wt_articles.models import FeaturedTranslation, latest_featured_article
 from wt_articles.models import ArticleOfInterest
-from wt_articles.forms import TranslatedSentenceMappingForm, ArticleRequestForm, FixArticleForm, DummyFixArticleForm, AddTargetLanguagesForm
+from wt_articles.forms import TranslatedSentenceMappingForm, ArticleRequestForm, DummyFixArticleForm, AddTargetLanguagesForm
 from wt_articles.utils import sentences_as_html, sentences_as_html_span, target_pairs_by_user
 from wt_articles.utils import user_compatible_articles
 from wt_articles.utils import user_compatible_target_articles
@@ -269,7 +269,7 @@ def translate_post_edit(request, source, target, title, aid, template_name="wt_a
     
 
 @login_required
-def fix_article(request, aid, form_class=FixArticleForm, template_name="wt_articles/fix_article.html"):
+def fix_article(request, aid, form_class=DummyFixArticleForm, template_name="wt_articles/fix_article.html"):
     """
     aid in this context is the source article id
     """

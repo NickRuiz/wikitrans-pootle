@@ -2,15 +2,11 @@
 {% load i18n baseurl %}
 
 {% block title %}
-{{ block.super }} » {% trans "Page Not Found" %}
-{% endblock %}
-
-{% block breadcrumb_content %}
-{{ block.super }} » <span>{% trans "Page Not Found" %}</span>
+{{ block.super }}: {% trans "Page Not Found" %}
 {% endblock %}
 
 {% block content %}
-<div class="form message error" lang="{{ LANGUAGE_CODE }}">
+<div class="general-message" lang="{{ LANGUAGE_CODE }}">
   <h2>{% trans 'Page Not Found' %}</h2>
   <p>{% trans "We're sorry, but the requested page could not be found." %}</p>
 </div>

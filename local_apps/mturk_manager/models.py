@@ -14,8 +14,8 @@ class TaskConfig(models.Model):
     max_assignments = models.PositiveIntegerField(_('Max number of Assignments'))
     title = models.CharField(_('Question Form Title'), max_length=255)
     description = models.TextField(_('Question Form Description'))
-    reward = models.DecimalField(_('Reward Per Answer'), decimal_places=2, max_digits=2)
-    bonus = models.DecimalField(_('Bonus'), decimal_places=2, max_digits=2)
+    reward = models.DecimalField(_('Reward Per Answer'), decimal_places=2, max_digits=3)
+    bonus = models.DecimalField(_('Bonus'), decimal_places=2, max_digits=3)
     
     class Meta:
         ordering = ["name"]
@@ -142,7 +142,7 @@ class AssignmentItem(models.Model):
                                  default=PENDING)
     hit = models.ForeignKey(HITItem)
     worker_id = models.CharField(_('Worker Id'), max_length=50, null=True, blank=True)
-    wages_paid = models.DecimalField(_('Wages Paid'), decimal_places=2, max_digits=2, default='0.0')
+    wages_paid = models.DecimalField(_('Wages Paid'), decimal_places=2, max_digits=3, default='0.0')
 
     class Meta:
         ordering = ["accept_time"]

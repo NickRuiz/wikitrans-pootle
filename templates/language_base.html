@@ -3,16 +3,17 @@
 {% load baseurl i18n %}
 
 {% block title %}
-{{ block.super }} » {{ language.name }}
-{% endblock %}
-
-{% block breadcrumb_content %}
-    {{ block.super }} » 
-    <span><a href="{% filter l %}/{{ language.code }}/{% endfilter %}">{{ language.name }}</a></span>
+{{ block.super }}: {{ language.name }}
 {% endblock %}
 
 {% block extra_head %}
 <link rel="alternate" type="application/rss+xml" href="{% url pootle_notifications.feeds.view feed_path %}" />
+{% endblock %}
+
+{% block breadcrumbs %}
+<div id="breadcrumbs">
+    <h2 class="title"><a href="{% filter l %}/{{ language.code }}/{% endfilter %}">{{ language.name }}</a></h2>
+</div>
 {% endblock %}
 
 {% block precontent %}

@@ -35,10 +35,12 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.forms.models import BaseModelFormSet
 from django import forms
+from django.utils.encoding import iri_to_uri
+
 
 from translate.storage import factory, versioncontrol
 
-from pootle_misc.baseurl import redirect
+from pootle_misc.baseurl import redirect, l
 from pootle_app.models.permissions import get_matching_permissions, check_permission
 from pootle_app.models.signals import post_file_upload
 from pootle_app.models             import Directory
@@ -50,7 +52,7 @@ from pootle_app.views.language.view import get_stats_headings
 from pootle_app.views.admin import util
 from pootle_app.views.admin.permissions import admin_permissions
 from pootle_app.views.language.view import get_translation_project, set_request_context
-from pootle_app.project_tree import ensure_target_dir_exists
+from pootle_app.project_tree import ensure_target_dir_exists, direct_language_match_filename
 
 from pootle_store.models import Store, Unit
 from pootle_store.util import absolute_real_path, relative_real_path
@@ -187,7 +189,7 @@ def tp_admin_files(request, translation_project):
         'directory': translation_project.directory,
         }
     link = lambda instance: '<a href="%s/translate">%s</a>' % (
-        instance.pootle_path, instance.pootle_path[len(translation_project.pootle_path):])
+        l(instance.pootle_path), instance.pootle_path[len(translation_project.pootle_path):])
 
     return util.edit(request, 'translation_project/tp_admin_files.html', Store, model_args,
                      link, linkfield='pootle_path', queryset=queryset,
@@ -247,7 +249,7 @@ def export_zip(request, translation_project, file_path):
     export_path = os.path.join('POOTLE_EXPORT', translation_project.real_path, archivename)
     abs_export_path = absolute_real_path(export_path)
 
-    key = "%s:export_zip" % pootle_path
+    key = iri_to_uri("%s:export_zip" % pootle_path)
     last_export = cache.get(key)
     if not (last_export and last_export == translation_project.get_mtime() and os.path.isfile(abs_export_path)):
         ensure_target_dir_exists(abs_export_path)
@@ -290,9 +292,7 @@ def get_local_filename(translation_project, upload_filename):
     # project_tree.py! The rest of Pootle shouldn't have to care
     # whether something is GNU-style or not.
     if translation_project.file_style == "gnu" and not translation_project.is_template_project:
-        name = os.path.splitext(local_filename)[0]
-        if not (name.endswith('_'+translation_project.language.code) or \
-                name.endswith('+'+translation_project.language.code)):
+        if not direct_language_match_filename(translation_project.language.code, local_filename):
             raise ValueError(_("Invalid GNU-style file name: %(local_filename)s. It must match '%(langcode)s.%(filetype)s'.",
                              {'local_filename': local_filename,
                               'langcode': translation_project.language.code,

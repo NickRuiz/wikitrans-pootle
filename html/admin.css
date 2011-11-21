@@ -21,7 +21,6 @@ div#depchecks ul li
 {
     background-repeat: no-repeat;
     padding: 0 2em;
-    margin: 0.5em 0;
 }
 
 div#depchecks ul li.good
@@ -59,45 +58,15 @@ html[dir="rtl"] div#depchecks ul li.error
     background-position: right top;
 }
 
-/* ADMIN GENERAL SETTINGS */
+/* ADMIN RSS NEWS FEED */
 
-textarea#id_DESCRIPTION
+#rss-alerts div.bd div.centered
 {
     width: 100%;
+    text-align: center;
 }
 
 /* ADMIN LANGUAGES, FILES */
-
-td.code input
-{
-   width: 5em;
-}
-
-td.fullname {
-    width: 20%;
-}
-
-td.pluralequation
-{
-    width: 50%;
-}
-
-td.fullname input
-{
-    min-width: 10em;
-}
-
-td.specialchars input
-{
-    min-width: 5em;
-}
-
-td.fullname input,
-td.pluralequation input,
-td.specialchars input
-{
-    width: 90%;
-}
 
 td.fullname input,
 td.pluralequation input,
@@ -111,16 +80,56 @@ html[dir="rtl"] td.pootle_path
     text-align: right;
 }
 
-/* ADMIN PERMISSIONS */
-
-td.positive_permissions select
-{
-    height: 11.5em;
-}
-
 /* ADMIN BUTTONS */
+
+.admin-buttons-block
+{
+    margin-bottom: 1em;
+}
 
 .admin-buttons-block input
 {
-    margin-bottom: 1em;
+    margin-bottom: 0.3em;
+}
+
+.admin-buttons-block input[type="submit"]
+{
+    cursor: pointer;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+    background-position: 5px 50%;
+    background-repeat: no-repeat;
+    border: 1px solid #ccc;
+    padding: 2px 5px 2px 23px;
+    min-height: 16px;
+}
+
+html[dir="rtl"] .admin-buttons-block input[type="submit"]
+{
+    padding: 2px 23px 2px 5px;
+    background-position: 95% center;
+}
+
+.admin-buttons-block .update
+{
+    background-image: url('images/page_refresh.png');
+}
+
+.admin-buttons-block .rescan
+{
+    background-image: url('images/arrow_refresh.png');
+}
+
+.admin-buttons-block .save
+{
+    background-image: url('images/database_save.png');
+}
+
+.admin-buttons-block input[type="submit"]:hover,
+.admin-buttons-block input[type="submit"]:active,
+.admin-buttons-block input[type="submit"]:focus
+{
+    border-color: #999;
+    border-style: solid;
 }

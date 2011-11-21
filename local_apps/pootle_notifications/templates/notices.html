@@ -11,32 +11,17 @@ approach for this.
 {% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}
-    {{ block.super }} »
-    {% if directory.is_language %}
-        {{ directory.language.name }}
-    {% else %}
-        {% if directory.is_project %}
-            {% trans "Projects" %} » {{ directory.project.fullname }}
-        {% else %}
-            {{ navitems.0.path.language.text }} » {{ navitems.0.path.project.text }}
-        {% endif %}
-    {% endif %}
-    » {% trans "News" %}
-{% endblock %}
-
-{% block breadcrumb_content %}
-    {{ block.super }} » 
-    {% if directory.is_language %}
-        <span><a href="{% filter l %}/{{ directory.language.code }}/{% endfilter %}">{{ directory.language.name }}</a></span>
-    {% else %}
-        {% if directory.is_project %}
-            <span><a href='{{ "/projects/"|l }}'>{% trans "Projects" %}</a></span> »
-            <span><a href="{% filter l %}/projects/{{ directory.project.code }}/{% endfilter %}">{{ directory.project.fullname }}</a></span>
-        {% else %}
-            <span>{% include "language/item_title.html" %}</span>
-        {% endif %}
-    {% endif %}
-    » <span>{% trans "News" %}</span>
+{{ block.super }}:
+{% if directory.is_language %}
+  {{ directory.language.name }}
+{% else %}
+  {% if directory.is_project %}
+    {{ directory.project.fullname }}
+  {% else %}
+    {{ navitems.0.path.language.text }} » {{ navitems.0.path.project.text }} » {% trans "News" %}
+  {% endif %}
+{% endif %}
+» {% trans "News" %}
 {% endblock %}
 
 {% block extra_head %}
@@ -45,6 +30,26 @@ approach for this.
 
 {% block bodyclass %}
 {% if directory.is_language %}languagenews{% else %}tpnews{% endif %}
+{% endblock %}
+
+{% block nav-secondary %}
+{% if directory.is_language %}
+<div id="breadcrumbs">
+    <h2 class="title"><a href="{% filter l %}/{{ directory.language.code }}/{% endfilter %}">{{ directory.language.name }}</a></h2>
+</div>
+{% else %}
+    {% if directory.is_project %}
+    <div id="breadcrumbs">
+        <h2 class="title"><a href="{% filter l %}/projects/{{ directory.project.code }}/{% endfilter %}">{{ directory.project.fullname }}</a></h2>
+    </div>
+    {% else %}
+    {% block breadcrumbs %}
+    <div id="breadcrumbs">
+      <h2 class="title">{% include "language/item_title.html" %}</h2>
+    </div>
+    {% endblock %}
+    {% endif %}
+{% endif %}
 {% endblock %}
 
 {% block precontent %}
@@ -60,34 +65,28 @@ approach for this.
 {% endblock %}
 
 {% block content %}
-<div id="innernav" lang="{{ LANGUAGE_CODE }}">
-    {% if form %}
-        <h2>{{ title }}</h2>
-        <div class="form news">
-        <h2>{% trans "Publish News" %}</h2>
-        <p>{{ success }}</p>
-        <form method="post" action="">
-            {{ form.as_p }}
-            <p class="buttons">
-                <input type="submit" class="news-publish" value="{% trans "Publish" %}" />
-            </p>
-        </form>
-        </div>
-    {% else %}
-        <h2>{% trans "Latest News" %} {{ name }}</h2>
-    {% endif %}
+<div class="settings-container centered" lang="{{ LANGUAGE_CODE }}">
+{% if form %}
+    <h2>{{ title }}</h2>
+    <p>{{ success }}</p>
+    <form method="post" action="">
+        {{ form.as_p }}
+        <p class="common-buttons-block">
+            <input type="submit" class="news-publish" value="{% trans "Publish" %}" />
+        </p>
+    </form>
+{% endif %}
 
-    <div class="news-feed{% if form %}-with-form{% endif %}">
-        {% if notices %}
-            {% for notice in notices %}
-                <div class="datetime"><small>{{ notice.get_date }}</small></div>
-                <div class="newsitem">{{ notice.message|safe|linebreaks|clean }}</div>
-                <div class="newsitem-sep"></div>
-            {% endfor %}
-        {% else %}
-            <p>{% trans "No news yet." %}</p>
-        {% endif %}
-    </div>
+    <h2>{% trans "Latest News" %} {{ name }}</h2>
+{% if notices %}
+    {% for notice in notices %}
+    <div class="datetime"><small>{{ notice.get_date }}</small></div>
+    <div class="newsitem">{{ notice.message|safe|linebreaks|clean }}</div>
+    <div class="newsitem-sep"></div>
+    {% endfor %}
+{% else %}
+    <p>{% trans "No news yet." %}</p>
+{% endif %}
 </div>
 {% endblock %}
 

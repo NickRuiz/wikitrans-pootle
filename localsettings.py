@@ -17,7 +17,7 @@ from pootle.install_dirs import *
 # Mail server settings
 
 # By default Pootle uses SMTP server on localhost, if the server is
-# not configured for sending emails use these settings to setup and
+# not configured for sending emails use these settings to setup an
 # external outgoing SMTP server.
 
 # Example for Google as an external SMTP server
@@ -81,7 +81,7 @@ CACHE_BACKEND = 'db://pootlecache?max_entries=65536&cull_frequency=16'
 # Uncomment this if you're using memcached as CACHE_BACKEND and running under Django 1.0
 #SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
-# Uncomment this if you're using memcached as CACHE_BACKEND and running under Django 1.1
+# Uncomment this if you're using memcached as CACHE_BACKEND and running under Django >= 1.1
 #SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 # To improve performance, non-logged users get cached copies of most pages.
@@ -94,7 +94,7 @@ CACHE_MIDDLEWARE_SECONDS = 600
 
 # Set this to False. DEBUG mode is only needed when testing beta's or
 # hacking Pootle.
-DEBUG = True
+DEBUG = False
 
 
 # Use the commented definition to authenticate first with an LDAP system and

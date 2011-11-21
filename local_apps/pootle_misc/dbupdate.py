@@ -27,10 +27,29 @@ from pootle.i18n.gettext import ugettext as _
 from pootle.i18n.gettext import ungettext
 
 from pootle_app.models import Directory
-from pootle_store.models import Store
+from pootle_store.models import Store, QualityCheck, CHECKED, PARSED
+from pootle_store.util import OBSOLETE
+from pootle_misc.util import deletefromcache
 from pootle_language.models import Language
 from pootle_project.models import Project
+from pootle_translationproject.models import TranslationProject
 from pootle_misc.dbinit import stats_start, stats_language, stats_project, stats_end
+
+def flush_quality_checks():
+    """reverts stores to unchecked state. if store has false positives
+    marked updates quality checks keeping false postivies intact"""
+    for store in Store.objects.filter(state=CHECKED).iterator():
+        store_checks = QualityCheck.objects.filter(unit__store=store)
+        false_positives = store_checks.filter(false_positive=True).count()
+        if false_positives:
+            logging.debug("%s has false positives, updating quality checks", store.pootle_path)
+            for unit in store.units.iterator():
+                unit.update_qualitychecks(keep_false_positives=True)
+        else:
+            logging.debug("%s has no false positives, deleting checks", store.pootle_path)
+            store_checks.delete()
+            store.state = PARSED
+            store.save()
 
 def header(db_buildversion):
     text = """
@@ -101,6 +120,7 @@ def update_tables_21000():
     """ % _('Updating existing database tables...')
     logging.info("Updating existing database tables")
     from south.db import db
+    #raise ImportError
     table_name = Store._meta.db_table
     field = Store._meta.get_field('state')
     db.add_column(table_name, field.name, field)
@@ -117,10 +137,45 @@ def update_tables_21000():
     db.add_column(table_name, field.name, field)
 
     field = Project._meta.get_field('source_language')
-    en, created = Language.objects.get_or_create(code='en', fullname='English', nplurals=2)
+    try:
+        en = Language.objects.get(code='en')
+    except Language.DoesNotExist:
+        # we can't allow translation project detection to kick in yet so let's create en manually
+        en = Language(code='en', fullname='English', nplurals=2, pluralequation="(n != 1)")
+        en.directory = Directory.objects.root.get_or_make_subdir(en.code)
+        en.save_base(raw=True)
     field.default = en.id
     db.add_column(table_name, field.name, field)
     db.create_index(table_name, (field.name + '_id',))
+    return text
+
+def update_qualitychecks_21040():
+    text = """
+    <p>%s</p>
+    """ % _('Removing quality checks, will be recalculated on demand...')
+    logging.info("Fixing quality checks")
+    flush_quality_checks()
+    return text
+
+def update_stats_21060():
+    text = """
+    <p>%s</p>
+    """ %_('Removing potentially incorrect cached stats, will be recalculated...')
+    logging.info('flushing cached stats')
+    for tp in TranslationProject.objects.filter(stores__unit__state=OBSOLETE).distinct().iterator():
+        deletefromcache(tp, ["getquickstats", "getcompletestats", "get_mtime", "has_suggestions"])
+    return text
+
+def update_ts_tt_12008():
+    text = """
+    <p>%s</p>
+    """ %_('Reparsing Qt ts files...')
+    logging.info('reparsing qt ts')
+    for store in Store.objects.filter(state__gt=PARSED,
+                                      translation_project__project__localfiletype='ts',
+                                      file__iendswith='.ts').iterator():
+        store.sync(update_translation=True)
+        store.update(update_structure=True, update_translation=True, conservative=False)
     return text
 
 def parse_start():
@@ -180,9 +235,8 @@ def footer():
     """ % {'endmsg': _('Pootle initialized the database. You will be redirected to the front page in 10 seconds.')}
     return text
 
-def staggered_update(db_buildversion):
+def staggered_update(db_buildversion, tt_buildversion):
     """Update pootle database, while displaying progress report for each step"""
-
     # django's syncdb command prints progress reports to stdout, but
     # mod_wsgi doesn't like stdout, so we reroute to stderr
     stdout = sys.stdout
@@ -234,6 +288,15 @@ def staggered_update(db_buildversion):
                 logging.warning(u"something broke while parsing %s:\n%s", store, e)
 
         yield parse_end()
+
+    if db_buildversion < 21040:
+        yield update_qualitychecks_21040()
+
+    if db_buildversion < 21060:
+        yield update_stats_21060()
+
+    if tt_buildversion < 12008:
+        yield update_ts_tt_12008()
 
     # first time to visit the front page all stats for projects and
     # languages will be calculated which can take forever, since users

@@ -46,7 +46,7 @@ echo "Setting directory to "$GIT_LOCAL_DIRECTORY"/Pootle"
 cd $GIT_LOCAL_DIRECTORY/Pootle
 
 # Install dependencies from requirements.txt
-sudo apt-get install libyaml-0-1
+sudo apt-get install libyaml-0-2
 sudo pip install -I pyyaml
 sudo pip install http://dist.repoze.org/PIL-1.1.6.tar.gz
 
@@ -54,6 +54,7 @@ sudo apt-get install libxml2-dev
 sudo apt-get install libxslt-dev
 sudo pip install lxml
 
+sudo apt-get install libevent-dev
 sudo pip install -I -r requirements.txt
 
 # Configure nltk

@@ -44,7 +44,7 @@ from pootle_misc.baseurl import l
 from pootle_misc.aggregate import group_by_count, max_column
 from pootle_store.util import calculate_stats
 from pootle_store.models           import Store, Unit, QualityCheck, PARSED, CHECKED
-from pootle_store.util             import relative_real_path, absolute_real_path
+from pootle_store.util             import relative_real_path, absolute_real_path, OBSOLETE
 from pootle_store.util import empty_quickstats, empty_completestats
 
 from pootle_app.lib.util           import RelatedManager
@@ -211,7 +211,7 @@ class TranslationProject(models.Model):
         if self.is_template_project:
             return empty_quickstats
         errors = self.require_units()
-        stats = calculate_stats(Unit.objects.filter(store__translation_project=self))
+        stats = calculate_stats(Unit.objects.filter(store__translation_project=self, state__gt=OBSOLETE))
         stats['errors'] = errors
         return stats
 
@@ -297,6 +297,7 @@ class TranslationProject(models.Model):
     has_index = property(_has_index)
 
     def update_file_from_version_control(self, store):
+        store.sync(update_translation=True)
         try:
             hooks.hook(self.project.code, "preupdate", store.file.path)
         except:
@@ -310,8 +311,7 @@ class TranslationProject(models.Model):
             logging.debug(u"updating %s from version control", store.file.path)
             versioncontrol.updatefile(store.file.path)
             store.file._delete_store_cache()
-            store.update(update_structure=True, update_translation=True, conservative=False)
-            remotestats = store.getquickstats()
+            store.file._update_store_cache()
         except Exception, e:
             #something wrong, file potentially modified, bail out
             #and replace with working copy
@@ -319,9 +319,18 @@ class TranslationProject(models.Model):
             working_copy.save()
             raise VersionControlError
 
-        #FIXME: try to avoid merging if file was not updated
-        logging.debug(u"merging %s with version control update", store.file.path)
-        store.mergefile(working_copy, None, allownewstrings=False, suggestions=True, notranslate=False, obsoletemissing=False)
+        try:
+            logging.debug(u"parsing version control copy of %s into db", store.file.path)
+            store.update(update_structure=True, update_translation=True, conservative=False)
+            remotestats = store.getquickstats()
+            #FIXME: try to avoid merging if file was not updated
+            logging.debug(u"merging %s with version control update", store.file.path)
+            store.mergefile(working_copy, None, allownewstrings=False, suggestions=True, notranslate=False, obsoletemissing=False)
+        except Exception, e:
+            logging.error(u"near fatal catastrophe, exception %s while merging %s with version control copy", e, store.file.path)
+            working_copy.save()
+            store.update(update_structure=True, update_translation=True, conservative=False)
+            raise
 
         try:
             hooks.hook(self.project.code, "postupdate", store.file.path)
@@ -378,10 +387,11 @@ class TranslationProject(models.Model):
 
     def commitpofile(self, request, store):
         """commits an individual PO file to version control"""
+        #FIXME: this is a view what is it doing here
         if not check_permission("commit", request):
             raise PermissionDenied(_("You do not have rights to commit files here"))
 
-        store.sync(update_structure=True, update_translation=True, conservative=False)
+        store.sync(update_structure=False, update_translation=True, conservative=True)
         stats = store.getquickstats()
         author = request.user.username
         message = stats_message("Commit from %s by user %s." % (settings.TITLE, author), stats)

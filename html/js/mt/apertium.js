@@ -1,58 +1,41 @@
-(function($) {
-  window.PTL.editor.mt = window.PTL.editor.mt || {};
+/*
+ * Apertium Service
+ */
 
-  PTL.editor.mt.apertium = {
+$(document).ready(function() {
+  var target_lang = $.pootle.normalize_code($("#id_target_f_0").attr("lang"));
 
-    url: "http://api.apertium.org/JSLibrary.js",
-    cookie_name: "apertium_pairs",
-    cookie_options: {path: '/', expires: 15},
+  var cookie_name = "apertium_pairs";
+  var cookie_options = {path: '/', expires: 15};
+  var pairs = $.cookie(cookie_name);
+  if (!pairs) {
+    pairs = apertium.getSupportedLanguagePairs();
+    pairs = $.map(pairs, function(obj, i) {
+      return {source: obj.source, target: obj.target};
+    });
+    var cookie_data = JSON.stringify(pairs);
+    $.cookie(cookie_name, cookie_data, cookie_options);
+  } else {
+    pairs = $.parseJSON(pairs);
+  }
 
-    init: function(apikey) {
-      var _this = PTL.editor.mt.apertium;
-      /* Load Apertium library */
-      _this.url = apikey == undefined ? _this.url : _this.url + '?key=' + apikey;
-      $.getScript(_this.url, function() {
-        /* Init variables */
-        var _this = PTL.editor.mt.apertium;
-        _this.target_lang = PTL.editor.normalize_code($("#id_target_f_0").attr("lang"));
-
-        _this.pairs = $.cookie(_this.cookie_name);
-        if (!_this.pairs) {
-          var pairs = apertium.getSupportedLanguagePairs();
-          _this.pairs = $.map(pairs, function(obj, i) {
-            return {source: obj.source, target: obj.target};
-          });
-          var cookie_data = JSON.stringify(_this.pairs);
-          $.cookie(_this.cookie_name, cookie_data, _this.cookie_options);
-        } else {
-          _this.pairs = $.parseJSON(_this.pairs);
-        }
-
-        /* Bind event handler */
-        $(".apertium").live("click", _this.translate);
-      });
-    },
-
-    ready: function() {
-      var _this = PTL.editor.mt.apertium;
-      if (PTL.editor.isSupportedTarget(_this.pairs, _this.target_lang)) {
-        var sources = $("div.placeholder").prev(".translation-text");
-        $(sources).each(function() {
-          var source = PTL.editor.normalize_code($(this).attr("lang"));
-          if (PTL.editor.isSupportedPair(_this.pairs, source, _this.target_lang)) {
-            PTL.editor.addMTButton("apertium",
-                                   m("images/apertium.png"),
-                                   "Apertium");
-          }
-        });
+  if ($.pootle.isSupportedTarget(pairs, target_lang)) {
+    var sources = $("div.placeholder").prev(".translation-text");
+    $(sources).each(function() {
+      var source = $.pootle.normalize_code($(this).attr("lang"));
+      if ($.pootle.isSupportedPair(pairs, source, target_lang)) {
+        $.pootle.addMTButton($(this).parent().siblings().children(".translate-toolbar"),
+                             "apertium",
+                             m("images/apertium.png"),
+                             "Apertium");
       }
-    },
+    });
 
-    translate: function() {
+    $(".apertium").click(function() {
       var areas = $("[id^=id_target_f_]");
       var sources = $(this).parent().parent().siblings().children(".translation-text");
-      var lang_from = PTL.editor.normalize_code(sources.eq(0).attr("lang"));
-      var lang_to = PTL.editor.normalize_code(areas.eq(0).attr("lang"));
+      var lang_from = $.pootle.normalize_code(sources.eq(0).attr("lang"));
+      var lang_to = $.pootle.normalize_code(areas.eq(0).attr("lang"));
 
       // The printf regex based on http://phpjs.org/functions/sprintf:522
       var c_printf_pattern = /%%|%(\d+\$)?([-+\'#0 ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuidfegEG])/g;
@@ -63,9 +46,9 @@
 
       $(sources).each(function(j) {
         var source_text = $(this).text();
-        source_text = source_text.replace(c_printf_pattern, PTL.editor.collectArguments);
-        source_text = source_text.replace(csharp_string_format_pattern, PTL.editor.collectArguments);
-        source_text = source_text.replace(percent_number_pattern, PTL.editor.collectArguments);
+        source_text = source_text.replace(c_printf_pattern, $.pootle.collectArguments);
+        source_text = source_text.replace(csharp_string_format_pattern, $.pootle.collectArguments);
+        source_text = source_text.replace(percent_number_pattern, $.pootle.collectArguments);
 
         var content = new Object()
         content.text = source_text;
@@ -78,12 +61,13 @@
             areas.eq(j).val(translation);
             areas.eq(j).focus();
           } else {
-            PTL.editor.error("Apertium Error: " + result.error.message);
+            alert("Apertium Error: " + result.error.message);
           }
         });
       });
-      PTL.editor.goFuzzy();
+      $.pootle.goFuzzy();
       return false;
-    }
-  };
-})(jQuery);
+    });
+  }
+
+});

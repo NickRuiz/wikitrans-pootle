@@ -23,20 +23,13 @@ Directory contents
 
     http://homepage.ntlworld.com/bobosola
 
-  - editor.js :
-    Code that sets up the editor and handles all the actions involved there.
-    This includes unit navigation, submission, suggestions' handling, copying
-    functions, fuzzy/unfuzzy, and several other helper stuff.
-
   - json2.min.js :
     JavaScript library for encoding/decoding data to/from JSON format.
 
     http://www.json.org/js.html
 
-  - common.js :
-    Common code that is included in every page. This includes:
-    - Code to handle the page zoom feature.
-    - Code to handle the advanced search dropdown. May be merged with other code
+  - search.js :
+    Code to handle the advanced search dropdown. May be merged with other code
     in the translate page.
 
   - sorttable.js :
@@ -49,15 +42,23 @@ Directory contents
 
     http://www.kryogenix.org/code/browser/sorttable/
 
-  - shortcut.js :
-    Small library to ease adding keyboard shortcuts.
+  - translatepage.js :
+    This handles several actions performed in the translate page. Including:
 
-    http://www.openjs.com/scripts/events/keyboard_shortcuts/
+    1. Automatically unchecks the fuzzy mark when an edit is detected in a fuzzy
+    entry. Used in the translate page.
+    A new implementation would be better:
+    http://bugs.locamotion.org/show_bug.cgi?id=473
+
+    2. Handles suggestions doing XMLHttpRequest calls using jQuery and
+    sending/receiving data in JSON format.
+
+    3. Includes several functions for handling actions in the translate page.
 
   + jquery/
 
     - jquery.min.js :
-      The jQuery library, version 1.4.3, minified.
+      The jQuery library, version 1.4.2, minified.
 
     - jquery.bidi.js :
       jQuery plugin used to automatically set line direction of news
@@ -65,40 +66,27 @@ Directory contents
 
       http://plugins.jquery.com/project/bidi
 
-    - jquery.caret.js :
-      jQuery plugin to write text on top of the selected text or just after
-      the caret position.
-
-      http://www.jquery-plugin.buss.hk/my-plugins/jquery-caret-plugin
-
-    - jquery.fancybox.min.js :
-      Fancybox plugin for jQuery that adds the ability to display overlay
-      boxes with all sorts of content: images, HTML, AJAX data, ...
-
-      Using version 1.3.1, minified.
-
-      http://fancybox.net/
-
     - jquery.fieldselection.js :
       jQuery plugin to retrieve or replace text selections within
       textareas.
 
       http://laboratorium.0xab.cd/jquery/fieldselection/0.1.0/
 
-    - jquery.history.js :
-      Plugin to handle AJAX history using hashes.
+    - jquery.caret.js :
+      jQuery plugin to write text on top of the selected text or just after
+      the caret position.
 
-      http://github.com/tkyk/jquery-history-plugin/
+      http://www.jquery-plugin.buss.hk/my-plugins/jquery-caret-plugin
+
+    - jquery.scrollTo.min.js :
+      Scrolls the viewport to the selected element.
+
+      http://flesler.blogspot.com/2007/10/jqueryscrollto.html
 
     - jquery.textarea-expander.js :
       jQuery plugin used in the translate page textareas.
 
       http://blogs.sitepointstatic.com/examples/tech/textarea-expander/jquery.textarea-expander.js
-
-    - jquery.tmpl.js :
-      jQuery templating engine.
-
-      http://github.com/nje/jquery-tmpl
 
   + mt/
 

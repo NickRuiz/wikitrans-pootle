@@ -2,15 +2,19 @@
 {% load i18n baseurl %}
 
 {% block title %}
-{{ block.super }} » {% trans "Help" %}
-{% endblock %}
-
-{% block breadcrumb_content %}
-{{ block.super }} » <span>{% trans "Help" %}</span>
+{{ block.super }}: {% trans "Help" %}
 {% endblock %}
 
 {% block content %}
 <div class="documentation" lang="en" dir="LTR">
-    {% include "docs/index.html" %}
+    {% ifequal params.docfile "howto.html" %}
+        {% include "docs/howto.html" %}
+    {% else %}
+        {% ifequal params.docfile "resources.html" %}
+            {% include "docs/resources.html" %}
+        {% else %}
+            {% include "docs/index.html" %}
+        {% endifequal %}
+    {% endifequal %}
 </div>
 {% endblock %}

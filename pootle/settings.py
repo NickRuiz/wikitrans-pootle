@@ -21,7 +21,7 @@
 """This is a standard module defining some Django settings, as well as some
 settings specific to Pootle.
 
-Note that some of this can also be specified in pootle.ini in order to have a
+Note that some of this can also be specified in localsettings.py in order to have a
 configuration override outside of the code."""
 
 import logging
@@ -37,7 +37,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 # dummy translate function so we can extract text
-_ = lambda x : x
+_ = lambda x: x
 
 TITLE = _("WikiTrans")
 
@@ -90,23 +90,23 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'pootle_misc.middleware.baseurl.BaseUrlMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
-    'pootle_misc.middleware.siteconfig.SiteConfigMiddleware',
-    'django.middleware.cache.UpdateCacheMiddleware', # THIS MUST BE FIRST
-    'django.middleware.http.ConditionalGetMiddleware',
-    'django.middleware.gzip.GZipMiddleware',
-    'django.contrib.csrf.middleware.CsrfMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'pootle.middleware.setlocale.SetLocale',
-    'pootle_misc.middleware.errorpages.ErrorPagesMiddleware',
+    'pootle_misc.middleware.baseurl.BaseUrlMiddleware', # resolves paths
+    'django.middleware.transaction.TransactionMiddleware', # needs to be before anything that writes to the db
+    'pootle_misc.middleware.siteconfig.SiteConfigMiddleware', # must be early to detect the need to install or update schema, but must precede the cache middleware
+    'django.middleware.cache.UpdateCacheMiddleware', # must be as high as possible (see above)
+    'django.middleware.http.ConditionalGetMiddleware', # support for e-tag
+    'django.middleware.gzip.GZipMiddleware', # compress responses
+    'django.contrib.csrf.middleware.CsrfMiddleware', # protection against cross-site request forgery
+    'django.contrib.sessions.middleware.SessionMiddleware', # must be before authentication
+    'django.contrib.auth.middleware.AuthenticationMiddleware', # must be before anything user-related
+    'django.middleware.locale.LocaleMiddleware', # user-related
+    'pootle.middleware.setlocale.SetLocale', # sets Python's locale based on request's locale for sorting, etc.
+    'pootle_misc.middleware.errorpages.ErrorPagesMiddleware', # nice 500 and 403 pages (must be after locale to have translated versions)
     'django.middleware.common.CommonMiddleware',
-    'pootle.middleware.check_cookies.CheckCookieMiddleware',
-    'pootle.middleware.captcha.CaptchaMiddleware',
+    #'pootle.middleware.check_cookies.CheckCookieMiddleware',
+    'pootle.middleware.captcha.CaptchaMiddleware', # must be early in the response cycle (close to bottom)
     #'pootle.middleware.profile.ProfilerMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware' # THIS MUST BE LAST
+    'django.middleware.cache.FetchFromCacheMiddleware' # must be last in the request cycle (at the bottom)
 )
 
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
@@ -131,7 +131,6 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sites',
-    'django.contrib.humanize',
     'django.contrib.admin',
     'pootle_app',
     'pootle_misc',
@@ -182,6 +181,14 @@ USE_CAPTCHA = False
 AUTOSYNC = False
 MT_BACKENDS = ()
 CAN_CONTACT = True
+
+# By default Pootle sends only text emails. If your organization would
+# prefer to send mixed HTML/TEXT emails, set this to True, and update
+# activation_email.txt and activation_email.html in the templates/registration/
+# directory.
+# NOTE: Password reset emails will still be sent in plain text. This is a limitation
+# of the underlying system.
+EMAIL_SEND_HTML = False
 
 execfile(config_path("localsettings.py"))
 
@@ -239,14 +246,14 @@ if TEMPLATE_DEBUG:
 
 if DEBUG:
     logging.basicConfig(
-            level = logging.DEBUG,
-            format =  '%(asctime)s %(levelname)s %(message)s',
+            level=logging.DEBUG,
+            format='%(asctime)s %(levelname)s %(message)s',
             )
 else:
     # Will log only CRITICAL errors to the console
     logging.basicConfig(
-            level = logging.INFO,
-            format =  '%(asctime)s %(levelname)s %(message)s',
+            level=logging.INFO,
+            format='%(asctime)s %(levelname)s %(message)s',
             )
 
 

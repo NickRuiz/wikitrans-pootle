@@ -6,10 +6,6 @@
 {{ block.super }} » {% trans "Review" %}
 {% endblock %}
 
-{% block breadcrumb_content %}
-{{ block.super }} » <span>{% trans "Review" %}</span>
-{% endblock %}
-
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_language_bidi as LANGUAGE_BIDI %}
 
@@ -24,6 +20,7 @@
         {% if item.isdir or item.isfile %}
         <div class="item {% cycle 'even' 'odd' %}">
         {% include "language/item_block.html" %}
+        {% include "language/item_stats.html" %}
         </div>
         {% endif %}
     </div>

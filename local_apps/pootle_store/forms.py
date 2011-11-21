@@ -28,7 +28,8 @@ from django.utils.safestring import mark_safe
 from translate.misc.multistring import multistring
 
 from pootle_store.models import Unit
-from pootle_store.util import FUZZY, TRANSLATED, UNTRANSLATED
+from pootle_store.util import FUZZY, TRANSLATED
+from pootle_store.fields import PLURAL_PLACEHOLDER
 
 ############## text cleanup and highlighting #########################
 FORM_RE = re.compile('\r\n|\r|\n|\t|\\\\')
@@ -79,9 +80,8 @@ class MultiStringWidget(forms.MultiWidget):
 
         output = ''
         for i, widget in enumerate(rendered_widgets):
-            output += '<div lang="%s" title="%s">' % (get_language(), _('Plural Form %d', i))
+            output += '<p class="translation-text-headers" lang="%s">%s</p>' % (get_language(), _('Plural Form %d', i))
             output += widget
-            output += '</div>'
         return mark_safe(output)
 
     def decompress(self, value):
@@ -127,11 +127,12 @@ class MultiStringFormField(forms.MultiValueField):
         return [unhighlight_whitespace(string) for string in data_list]
 
 
-def unit_form_factory(language, snplurals=1):
-    if snplurals > 1:
+def unit_form_factory(language, snplurals=None):
+    if snplurals is not None:
         tnplurals = language.nplurals
     else:
         tnplurals = 1
+
     target_attrs = {
         'lang': language.code,
         'dir': language.get_direction(),
@@ -159,7 +160,7 @@ def unit_form_factory(language, snplurals=1):
             exclude = ['store']
 
         id = forms.IntegerField(required=False)
-        source_f = MultiStringFormField(nplurals=snplurals, required=False, textarea=False)
+        source_f = MultiStringFormField(nplurals=snplurals or 1, required=False, textarea=False)
         target_f = MultiStringFormField(nplurals=tnplurals, required=False, attrs=target_attrs)
         state = forms.BooleanField(required=False,
                 label=_('Fuzzy'),
@@ -174,6 +175,9 @@ def unit_form_factory(language, snplurals=1):
             value = self.cleaned_data['source_f']
             if self.instance.source.strings != value:
                 self.instance._source_updated = True
+            if snplurals == 1:
+                # plural with single form, insert placeholder
+                value.append(PLURAL_PLACEHOLDER)
             return value
 
         def clean_target_f(self):
